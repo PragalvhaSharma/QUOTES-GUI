@@ -4,40 +4,69 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import quoteData from './data.json';
 
+interface QuoteItem {
+  id?: number;
+  name: string;
+  description: string;
+  price_per_unit: number;
+  quantity: number;
+  url: string;
+  image_url: string;
+}
+
+interface QuoteData {
+  quote: {
+    quoteInfo: {
+      quoteNumber: string;
+      validUntil: string;
+    };
+    companyInfo: {
+      name: string;
+      contact: string;
+      email: string;
+      phone: string;
+      address: string;
+    };
+    clientInfo: {
+      company: string;
+      email: string;
+      phone: string;
+      address: string;
+    };
+    items: QuoteItem[];
+  };
+}
+
 interface LineItem {
   id: number;
   description: string;
   details: string;
   rate: number;
   quantity: number;
+  url: string;
+  image_url: string;
 }
 
 export default function QuotePage() {
   const router = useRouter();
+  const typedQuoteData = quoteData as QuoteData;
   
-  // Default rates for items
-  const defaultRates: { [key: string]: number } = {
-    "4x4 pressure-treated lumber": 15.98,
-    "2x8 pressure-treated lumber": 22.97,
-    "2x6 pressure-treated decking boards": 18.97,
-    "2x4 pressure-treated lumber": 12.97,
-    "4x6 pressure-treated stringers for stairs": 34.98,
-    "3-inch exterior deck screws": 29.97,
-    "16d galvanized nails": 24.97,
-    "Joist hangers compatible with 2x8 lumber": 3.97,
-    "Post brackets compatible with 4x4 posts": 8.97,
-    "Railing brackets": 4.93,
-    "Concrete mix, 50 lb bags": 5.21,
-    "Gravel, 1 cubic foot bags": 5.97
-  };
+  // Add state for focused inputs and deleted items
+  const [focusedInput, setFocusedInput] = useState<{ id: number, type: 'rate' | 'quantity' } | null>(null);
+  const [deletedItems, setDeletedItems] = useState<LineItem[]>([]);
+  const [showUndo, setShowUndo] = useState(false);
+  const [lastDeletedItem, setLastDeletedItem] = useState<LineItem | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const [items, setItems] = useState<LineItem[]>(
-    quoteData.items.map((item, index) => ({
-      id: index + 1,
-      description: item.rawMaterialName,
+    typedQuoteData.quote.items.map((item: QuoteItem) => ({
+      id: item.id || Math.random(),
+      description: item.name,
       details: item.description,
-      rate: defaultRates[item.rawMaterialName] || 0,
-      quantity: parseInt(item.amountNeeded) || 0,
+      rate: item.price_per_unit || 0,
+      quantity: item.quantity || 0,
+      url: item.url,
+      image_url: item.image_url,
     }))
   );
 
@@ -46,18 +75,21 @@ export default function QuotePage() {
   };
 
   const handleRateChange = (id: number, value: string) => {
+    // Remove any non-numeric characters except decimal point
+    const numericValue = value.replace(/[^0-9.]/g, '');
     setItems(items.map(item => {
       if (item.id === id) {
-        return { ...item, rate: parseFloat(value) || 0 };
+        return { ...item, rate: parseFloat(numericValue) || 0 };
       }
       return item;
     }));
   };
 
   const handleQuantityChange = (id: number, value: string) => {
+    const numericValue = value.replace(/[^0-9]/g, '');
     setItems(items.map(item => {
       if (item.id === id) {
-        return { ...item, quantity: parseInt(value) || 0 };
+        return { ...item, quantity: parseInt(numericValue) || 0 };
       }
       return item;
     }));
@@ -82,6 +114,30 @@ export default function QuotePage() {
     return (subtotal + tax).toFixed(2);
   };
 
+  const handleDelete = (id: number) => {
+    const itemToDelete = items.find(item => item.id === id);
+    if (itemToDelete) {
+      setItems(items.filter(item => item.id !== id));
+      setDeletedItems([...deletedItems, itemToDelete]);
+      setLastDeletedItem(itemToDelete);
+      setShowUndo(true);
+      // Hide undo after 5 seconds
+      setTimeout(() => {
+        setShowUndo(false);
+        setLastDeletedItem(null);
+      }, 5000);
+    }
+  };
+
+  const handleUndo = () => {
+    if (lastDeletedItem) {
+      setItems([...items, lastDeletedItem]);
+      setDeletedItems(deletedItems.filter(item => item.id !== lastDeletedItem.id));
+      setShowUndo(false);
+      setLastDeletedItem(null);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-8">
       <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-lg p-12 border border-gray-100">
@@ -94,7 +150,7 @@ export default function QuotePage() {
           <div className="space-y-3 bg-gray-50 p-4 rounded-lg border border-gray-100">
             <div className="flex justify-between gap-8">
               <span className="text-gray-600">Quote no.</span>
-              <span className="font-semibold text-gray-900">{quoteData.quoteInfo.quoteNumber}</span>
+              <span className="font-semibold text-gray-900">{typedQuoteData.quote.quoteInfo.quoteNumber}</span>
             </div>
             <div className="flex justify-between gap-8">
               <span className="text-gray-600">Quote date:</span>
@@ -102,7 +158,7 @@ export default function QuotePage() {
             </div>
             <div className="flex justify-between gap-8">
               <span className="text-gray-600">Due:</span>
-              <span className="font-semibold text-gray-900">{quoteData.quoteInfo.validUntil}</span>
+              <span className="font-semibold text-gray-900">{typedQuoteData.quote.quoteInfo.validUntil}</span>
             </div>
           </div>
         </div>
@@ -114,21 +170,21 @@ export default function QuotePage() {
               <span className="h-5 w-1 bg-blue-500 rounded-full"></span>
               From
             </h2>
-            <p className="font-semibold text-gray-900">{quoteData.companyInfo.name}</p>
-            <p className="text-gray-600">{quoteData.companyInfo.contact}</p>
-            <p className="text-gray-600">{quoteData.companyInfo.email}</p>
-            <p className="text-gray-600">{quoteData.companyInfo.phone}</p>
-            <p className="text-gray-600">{quoteData.companyInfo.address}</p>
+            <p className="font-semibold text-gray-900">{typedQuoteData.quote.companyInfo.name}</p>
+            <p className="text-gray-600">{typedQuoteData.quote.companyInfo.contact}</p>
+            <p className="text-gray-600">{typedQuoteData.quote.companyInfo.email}</p>
+            <p className="text-gray-600">{typedQuoteData.quote.companyInfo.phone}</p>
+            <p className="text-gray-600">{typedQuoteData.quote.companyInfo.address}</p>
           </div>
           <div className="space-y-2 flex-1 bg-gray-50 p-6 rounded-lg border border-gray-100">
             <h2 className="text-gray-900 font-semibold mb-4 flex items-center gap-2">
               <span className="h-5 w-1 bg-cyan-500 rounded-full"></span>
               Bill to
             </h2>
-            <p className="font-semibold text-gray-900">{quoteData.clientInfo.company}</p>
-            <p className="text-gray-600">{quoteData.clientInfo.email}</p>
-            <p className="text-gray-600">{quoteData.clientInfo.phone}</p>
-            <p className="text-gray-600">{quoteData.clientInfo.address}</p>
+            <p className="font-semibold text-gray-900">{typedQuoteData.quote.clientInfo.company}</p>
+            <p className="text-gray-600">{typedQuoteData.quote.clientInfo.email}</p>
+            <p className="text-gray-600">{typedQuoteData.quote.clientInfo.phone}</p>
+            <p className="text-gray-600">{typedQuoteData.quote.clientInfo.address}</p>
           </div>
         </div>
 
@@ -147,31 +203,67 @@ export default function QuotePage() {
               {items.map((item) => (
                 <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                   <td className="p-6">
-                    <div>
-                      <p className="font-semibold text-gray-900">{item.description}</p>
-                      <p className="text-gray-600 mt-2 text-sm leading-relaxed">{item.details}</p>
+                    <div className="flex gap-4">
+                      <img 
+                        src={item.image_url} 
+                        alt={item.description}
+                        className="w-24 h-24 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={() => setSelectedImage(item.image_url)}
+                      />
+                      <div className="flex-grow">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-semibold text-gray-900">{item.description}</p>
+                            <p className="text-gray-600 mt-2 text-sm leading-relaxed">{item.details}</p>
+                            <a 
+                              href={item.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center mt-2 text-sm text-blue-500 hover:text-blue-600 transition-colors"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                                <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                              </svg>
+                              View Product
+                            </a>
+                          </div>
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            className="text-red-500 hover:text-red-600 transition-colors p-1 hover:bg-red-50 rounded"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </td>
                   <td className="p-6 text-right">
-                    <div className="flex items-center justify-end">
-                      <span className="text-gray-900 mr-1">$</span>
+                    <div className="relative flex items-center justify-end">
                       <input
-                        type="number"
-                        value={item.rate}
+                        type="text"
+                        value={focusedInput?.id === item.id && focusedInput?.type === 'rate' 
+                          ? item.rate.toString()
+                          : `$${item.rate.toFixed(2)}`}
                         onChange={(e) => handleRateChange(item.id, e.target.value)}
-                        className="w-24 text-right bg-white border border-gray-200 rounded px-2 py-1 font-medium text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
-                        step="0.01"
-                        min="0"
+                        onFocus={() => setFocusedInput({ id: item.id, type: 'rate' })}
+                        onBlur={() => setFocusedInput(null)}
+                        className="w-32 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all hover:border-gray-300"
                       />
                     </div>
                   </td>
                   <td className="p-6 text-right">
                     <input
-                      type="number"
-                      value={item.quantity}
+                      type="text"
+                      value={focusedInput?.id === item.id && focusedInput?.type === 'quantity' && item.quantity === 0 
+                        ? '' 
+                        : item.quantity}
                       onChange={(e) => handleQuantityChange(item.id, e.target.value)}
-                      className="w-20 text-right bg-white border border-gray-200 rounded px-2 py-1 font-medium text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
-                      min="0"
+                      onFocus={() => setFocusedInput({ id: item.id, type: 'quantity' })}
+                      onBlur={() => setFocusedInput(null)}
+                      className="w-24 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all hover:border-gray-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </td>
                   <td className="p-6 text-right font-semibold text-gray-900">
@@ -214,7 +306,61 @@ export default function QuotePage() {
             </div>
           </div>
         </div>
+
+        {/* Undo Notification */}
+        {showUndo && lastDeletedItem && (
+          <div className="fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-4 animate-fade-in">
+            <span>Item deleted</span>
+            <button
+              onClick={handleUndo}
+              className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+            >
+              Undo
+            </button>
+          </div>
+        )}
+
+        {/* Image Modal */}
+        {selectedImage && (
+          <div 
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
+            onClick={() => setSelectedImage(null)}
+          >
+            <div 
+              className="relative max-w-4xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden"
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setSelectedImage(null)}
+                className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <img 
+                src={selectedImage} 
+                alt="Enlarged view" 
+                className="w-full h-auto max-h-[80vh] object-contain"
+              />
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );
 }
+
+const styles = `
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(1rem); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+`;
+
+const styleSheet = document.createElement("style");
+styleSheet.innerText = styles;
+document.head.appendChild(styleSheet);
