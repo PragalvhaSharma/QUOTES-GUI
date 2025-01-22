@@ -19,14 +19,33 @@ export default function Home() {
 
   // Auto-save functionality
   useEffect(() => {
-    const autoSaveTimer = setTimeout(() => {
-      if (requirements && !saved) {
-        handleSave();
+    let autoSaveTimer: NodeJS.Timeout;
+    
+    if (requirements && !saved) {
+      autoSaveTimer = setTimeout(() => {
+        try {
+          localStorage.setItem('clientRequirements', requirements);
+          setSaved(true);
+          setLastSaved(new Date());
+          
+          // Reset saved state after showing success
+          const resetTimer = setTimeout(() => {
+            setSaved(false);
+          }, 2000);
+          
+          return () => clearTimeout(resetTimer);
+        } catch (err) {
+          console.error('Auto-save failed:', err);
+        }
+      }, 3000);
+    }
+    
+    return () => {
+      if (autoSaveTimer) {
+        clearTimeout(autoSaveTimer);
       }
-    }, 3000); // Auto-save after 3 seconds of no typing
-
-    return () => clearTimeout(autoSaveTimer);
-  }, [requirements]);
+    };
+  }, [requirements, saved]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setRequirements(e.target.value);
@@ -34,12 +53,10 @@ export default function Home() {
   };
 
   const handleClear = () => {
-    if (window.confirm('Are you sure you want to clear all requirements? This cannot be undone.')) {
-      setRequirements('');
-      setSaved(false);
-      setLastSaved(null);
-      localStorage.removeItem('clientRequirements');
-    }
+    setRequirements('');
+    setSaved(false);
+    setLastSaved(null);
+    localStorage.removeItem('clientRequirements');
   };
 
   const handleSave = () => {
@@ -58,11 +75,23 @@ export default function Home() {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(requirements);
+      // Create a temporary textarea element
+      const textArea = document.createElement('textarea');
+      textArea.value = requirements;
+      document.body.appendChild(textArea);
+      
+      // Select and copy the text
+      textArea.select();
+      document.execCommand('copy');
+      
+      // Clean up
+      document.body.removeChild(textArea);
+      
+      // Show success state
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      alert(`Failed to copy to clipboard: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } catch {
+      alert('Failed to copy text. Please try selecting and copying manually.');
     }
   };
 
@@ -91,14 +120,9 @@ export default function Home() {
                   Project Details
                 </label>
                 <div className="flex items-center space-x-4">
-                  {!saved && requirements && (
-                    <span className="text-xs text-gray-500 animate-pulse">
-                      Auto-saving...
-                    </span>
-                  )}
                   {lastSaved && (
                     <span className="text-xs text-gray-500">
-                      Last saved: {lastSaved.toLocaleString()}
+                      Saved
                     </span>
                   )}
                 </div>
@@ -131,21 +155,7 @@ export default function Home() {
                   onClick={handleCopy}
                   disabled={requirements.length === 0}
                 >
-                  {copied ? (
-                    <span className="flex items-center space-x-1">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span>Copied!</span>
-                    </span>
-                  ) : (
-                    <span className="flex items-center space-x-1">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                      </svg>
-                      <span>Copy</span>
-                    </span>
-                  )}
+                  Copy
                 </button>
                 <button 
                   className="px-5 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors disabled:opacity-50"
@@ -155,24 +165,11 @@ export default function Home() {
                   Clear
                 </button>
                 <button 
-                  className={`px-5 py-2.5 rounded-lg transition-colors font-medium flex items-center space-x-2
-                    ${saved 
-                      ? 'bg-green-500 text-white hover:bg-green-600' 
-                      : 'bg-black text-white hover:bg-gray-900'
-                    }`}
+                  className="px-5 py-2.5 bg-black text-white rounded-lg hover:bg-gray-900 transition-colors font-medium disabled:opacity-50"
                   onClick={handleSave}
                   disabled={requirements.length === 0}
                 >
-                  {saved ? (
-                    <>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span>Saved!</span>
-                    </>
-                  ) : (
-                    'Save Requirements'
-                  )}
+                  Save Requirements
                 </button>
               </div>
             </div>
