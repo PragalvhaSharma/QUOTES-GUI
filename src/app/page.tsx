@@ -1,0 +1,205 @@
+"use client";
+
+import { useState, useEffect } from 'react';
+
+export default function Home() {
+  const [requirements, setRequirements] = useState('');
+  const [saved, setSaved] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  // Load saved requirements when component mounts
+  useEffect(() => {
+    const savedRequirements = localStorage.getItem('clientRequirements');
+    if (savedRequirements) {
+      setRequirements(savedRequirements);
+      setLastSaved(new Date());
+    }
+  }, []);
+
+  // Auto-save functionality
+  useEffect(() => {
+    const autoSaveTimer = setTimeout(() => {
+      if (requirements && !saved) {
+        handleSave();
+      }
+    }, 3000); // Auto-save after 3 seconds of no typing
+
+    return () => clearTimeout(autoSaveTimer);
+  }, [requirements]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setRequirements(e.target.value);
+    setSaved(false);
+  };
+
+  const handleClear = () => {
+    if (window.confirm('Are you sure you want to clear all requirements? This cannot be undone.')) {
+      setRequirements('');
+      setSaved(false);
+      setLastSaved(null);
+      localStorage.removeItem('clientRequirements');
+    }
+  };
+
+  const handleSave = () => {
+    try {
+      localStorage.setItem('clientRequirements', requirements);
+      setSaved(true);
+      setLastSaved(new Date());
+
+      setTimeout(() => {
+        setSaved(false);
+      }, 2000);
+    } catch (err) {
+      alert(`Failed to save requirements: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    }
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(requirements);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      alert(`Failed to copy to clipboard: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const handleProceed = () => {
+    // Save before proceeding
+    handleSave();
+    // Add navigation or next step logic here
+    alert('Proceeding to next step...');
+  };
+
+  return (
+    <main className="min-h-screen bg-[#fafafa]">
+      <div className="max-w-3xl mx-auto p-6 sm:p-8 pt-12 sm:pt-24">
+        <div className="text-center mb-12">
+          <h1 className="text-3xl sm:text-5xl font-bold text-black mb-3 tracking-tight">
+            Client Requirements
+          </h1>
+          <p className="text-gray-500 text-lg">Capture your project needs in detail</p>
+        </div>
+        
+        <div className="space-y-6">
+          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 sm:p-8 transition-all duration-300 hover:shadow-lg hover:border-gray-300">
+            <div className="space-y-1 mb-4">
+              <div className="flex justify-between items-center">
+                <label htmlFor="requirements" className="block text-sm font-medium text-gray-700">
+                  Project Details
+                </label>
+                <div className="flex items-center space-x-4">
+                  {!saved && requirements && (
+                    <span className="text-xs text-gray-500 animate-pulse">
+                      Auto-saving...
+                    </span>
+                  )}
+                  {lastSaved && (
+                    <span className="text-xs text-gray-500">
+                      Last saved: {lastSaved.toLocaleString()}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <p className="text-sm text-gray-500">
+                Be as specific as possible about your requirements
+              </p>
+            </div>
+            
+            <textarea
+              id="requirements"
+              className="w-full min-h-[400px] p-5 bg-transparent border-0 focus:ring-0 text-gray-800 text-lg resize-none placeholder:text-gray-400"
+              placeholder="Start typing or paste your requirements here..."
+              value={requirements}
+              onChange={handleChange}
+              style={{ outline: 'none' }}
+            />
+            
+            <div className="mt-6 flex justify-between items-center text-sm border-t border-gray-100 pt-6">
+              <div className="flex items-center space-x-3 text-gray-500">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                <span className="font-medium">{requirements.length} characters</span>
+              </div>
+              
+              <div className="flex space-x-3">
+                <button 
+                  className="px-5 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors disabled:opacity-50"
+                  onClick={handleCopy}
+                  disabled={requirements.length === 0}
+                >
+                  {copied ? (
+                    <span className="flex items-center space-x-1">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>Copied!</span>
+                    </span>
+                  ) : (
+                    <span className="flex items-center space-x-1">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                      </svg>
+                      <span>Copy</span>
+                    </span>
+                  )}
+                </button>
+                <button 
+                  className="px-5 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors disabled:opacity-50"
+                  onClick={handleClear}
+                  disabled={requirements.length === 0}
+                >
+                  Clear
+                </button>
+                <button 
+                  className={`px-5 py-2.5 rounded-lg transition-colors font-medium flex items-center space-x-2
+                    ${saved 
+                      ? 'bg-green-500 text-white hover:bg-green-600' 
+                      : 'bg-black text-white hover:bg-gray-900'
+                    }`}
+                  onClick={handleSave}
+                  disabled={requirements.length === 0}
+                >
+                  {saved ? (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>Saved!</span>
+                    </>
+                  ) : (
+                    'Save Requirements'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-center">
+            <button
+              onClick={handleProceed}
+              disabled={requirements.length === 0}
+              className={`
+                px-8 py-4 rounded-lg text-lg font-medium transition-all duration-300
+                ${requirements.length === 0
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-black to-gray-800 text-white hover:shadow-lg hover:scale-105 active:scale-100'
+                }
+              `}
+            >
+              <span className="flex items-center space-x-2">
+                <span>Proceed</span>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
