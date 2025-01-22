@@ -1,19 +1,19 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
   const [requirements, setRequirements] = useState('');
   const [saved, setSaved] = useState(false);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [copied, setCopied] = useState(false);
 
   // Load saved requirements when component mounts
   useEffect(() => {
     const savedRequirements = localStorage.getItem('clientRequirements');
     if (savedRequirements) {
       setRequirements(savedRequirements);
-      setLastSaved(new Date());
+      setSaved(true);
     }
   }, []);
 
@@ -26,7 +26,6 @@ export default function Home() {
         try {
           localStorage.setItem('clientRequirements', requirements);
           setSaved(true);
-          setLastSaved(new Date());
           
           // Reset saved state after showing success
           const resetTimer = setTimeout(() => {
@@ -55,7 +54,6 @@ export default function Home() {
   const handleClear = () => {
     setRequirements('');
     setSaved(false);
-    setLastSaved(null);
     localStorage.removeItem('clientRequirements');
   };
 
@@ -63,11 +61,6 @@ export default function Home() {
     try {
       localStorage.setItem('clientRequirements', requirements);
       setSaved(true);
-      setLastSaved(new Date());
-
-      setTimeout(() => {
-        setSaved(false);
-      }, 2000);
     } catch (err) {
       alert(`Failed to save requirements: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
@@ -88,8 +81,9 @@ export default function Home() {
       document.body.removeChild(textArea);
       
       // Show success state
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => {
+        setSaved(false);
+      }, 2000);
     } catch {
       alert('Failed to copy text. Please try selecting and copying manually.');
     }
@@ -98,8 +92,8 @@ export default function Home() {
   const handleProceed = () => {
     // Save before proceeding
     handleSave();
-    // Add navigation or next step logic here
-    alert('Proceeding to next step...');
+    // Navigate to quote page
+    router.push('/quotePage');
   };
 
   return (
@@ -119,13 +113,6 @@ export default function Home() {
                 <label htmlFor="requirements" className="block text-sm font-medium text-gray-700">
                   Project Details
                 </label>
-                <div className="flex items-center space-x-4">
-                  {lastSaved && (
-                    <span className="text-xs text-gray-500">
-                      Saved
-                    </span>
-                  )}
-                </div>
               </div>
               <p className="text-sm text-gray-500">
                 Be as specific as possible about your requirements
@@ -167,9 +154,9 @@ export default function Home() {
                 <button 
                   className="px-5 py-2.5 bg-black text-white rounded-lg hover:bg-gray-900 transition-colors font-medium disabled:opacity-50"
                   onClick={handleSave}
-                  disabled={requirements.length === 0}
+                  disabled={requirements.length === 0 || saved}
                 >
-                  Save Requirements
+                  {saved ? 'Saved' : 'Save Requirements'}
                 </button>
               </div>
             </div>

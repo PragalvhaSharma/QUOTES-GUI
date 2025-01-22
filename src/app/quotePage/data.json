@@ -1,0 +1,92 @@
+{
+    "quoteInfo": {
+        "quoteNumber": "001",
+        "validUntil": "Feb 28th, 2024"
+    },
+    "companyInfo": {
+        "name": "Premier Building Supply",
+        "contact": "Mike Johnson",
+        "email": "sales@premierbuild.ca",
+        "phone": "416-555-0123",
+        "address": "123 Builder Ave, Toronto, ON M5V 2T6"
+    },
+    "clientInfo": {
+        "company": "Custom Homes Ltd.",
+        "email": "info@customhomes.ca",
+        "phone": "647-555-0189",
+        "address": "456 Development Dr, Toronto, ON M4W 1A8"
+    },
+    "items": [
+        {
+            "rawMaterialName": "4x4 pressure-treated lumber",
+            "amountNeeded": "6 pieces",
+            "description": "Used for structural supports and posts in outdoor projects."
+        },
+        {
+            "rawMaterialName": "2x8 pressure-treated lumber",
+            "amountNeeded": "12 pieces",
+            "description": "Utilized for beams and larger structural components."
+        },
+        {
+            "rawMaterialName": "2x6 pressure-treated decking boards",
+            "amountNeeded": "40 pieces",
+            "description": "Used for creating decks and outdoor flooring."
+        },
+        {
+            "rawMaterialName": "2x4 pressure-treated lumber",
+            "amountNeeded": "8 pieces",
+            "description": "Commonly used for framing, support, and construction."
+        },
+        {
+            "rawMaterialName": "4x6 pressure-treated stringers for stairs",
+            "amountNeeded": "3 pieces",
+            "description": "Used as the main support structure for staircases."
+        },
+        {
+            "rawMaterialName": "3-inch exterior deck screws",
+            "amountNeeded": "10 lbs",
+            "description": "Designed for fastening decking and outdoor structures."
+        },
+        {
+            "rawMaterialName": "16d galvanized nails",
+            "amountNeeded": "5 lbs",
+            "description": "Used for structural framing and securing lumber."
+        },
+        {
+            "rawMaterialName": "Joist hangers compatible with 2x8 lumber",
+            "amountNeeded": "20 pieces",
+            "description": "Used to securely attach joists to beams."
+        },
+        {
+            "rawMaterialName": "Post brackets compatible with 4x4 posts",
+            "amountNeeded": "8 pieces",
+            "description": "Used for securing posts to the ground or deck frame."
+        },
+        {
+            "rawMaterialName": "Railing brackets",
+            "amountNeeded": "20 pieces",
+            "description": "Used to attach railings to posts or walls."
+        },
+        {
+            "rawMaterialName": "Concrete mix, 50 lb bags",
+            "amountNeeded": "8 bags",
+            "description": "Used for pouring footings or setting posts."
+        },
+        {
+            "rawMaterialName": "Gravel, 1 cubic foot bags",
+            "amountNeeded": "6 bags",
+            "description": "Used for drainage and as a base material."
+        },
+        {
+            "rawMaterialName": "123123123, 1 cubic foot bags",
+            "amountNeeded": "6 bags",
+            "description": "Used for drainage and as a base material."
+        }
+    ],
+    "paymentInfo": {
+        "paypal": "payments@premierbuild.ca",
+        "checkPayableTo": "Premier Building Supply",
+        "routingNumber": "061120084"
+    },
+    "notes": "All lumber prices are subject to market fluctuations. Quote valid for 14 days. Delivery included within city limits. Special orders may require additional lead time. All materials are new and meet or exceed building code requirements."
+}
