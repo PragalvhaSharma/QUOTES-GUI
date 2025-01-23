@@ -7,13 +7,36 @@ export default function Home() {
   const router = useRouter();
   const [requirements, setRequirements] = useState('');
   const [saved, setSaved] = useState(false);
+  const [fromInfo, setFromInfo] = useState({
+    companyName: '',
+    contactName: '',
+    email: '',
+    phone: '',
+    address: ''
+  });
+  const [billToInfo, setBillToInfo] = useState({
+    companyName: '',
+    contactName: '',
+    email: '',
+    phone: '',
+    address: ''
+  });
 
-  // Load saved requirements when component mounts
+  // Load saved data when component mounts
   useEffect(() => {
     const savedRequirements = localStorage.getItem('clientRequirements');
+    const savedFromInfo = localStorage.getItem('fromInfo');
+    const savedBillToInfo = localStorage.getItem('billToInfo');
+    
     if (savedRequirements) {
       setRequirements(savedRequirements);
       setSaved(true);
+    }
+    if (savedFromInfo) {
+      setFromInfo(JSON.parse(savedFromInfo));
+    }
+    if (savedBillToInfo) {
+      setBillToInfo(JSON.parse(savedBillToInfo));
     }
   }, []);
 
@@ -25,6 +48,8 @@ export default function Home() {
       autoSaveTimer = setTimeout(() => {
         try {
           localStorage.setItem('clientRequirements', requirements);
+          localStorage.setItem('fromInfo', JSON.stringify(fromInfo));
+          localStorage.setItem('billToInfo', JSON.stringify(billToInfo));
           setSaved(true);
           
           // Reset saved state after showing success
@@ -44,7 +69,7 @@ export default function Home() {
         clearTimeout(autoSaveTimer);
       }
     };
-  }, [requirements, saved]);
+  }, [requirements, saved, fromInfo, billToInfo]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setRequirements(e.target.value);
@@ -55,14 +80,18 @@ export default function Home() {
     setRequirements('');
     setSaved(false);
     localStorage.removeItem('clientRequirements');
+    localStorage.removeItem('fromInfo');
+    localStorage.removeItem('billToInfo');
   };
 
   const handleSave = () => {
     try {
       localStorage.setItem('clientRequirements', requirements);
+      localStorage.setItem('fromInfo', JSON.stringify(fromInfo));
+      localStorage.setItem('billToInfo', JSON.stringify(billToInfo));
       setSaved(true);
     } catch (err) {
-      alert(`Failed to save requirements: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      alert(`Failed to save data: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   };
 
@@ -101,12 +130,187 @@ export default function Home() {
       <div className="max-w-3xl mx-auto p-6 sm:p-8 pt-12 sm:pt-24">
         <div className="text-center mb-12">
           <h1 className="text-3xl sm:text-5xl font-bold text-black mb-3 tracking-tight">
-            Client Requirements
+            Quote Details
           </h1>
-          <p className="text-gray-500 text-lg">Capture your project needs in detail</p>
+          <p className="text-gray-500 text-lg">Enter quote information and project requirements</p>
         </div>
         
         <div className="space-y-6">
+          {/* Billing Information Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* From Section */}
+            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 transition-all duration-300 hover:shadow-lg hover:border-gray-300">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="p-2 bg-black rounded-lg">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-semibold text-black">From</h2>
+              </div>
+              <div className="space-y-5">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                  <input
+                    type="text"
+                    value={fromInfo.companyName}
+                    onChange={(e) => setFromInfo({...fromInfo, companyName: e.target.value})}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
+                    placeholder="Enter company name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Contact Name</label>
+                  <input
+                    type="text"
+                    value={fromInfo.contactName}
+                    onChange={(e) => setFromInfo({...fromInfo, contactName: e.target.value})}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
+                    placeholder="Enter contact name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="email"
+                      value={fromInfo.email}
+                      onChange={(e) => setFromInfo({...fromInfo, email: e.target.value})}
+                      className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
+                      placeholder="email@company.com"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="tel"
+                      value={fromInfo.phone}
+                      onChange={(e) => setFromInfo({...fromInfo, phone: e.target.value})}
+                      className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
+                      placeholder="+1 (555) 000-0000"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="text"
+                      value={fromInfo.address}
+                      onChange={(e) => setFromInfo({...fromInfo, address: e.target.value})}
+                      className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
+                      placeholder="Enter full address"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bill To Section */}
+            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 transition-all duration-300 hover:shadow-lg hover:border-gray-300">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="p-2 bg-black rounded-lg">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-semibold text-black">Bill To</h2>
+              </div>
+              <div className="space-y-5">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                  <input
+                    type="text"
+                    value={billToInfo.companyName}
+                    onChange={(e) => setBillToInfo({...billToInfo, companyName: e.target.value})}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
+                    placeholder="Enter company name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Contact Name</label>
+                  <input
+                    type="text"
+                    value={billToInfo.contactName}
+                    onChange={(e) => setBillToInfo({...billToInfo, contactName: e.target.value})}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
+                    placeholder="Enter contact name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="email"
+                      value={billToInfo.email}
+                      onChange={(e) => setBillToInfo({...billToInfo, email: e.target.value})}
+                      className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
+                      placeholder="email@company.com"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="tel"
+                      value={billToInfo.phone}
+                      onChange={(e) => setBillToInfo({...billToInfo, phone: e.target.value})}
+                      className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
+                      placeholder="+1 (555) 000-0000"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="text"
+                      value={billToInfo.address}
+                      onChange={(e) => setBillToInfo({...billToInfo, address: e.target.value})}
+                      className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
+                      placeholder="Enter full address"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 sm:p-8 transition-all duration-300 hover:shadow-lg hover:border-gray-300">
             <div className="space-y-1 mb-4">
               <div className="flex justify-between items-center">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import quoteData from './data.json';
 
 interface QuoteItem {
@@ -70,6 +70,52 @@ export default function QuotePage() {
     }))
   );
 
+  // Add state for labor hours
+  const [laborHours, setLaborHours] = useState(0);
+  const [laborRate, setLaborRate] = useState(75); // Default hourly rate
+  const [isEditingLabor, setIsEditingLabor] = useState(false);
+  const [isEditingLaborRate, setIsEditingLaborRate] = useState(false);
+
+  // Add refs for inputs
+  const laborHoursRef = useRef<HTMLInputElement>(null);
+  const laborRateRef = useRef<HTMLInputElement>(null);
+  const rateInputRefs = useRef<{[key: number]: HTMLInputElement}>({});
+
+  // Effect to handle cursor position
+  useEffect(() => {
+    if (isEditingLabor && laborHoursRef.current) {
+      setTimeout(() => {
+        if (laborHoursRef.current) {
+          laborHoursRef.current.selectionStart = laborHoursRef.current.value.length;
+          laborHoursRef.current.selectionEnd = laborHoursRef.current.value.length;
+        }
+      }, 0);
+    }
+  }, [isEditingLabor]);
+
+  useEffect(() => {
+    if (isEditingLaborRate && laborRateRef.current) {
+      setTimeout(() => {
+        if (laborRateRef.current) {
+          laborRateRef.current.selectionStart = laborRateRef.current.value.length;
+          laborRateRef.current.selectionEnd = laborRateRef.current.value.length;
+        }
+      }, 0);
+    }
+  }, [isEditingLaborRate]);
+
+  useEffect(() => {
+    if (focusedInput?.type === 'rate' && rateInputRefs.current[focusedInput.id]) {
+      setTimeout(() => {
+        const input = rateInputRefs.current[focusedInput.id];
+        if (input) {
+          input.selectionStart = input.value.length;
+          input.selectionEnd = input.value.length;
+        }
+      }, 0);
+    }
+  }, [focusedInput]);
+
   const handleBack = () => {
     router.back();
   };
@@ -95,12 +141,24 @@ export default function QuotePage() {
     }));
   };
 
+  const handleLaborHoursChange = (value: string) => {
+    const numericValue = value.replace(/[^0-9.]/g, '');
+    setLaborHours(parseFloat(numericValue) || 0);
+  };
+
+  const handleLaborRateChange = (value: string) => {
+    const numericValue = value.replace(/[^0-9.]/g, '');
+    setLaborRate(parseFloat(numericValue) || 0);
+  };
+
   const calculateAmount = (rate: number, quantity: number) => {
     return (rate * quantity).toFixed(2);
   };
 
   const calculateSubtotal = () => {
-    return items.reduce((sum, item) => sum + (item.rate * item.quantity), 0).toFixed(2);
+    const itemsTotal = items.reduce((sum, item) => sum + (item.rate * item.quantity), 0);
+    const laborTotal = laborHours * laborRate;
+    return (itemsTotal + laborTotal).toFixed(2);
   };
 
   const calculateTax = () => {
@@ -112,6 +170,10 @@ export default function QuotePage() {
     const subtotal = parseFloat(calculateSubtotal());
     const tax = parseFloat(calculateTax());
     return (subtotal + tax).toFixed(2);
+  };
+
+  const calculateLaborCost = () => {
+    return (laborHours * laborRate).toFixed(2);
   };
 
   const handleDelete = (id: number) => {
@@ -244,13 +306,18 @@ export default function QuotePage() {
                     <div className="relative flex items-center justify-end">
                       <input
                         type="text"
-                        value={focusedInput?.id === item.id && focusedInput?.type === 'rate' 
-                          ? item.rate.toString()
-                          : `$${item.rate.toFixed(2)}`}
+                        ref={(el) => {
+                          if (el) rateInputRefs.current[item.id] = el;
+                        }}
+                        value={focusedInput?.id === item.id && focusedInput?.type === 'rate' && item.rate === 0
+                          ? ''
+                          : focusedInput?.id === item.id && focusedInput?.type === 'rate'
+                            ? item.rate.toString()
+                            : `$${item.rate.toFixed(2)}`}
                         onChange={(e) => handleRateChange(item.id, e.target.value)}
                         onFocus={() => setFocusedInput({ id: item.id, type: 'rate' })}
                         onBlur={() => setFocusedInput(null)}
-                        className="w-32 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all hover:border-gray-300"
+                        className="w-32 bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all hover:border-gray-300"
                       />
                     </div>
                   </td>
@@ -263,7 +330,7 @@ export default function QuotePage() {
                       onChange={(e) => handleQuantityChange(item.id, e.target.value)}
                       onFocus={() => setFocusedInput({ id: item.id, type: 'quantity' })}
                       onBlur={() => setFocusedInput(null)}
-                      className="w-24 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all hover:border-gray-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="w-24 bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all hover:border-gray-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </td>
                   <td className="p-6 text-right font-semibold text-gray-900">
@@ -273,6 +340,54 @@ export default function QuotePage() {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Labor Hours Section */}
+        <div className="mt-8 bg-gray-50 p-6 rounded-lg border border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <span className="h-5 w-1 bg-blue-500 rounded-full"></span>
+            Labor Hours
+          </h3>
+          <div className="grid grid-cols-3 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-2">Hours</label>
+              <input
+                type="text"
+                ref={laborHoursRef}
+                value={isEditingLabor && laborHours === 0 
+                  ? '' 
+                  : isEditingLabor 
+                    ? laborHours.toString() 
+                    : laborHours.toFixed(2)}
+                onChange={(e) => handleLaborHoursChange(e.target.value)}
+                onFocus={() => setIsEditingLabor(true)}
+                onBlur={() => setIsEditingLabor(false)}
+                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all hover:border-gray-300"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-2">Hourly Rate</label>
+              <input
+                type="text"
+                ref={laborRateRef}
+                value={isEditingLaborRate && laborRate === 0 
+                  ? '' 
+                  : isEditingLaborRate 
+                    ? laborRate.toString()
+                    : `$${laborRate.toFixed(2)}`}
+                onChange={(e) => handleLaborRateChange(e.target.value)}
+                onFocus={() => setIsEditingLaborRate(true)}
+                onBlur={() => setIsEditingLaborRate(false)}
+                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all hover:border-gray-300"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-2">Total Labor Cost</label>
+              <div className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900">
+                ${calculateLaborCost()}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Total Section */}
