@@ -127,7 +127,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[#fafafa]">
-      <div className="max-w-3xl mx-auto p-6 sm:p-8 pt-12 sm:pt-24">
+      <div className="max-w-6xl mx-auto p-6 sm:p-8 pt-12 sm:pt-24">
         <div className="text-center mb-12">
           <h1 className="text-3xl sm:text-5xl font-bold text-black mb-3 tracking-tight">
             Quote Details
@@ -137,9 +137,9 @@ export default function Home() {
         
         <div className="space-y-6">
           {/* Billing Information Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
             {/* From Section */}
-            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 transition-all duration-300 hover:shadow-lg hover:border-gray-300">
+            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 lg:p-8 transition-all duration-300 hover:shadow-lg hover:border-gray-300 h-full">
               <div className="flex items-center space-x-3 mb-6">
                 <div className="p-2 bg-black rounded-lg">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -225,7 +225,7 @@ export default function Home() {
             </div>
 
             {/* Bill To Section */}
-            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 transition-all duration-300 hover:shadow-lg hover:border-gray-300">
+            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 lg:p-8 transition-all duration-300 hover:shadow-lg hover:border-gray-300 h-full">
               <div className="flex items-center space-x-3 mb-6">
                 <div className="p-2 bg-black rounded-lg">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
