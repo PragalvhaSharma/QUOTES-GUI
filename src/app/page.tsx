@@ -158,9 +158,20 @@ export default function Home() {
       if (!data.quote) {
         throw new Error('No quote data received from API');
       }
-      
-      // Save quote data to localStorage
-      localStorage.setItem('quoteData', JSON.stringify(data));
+
+      // Update data.json file with the new quote data
+      const updateResponse = await fetch('/api/updateQuote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!updateResponse.ok) {
+        const errorData = await updateResponse.json();
+        throw new Error(errorData.error || 'Failed to update quote data');
+      }
 
       // Only navigate if all operations succeeded
       router.push('/quotePage');

@@ -1,142 +1,110 @@
 {
-    "quote": {
-      "quoteInfo": {
-        "quoteNumber": "001",
-        "validUntil": "Feb 28th, 2024"
+  "quote": {
+    "quoteInfo": {
+      "quoteNumber": "001",
+      "validUntil": "Feb 28th, 2024"
+    },
+    "companyInfo": {
+      "name": "Premier Building Supply",
+      "contact": "Mike Johnson",
+      "email": "sales@premierbuild.ca",
+      "phone": "416-555-0123",
+      "address": "123 Builder Ave, Toronto, ON M5V 2T6"
+    },
+    "clientInfo": {
+      "company": "Custom Homes Ltd.",
+      "email": "info@customhomes.ca",
+      "phone": "647-555-0189",
+      "address": "456 Development Dr, Toronto, ON M4W 1A8"
+    },
+    "items": [
+      {
+        "name": "marble tile 10 cm x 10 cm",
+        "description": "A 10 cm x 10 cm marble tile used for flooring or wall coverings.",
+        "price_per_unit": 29.59,
+        "quantity": "1 piece",
+        "total_amount": 29.59,
+        "url": "https://www.homedepot.com/p/Ivy-Hill-Tile-Dart-Calcutta-and-Thassos-10-3-4-in-x-10-3-4-in-x-10-mm-Polished-Marble-Mosaic-Tile-EXT3RD101200/206675389",
+        "image_url": "https://images.thdstatic.com/productImages/b07f5724-695f-45ee-9c76-16a945f51e9c/svn/calacatta-and-thassos-ivy-hill-tile-marble-tile-ext3rd101200-64_300.jpg"
       },
-      "companyInfo": {
-        "name": "Premier Building Supply",
-        "contact": "Mike Johnson",
-        "email": "sales@premierbuild.ca",
-        "phone": "416-555-0123",
-        "address": "123 Builder Ave, Toronto, ON M5V 2T6"
+      {
+        "name": "tile adhesive 750 ml",
+        "description": "A 750 ml pack of tile adhesive used to bond tiles to surfaces.",
+        "price_per_unit": 15.57,
+        "quantity": "1 pack",
+        "total_amount": 15.57,
+        "url": "https://www.homedepot.com/p/Custom-Building-Products-SimpleFix-White-1-qt-Pre-Mixed-Adhesive-and-Grout-TAGWQT/100678076",
+        "image_url": "https://images.thdstatic.com/productImages/e0145997-029f-46da-b339-796bc3cc65aa/svn/custom-building-products-grout-tagwqt-64_300.jpg"
       },
-      "clientInfo": {
-        "company": "Custom Homes Ltd.",
-        "email": "info@customhomes.ca",
-        "phone": "647-555-0189",
-        "address": "456 Development Dr, Toronto, ON M4W 1A8"
+      {
+        "name": "grout 25 kg",
+        "description": "A 25 kg pack of grout used to fill the spaces between tiles.",
+        "price_per_unit": 19.48,
+        "quantity": "1 pack",
+        "total_amount": 19.48,
+        "url": "https://www.homedepot.com/p/Custom-Building-Products-Polyblend-Plus-381-Bright-White-25-lb-Sanded-Grout-PBPG38125/313291666",
+        "image_url": "https://images.thdstatic.com/productImages/750076c0-67ff-4e17-80d7-cc0cbc5e51dc/svn/custom-building-products-grout-pbpg38125-64_300.jpg"
       },
-      "items": [
-        {
-          "name": "quartz floor tile 12x12",
-          "description": "Quartz floor tiles used for flooring installation, providing a durable and stylish surface.",
-          "price_per_unit": 4.1,
-          "quantity": "158 pieces",
-          "total_amount": 647.8,
-          "url": "https://www.homedepot.com/p/MSI-Gold-Green-12-in-x-12-in-Honed-Quartzite-Floor-and-Wall-Tile-10-sq-ft-case-SGOLDGRN1212HG/202508387",
-          "image_url": "https://images.thdstatic.com/productImages/abe0cf80-19b2-4d7b-9eac-6ca1bf0c35de/svn/gold-green-msi-slate-tile-sgoldgrn1212hg-64_300.jpg"
-        },
-        {
-          "name": "premium thin-set mortar 50 pounds",
-          "description": "Thin-set mortar for adhering tiles to the substrate.",
-          "price_per_unit": 34.97,
-          "quantity": "1 bag",
-          "total_amount": 34.97,
-          "url": "https://www.homedepot.com/p/Custom-Building-Products-Natural-Stone-and-Large-Tile-50-lb-White-Premium-Thinset-Mortar-MGMM50/100154560",
-          "image_url": "https://images.thdstatic.com/productImages/e7a2c3df-e4b1-4566-bf46-5ee97c2a246b/svn/custom-building-products-tile-mortar-mgmm50-64_300.jpg"
-        },
-        {
-          "name": "cement-based grout 25 pounds",
-          "description": "Grout used to fill the joints between tiles for a finished look.",
-          "price_per_unit": 19.48,
-          "quantity": "1 bag",
-          "total_amount": 19.48,
-          "url": "https://www.homedepot.com/p/Custom-Building-Products-Polyblend-Plus-640-Arctic-White-25-lb-Sanded-Grout-PBPG64025/313027611",
-          "image_url": "https://images.thdstatic.com/productImages/fdba2796-d7b3-414a-9acf-cacd21dbcb79/svn/custom-building-products-grout-pbpg64025-64_300.jpg"
-        },
-        {
-          "name": "tile spacers",
-          "description": "Tile spacers for maintaining even grout lines between tiles during installation.",
-          "price_per_unit": 4.19,
-          "quantity": "1 pack",
-          "total_amount": 4.19,
-          "url": "https://coppsbuildall.com/shop/102340/tile-spacers-1-16-200-pkg-richard/",
-          "image_url": ""
-        },
-        {
-          "name": "silicone sealant 10 milliliters",
-          "description": "Sealant used to waterproof joints and edges around tiled surfaces.",
-          "price_per_unit": 8.98,
-          "quantity": "1 bottle",
-          "total_amount": 8.98,
-          "url": "https://www.homedepot.com/p/GE-All-Purpose-Silicone-1-Caulk-10-1-oz-Window-and-Door-Sealant-White-2749483/317804562",
-          "image_url": "https://images.thdstatic.com/productImages/1f5c1b3d-d5ec-4576-8685-ddbdd57a1933/svn/white-ge-caulk-2749483-64_300.jpg"
-        },
-        {
-          "name": "waterproof membrane 144 square feet",
-          "description": "Membrane used to prevent water damage beneath tile installations.",
-          "price_per_unit": 125.73,
-          "quantity": "1 roll",
-          "total_amount": 125.73,
-          "url": "https://www.homedepot.com/p/ALINO-Waterproof-Membrane-Blue-10-SQM-108SQF-SMG-XX-BLU10/312936507",
-          "image_url": "https://images.thdstatic.com/productImages/97e99e3f-4680-4ffa-87b1-bea0728d469a/svn/alino-floor-installation-kits-smg-xx-blu10-64_300.jpg"
-        },
-        {
-          "name": "floor leveling compound 40 pounds",
-          "description": "Compound used to create a level surface before tile installation.",
-          "price_per_unit": 35,
-          "quantity": "1 bag",
-          "total_amount": 35,
-          "url": "https://www.homedepot.com/p/Henry-555-Level-Pro-40-lb-Self-Leveling-Underlayment-12165/100549588",
-          "image_url": "https://images.thdstatic.com/productImages/9646da7e-8ac5-41e2-9ec0-0b9c28530360/svn/henry-floor-levelers-12165-64_300.jpg"
-        },
-        {
-          "name": "edge trim pieces",
-          "description": "Edge trim pieces used to finish the edges of tiled areas for a professional look.",
-          "price_per_unit": 6.4,
-          "quantity": "1 pack",
-          "total_amount": 6.4,
-          "url": "https://www.homedepot.com/p/TrimMaster-Black-3-8-in-x-98-1-2-in-PVC-L-Shaped-Tile-Edging-Trim-H7702BL98/323337499",
-          "image_url": "https://images.thdstatic.com/productImages/f15eeaae-b670-48a6-b28a-99ef0e83e8ca/svn/black-trimmaster-tile-edging-trim-h7702bl98-64_300.jpg"
-        },
-        {
-          "name": "grout sealer 250 milliliters",
-          "description": "Sealer used to protect grout from stains and moisture.",
-          "price_per_unit": 4.97,
-          "quantity": "1 bottle",
-          "total_amount": 4.97,
-          "url": "https://www.homedepot.com/p/QEP-12-oz-Grout-Sealer-Applicator-Roller-Bottle-with-2-Wheels-10279/311937636",
-          "image_url": "https://images.thdstatic.com/productImages/ed8059fe-f1e8-41e9-9d93-ed00c675ff45/svn/qep-floor-sealers-10279-64_300.jpg"
-        },
-        {
-          "name": "masking tape 60 meters",
-          "description": "Tape used for masking areas during tile installation to ensure clean lines.",
-          "price_per_unit": 12.99,
-          "quantity": "1 roll",
-          "total_amount": 12.99,
-          "url": "https://coppsbuildall.com/shop/1265156/masking-tape-frog-tape-medium-adhesion-36-mm-x-55-meter-roll/",
-          "image_url": ""
-        },
-        {
-          "name": "mixing buckets 5 liters",
-          "description": "Buckets used for mixing mortar, grout, and other materials.",
-          "price_per_unit": 4.38,
-          "quantity": "1 pack",
-          "total_amount": 4.38,
-          "url": "https://www.homedepot.com/p/Linzer-Heavy-Duty-5-gal-Metal-Bucket-Grid-HD-RM-416-H/309628524",
-          "image_url": "https://images.thdstatic.com/productImages/eb4b45c5-420b-493d-b95c-c538c96b2f5e/svn/metal-linzer-paint-trays-and-liners-hd-rm-416-h-64_300.jpg"
-        }
-      ],
-      "financials": {
-        "subtotal": 904.89,
-        "tax_rate": 0.13,
-        "tax_amount": 117.6357,
-        "total": 1022.5257,
-        "amount_paid": 0,
-        "balance_due": 1022.5257
+      {
+        "name": "marble sealant 500 ml",
+        "description": "A 500 ml bottle of marble sealant used to protect marble surfaces.",
+        "price_per_unit": 23.98,
+        "quantity": "1 bottle",
+        "total_amount": 23.98,
+        "url": "https://www.homedepot.com/p/Granite-Gold-24-oz-Multi-Surface-Countertop-Sealer-for-Granite-Marble-Travertine-and-More-Natural-Stone-Countertops-GG0036/204845004",
+        "image_url": "https://images.thdstatic.com/productImages/57352cef-03eb-4d4b-888a-92756c608291/svn/granite-gold-countertop-sealers-gg0036-64_300.jpg"
       },
-      "branding": {
-        "primary_color": "0x000000",
-        "secondary_color": "0x666666",
-        "accent_color": "0xffffff"
+      {
+        "name": "masking tape 50 meters",
+        "description": "A 50 meters pack of masking tape used for protecting surfaces while painting or tiling.",
+        "price_per_unit": 2.98,
+        "quantity": "1 pack",
+        "total_amount": 2.98,
+        "url": "https://www.homedepot.com/p/3M-Scotch-0-94-in-x-60-1-Yds-Multi-Surface-Contractor-Grade-Tan-Masking-Tape-1-Roll-2020-24AP/100207133",
+        "image_url": "https://images.thdstatic.com/productImages/eadbd686-d5d0-4dcf-9071-de2d67e181de/svn/beige-3m-masking-tape-2020-24ap-64_300.jpg"
       },
-      "paymentInfo": {
-        "paypal": "payments@premierbuild.ca",
-        "checkPayableTo": "Premier Building Supply",
-        "routingNumber": "061120084"
+      {
+        "name": "cleaning cloths 10 pieces",
+        "description": "A pack of 10 cleaning cloths used for cleaning surfaces.",
+        "price_per_unit": 7.78,
+        "quantity": "1 pack",
+        "total_amount": 7.78,
+        "url": "https://www.homedepot.com/p/Ettore-16-in-x-16-in-Blue-MicroSwipe-and-Microfiber-Cleaning-Cloths-10-Pack-84410-6/204267872",
+        "image_url": "https://images.thdstatic.com/productImages/befd7174-29fa-4a87-96b1-b8fb4a64c479/svn/ettore-microfiber-towels-84410-6-64_300.jpg"
       },
-      "notes": "All lumber prices are subject to market fluctuations. Quote valid for 14 days. Delivery included within city limits. Special orders may require additional lead time. All materials are new and meet or exceed building code requirements.",
-      "generated_at": "2025-01-23T20:30:01.830996"
-    }
+      {
+        "name": "grout sealer 250 ml",
+        "description": "A 250 ml pack of grout sealer used to protect grout lines.",
+        "price_per_unit": 9.97,
+        "quantity": "1 pack",
+        "total_amount": 9.97,
+        "url": "https://www.homedepot.com/p/Custom-Building-Products-TileLab-0-2-qt-Penetrating-Sealer-for-Tile-Grout-TLGS6Z/100041610",
+        "image_url": "https://images.thdstatic.com/productImages/d76fec52-f885-4a93-91c4-4cd81a5bc506/svn/custom-building-products-floor-sealers-tlgs6z-64_300.jpg"
+      }
+    ],
+    "financials": {
+      "subtotal": 109.35,
+      "tax_rate": 0.13,
+      "tax_amount": 14.22,
+      "total": 139.97,
+      "amount_paid": 0,
+      "balance_due": 139.97,
+      "labor_hours": 0,
+      "labor_rate": 75,
+      "markup_percentage": 15,
+      "markup_amount": 16.4
+    },
+    "branding": {
+      "primary_color": "0x000000",
+      "secondary_color": "0x666666",
+      "accent_color": "0xffffff"
+    },
+    "paymentInfo": {
+      "paypal": "payments@premierbuild.ca",
+      "checkPayableTo": "Premier Building Supply",
+      "routingNumber": "061120084"
+    },
+    "notes": "All lumber prices are subject to market fluctuations. Quote valid for 14 days. Delivery included within city limits. Special orders may require additional lead time. All materials are new and meet or exceed building code requirements.",
+    "generated_at": "2025-01-24T18:04:10.520059"
   }
+}

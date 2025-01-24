@@ -1,48 +1,51 @@
 'use client';
 
 import { Document, Page, Text, View, StyleSheet, PDFViewer, Image } from '@react-pdf/renderer';
-import { useEffect, useState } from 'react';
+import quoteData from '../data.json';
 
 const styles = StyleSheet.create({
   page: {
-    padding: 30,
+    padding: '20 30',
     backgroundColor: '#ffffff',
     fontFamily: 'Helvetica',
   },
   header: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: '#2563eb',
-    paddingBottom: 15,
-    marginBottom: 20,
+    borderBottomColor: '#0f172a',
+    paddingBottom: 10,
+    marginBottom: 15,
   },
   headerLeft: {
     flex: 1,
   },
   headerRight: {
-    width: 200,
+    width: 100,
     alignItems: 'flex-end',
   },
   logo: {
-    width: 120,
-    marginBottom: 10,
+    width: 80,
+    marginBottom: 4,
   },
   companyName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#2563eb',
-    marginBottom: 2,
+    color: '#0f172a',
+    marginBottom: 4,
   },
   companyDetails: {
-    fontSize: 8,
-    color: '#64748b',
+    fontSize: 7,
+    color: '#475569',
     marginBottom: 1,
+    lineHeight: 1.2,
   },
   quoteContainer: {
     backgroundColor: '#f8fafc',
-    padding: 15,
-    marginBottom: 20,
+    padding: 12,
+    marginBottom: 12,
     borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
   quoteHeader: {
     flexDirection: 'row',
@@ -51,72 +54,100 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   quoteTitle: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#1e293b',
+    color: '#0f172a',
+    letterSpacing: -0.5,
   },
   quoteNumber: {
-    fontSize: 12,
+    fontSize: 10,
     color: '#64748b',
+    backgroundColor: '#f1f5f9',
+    padding: '4 8',
+    borderRadius: 3,
   },
   infoGrid: {
     flexDirection: 'row',
-    gap: 40,
+    gap: 20,
   },
   infoColumn: {
     flex: 1,
   },
   infoSection: {
-    marginBottom: 10,
+    marginBottom: 8,
   },
   sectionTitle: {
-    fontSize: 9,
+    fontSize: 8,
     fontWeight: 'bold',
     color: '#64748b',
     textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 4,
+    letterSpacing: 0.5,
+    marginBottom: 3,
   },
   infoText: {
-    fontSize: 9,
+    fontSize: 8,
     color: '#334155',
-    lineHeight: 1.3,
+    lineHeight: 1.2,
   },
   table: {
-    marginBottom: 15,
+    marginBottom: 12,
+    borderRadius: 4,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    flexGrow: 1,
+    minHeight: 0,
   },
   tableHeader: {
     flexDirection: 'row',
-    backgroundColor: '#1e293b',
-    padding: 8,
-    marginBottom: 1,
+    backgroundColor: '#0f172a',
+    padding: 6,
   },
   tableHeaderText: {
-    fontSize: 9,
+    fontSize: 8,
     fontWeight: 'bold',
     color: '#ffffff',
   },
   tableRow: {
     flexDirection: 'row',
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#ffffff',
     padding: 6,
-    marginBottom: 1,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
+    minHeight: 0,
   },
   tableRowAlt: {
-    backgroundColor: '#f1f5f9',
+    backgroundColor: '#f8fafc',
   },
   tableCell: {
-    fontSize: 9,
+    fontSize: 8,
     color: '#334155',
+    lineHeight: 1.2,
   },
-  colItem: { width: '40%' },
-  colQty: { width: '15%', textAlign: 'center' },
+  tableCellName: {
+    fontSize: 8,
+    color: '#0f172a',
+    fontWeight: 'bold',
+    marginBottom: 1,
+  },
+  tableCellDescription: {
+    fontSize: 7,
+    color: '#64748b',
+    lineHeight: 1.1,
+  },
+  colItem: { width: '50%' },
+  colQty: { width: '20%', textAlign: 'center' },
   colRate: { width: '15%', textAlign: 'right' },
-  colTax: { width: '15%', textAlign: 'center' },
   colAmount: { width: '15%', textAlign: 'right' },
   totalsSection: {
     alignSelf: 'flex-end',
     width: '35%',
+    backgroundColor: '#f8fafc',
+    padding: 8,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    marginBottom: 40,
   },
   totalRow: {
     flexDirection: 'row',
@@ -129,45 +160,46 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
     marginTop: 4,
     paddingTop: 4,
-    borderTopWidth: 1,
-    borderTopColor: '#2563eb',
+    borderTopWidth: 2,
+    borderTopColor: '#0f172a',
   },
   totalLabel: {
-    fontSize: 10,
+    fontSize: 8,
     fontWeight: 'bold',
     color: '#64748b',
   },
   totalValue: {
-    fontSize: 10,
+    fontSize: 8,
     color: '#334155',
+    fontWeight: 'bold',
   },
   totalFinal: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
-    color: '#2563eb',
+    color: '#0f172a',
   },
   footer: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 20,
     left: 30,
     right: 30,
   },
   footerContent: {
     borderTopWidth: 1,
     borderTopColor: '#e2e8f0',
-    paddingTop: 15,
+    paddingTop: 10,
   },
   footerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 15,
+    marginBottom: 10,
   },
   footerText: {
-    fontSize: 9,
+    fontSize: 8,
     color: '#64748b',
   },
   footerNote: {
-    fontSize: 10,
+    fontSize: 8,
     color: '#64748b',
     textAlign: 'center',
     fontStyle: 'italic',
@@ -175,33 +207,6 @@ const styles = StyleSheet.create({
 });
 
 const QuotePDF = () => {
-  const [quoteData, setQuoteData] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchQuoteData = async () => {
-      try {
-        const response = await fetch('https://clara-consideration-brisbane-usd.trycloudflare.com/generate-quote');
-        const data = await response.json();
-        setQuoteData(data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching quote data:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchQuoteData();
-  }, []);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!quoteData) {
-    return <div>Error loading quote data</div>;
-  }
-
   const { quote } = quoteData;
 
   return (
@@ -215,7 +220,7 @@ const QuotePDF = () => {
               <Text style={styles.companyDetails}>{quote.companyInfo.address}</Text>
               <Text style={styles.companyDetails}>Tel: {quote.companyInfo.phone}</Text>
               <Text style={styles.companyDetails}>{quote.companyInfo.email}</Text>
-              <Text style={styles.companyDetails}>Business No: {quote.companyInfo.businessNumber}</Text>
+              <Text style={styles.companyDetails}>Contact: {quote.companyInfo.contact}</Text>
             </View>
             <View style={styles.headerRight}>
               <Image style={styles.logo} src="/path-to-your-logo.png" />
@@ -240,7 +245,7 @@ const QuotePDF = () => {
               <View style={styles.infoColumn}>
                 <View style={styles.infoSection}>
                   <Text style={styles.sectionTitle}>Quote Details</Text>
-                  <Text style={styles.infoText}>Date: {quote.quoteInfo.date}</Text>
+                  <Text style={styles.infoText}>Generated: {quote.generated_at}</Text>
                   <Text style={styles.infoText}>Valid Until: {quote.quoteInfo.validUntil}</Text>
                 </View>
               </View>
@@ -250,22 +255,23 @@ const QuotePDF = () => {
           {/* Table */}
           <View style={styles.table}>
             <View style={styles.tableHeader}>
-              <Text style={[styles.tableHeaderText, styles.colItem]}>Item Description</Text>
+              <Text style={[styles.tableHeaderText, styles.colItem]}>Item</Text>
               <Text style={[styles.tableHeaderText, styles.colQty]}>Quantity</Text>
               <Text style={[styles.tableHeaderText, styles.colRate]}>Rate</Text>
-              <Text style={[styles.tableHeaderText, styles.colTax]}>Tax</Text>
               <Text style={[styles.tableHeaderText, styles.colAmount]}>Amount</Text>
             </View>
             
             {quote.items.map((item, index) => (
               <View key={index} style={[
                 styles.tableRow,
-                index % 2 === 1 && styles.tableRowAlt
+                index % 2 === 1 ? styles.tableRowAlt : {}
               ]}>
-                <Text style={[styles.tableCell, styles.colItem]}>{item.name}</Text>
+                <View style={[styles.colItem]}>
+                  <Text style={styles.tableCellName}>{item.name}</Text>
+                  <Text style={styles.tableCellDescription}>{item.description}</Text>
+                </View>
                 <Text style={[styles.tableCell, styles.colQty]}>{item.quantity}</Text>
                 <Text style={[styles.tableCell, styles.colRate]}>${item.price_per_unit.toFixed(2)}</Text>
-                <Text style={[styles.tableCell, styles.colTax]}>Exempt</Text>
                 <Text style={[styles.tableCell, styles.colAmount]}>${item.total_amount.toFixed(2)}</Text>
               </View>
             ))}
@@ -276,6 +282,10 @@ const QuotePDF = () => {
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Subtotal</Text>
               <Text style={styles.totalValue}>${quote.financials.subtotal.toFixed(2)}</Text>
+            </View>
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>Labor ({quote.financials.labor_hours} hrs @ ${quote.financials.labor_rate}/hr)</Text>
+              <Text style={styles.totalValue}>${(quote.financials.labor_hours * quote.financials.labor_rate).toFixed(2)}</Text>
             </View>
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Tax</Text>
