@@ -7,6 +7,7 @@ export default function Home() {
   const router = useRouter();
   const [requirements, setRequirements] = useState('');
   const [saved, setSaved] = useState(false);
+  const [endDate, setEndDate] = useState('');
   const [fromInfo, setFromInfo] = useState({
     companyName: '',
     contactName: '',
@@ -27,6 +28,7 @@ export default function Home() {
     const savedRequirements = localStorage.getItem('clientRequirements');
     const savedFromInfo = localStorage.getItem('fromInfo');
     const savedBillToInfo = localStorage.getItem('billToInfo');
+    const savedEndDate = localStorage.getItem('endDate');
     
     if (savedRequirements) {
       setRequirements(savedRequirements);
@@ -37,6 +39,9 @@ export default function Home() {
     }
     if (savedBillToInfo) {
       setBillToInfo(JSON.parse(savedBillToInfo));
+    }
+    if (savedEndDate) {
+      setEndDate(savedEndDate);
     }
   }, []);
 
@@ -50,6 +55,7 @@ export default function Home() {
           localStorage.setItem('clientRequirements', requirements);
           localStorage.setItem('fromInfo', JSON.stringify(fromInfo));
           localStorage.setItem('billToInfo', JSON.stringify(billToInfo));
+          localStorage.setItem('endDate', endDate);
           setSaved(true);
           
           // Reset saved state after showing success
@@ -69,7 +75,7 @@ export default function Home() {
         clearTimeout(autoSaveTimer);
       }
     };
-  }, [requirements, saved, fromInfo, billToInfo]);
+  }, [requirements, saved, fromInfo, billToInfo, endDate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setRequirements(e.target.value);
@@ -78,10 +84,12 @@ export default function Home() {
 
   const handleClear = () => {
     setRequirements('');
+    setEndDate('');
     setSaved(false);
     localStorage.removeItem('clientRequirements');
     localStorage.removeItem('fromInfo');
     localStorage.removeItem('billToInfo');
+    localStorage.removeItem('endDate');
   };
 
   const handleSave = () => {
@@ -89,6 +97,7 @@ export default function Home() {
       localStorage.setItem('clientRequirements', requirements);
       localStorage.setItem('fromInfo', JSON.stringify(fromInfo));
       localStorage.setItem('billToInfo', JSON.stringify(billToInfo));
+      localStorage.setItem('endDate', endDate);
       setSaved(true);
     } catch (err) {
       alert(`Failed to save data: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -344,6 +353,18 @@ export default function Home() {
                 <label htmlFor="requirements" className="block text-sm font-medium text-gray-700">
                   Project Details
                 </label>
+                <div className="flex items-center space-x-2">
+                  <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">
+                    Project End Date:
+                  </label>
+                  <input
+                    type="date"
+                    id="endDate"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
+                  />
+                </div>
               </div>
               <p className="text-sm text-gray-500">
                 Be as specific as possible about your requirements

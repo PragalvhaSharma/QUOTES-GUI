@@ -48,9 +48,24 @@ interface LineItem {
   image_url: string;
 }
 
+// Update the generateQuoteData function to be properly typed
+const generateQuoteData = (data: QuoteData): string => {
+  return JSON.stringify(data);
+};
+
 export default function QuotePage() {
   const router = useRouter();
-  const typedQuoteData = quoteData as QuoteData;
+  const typedQuoteData: QuoteData = {
+    quote: {
+      quoteInfo: quoteData.quote.quoteInfo,
+      companyInfo: quoteData.quote.companyInfo,
+      clientInfo: quoteData.quote.clientInfo,
+      items: quoteData.quote.items.map(item => ({
+        ...item,
+        quantity: parseFloat(item.quantity) || 0 // Convert string quantity to number
+      }))
+    }
+  };
   
   // Add state for focused inputs and deleted items
   const [focusedInput, setFocusedInput] = useState<{ id: number, type: 'rate' | 'quantity' } | null>(null);
@@ -268,15 +283,21 @@ export default function QuotePage() {
 
   const handleAddItem = () => {
     if (newItem.description && newItem.details) {
+      // Validate and convert rate and quantity
+      const rate = !/^\d*\.?\d*$/.test(newItem.rate || '') ? '0' : newItem.rate;
+      const quantity = !/^\d*\.?\d*$/.test(newItem.quantity || '') ? '0' : newItem.quantity;
+      
       setItems([...items, {
         id: Math.random(),
         description: newItem.description || '',
         details: newItem.details || '',
-        rate: newItem.rate || '0',
-        quantity: newItem.quantity || '0',
-        url: '', // Default empty string
-        image_url: '', // Default empty string
+        rate: rate || '0',
+        quantity: quantity || '0',
+        url: newItem.url || '', 
+        image_url: newItem.image_url || '',
       }]);
+      
+      // Reset form
       setNewItem({
         description: '',
         details: '',
@@ -286,6 +307,66 @@ export default function QuotePage() {
         image_url: '',
       });
       setShowAddItemModal(false);
+    }
+  };
+
+  const handleNextClick = async () => {
+    try {
+      // Prepare the quote data
+      const quoteData = {
+        quoteInfo: typedQuoteData.quote.quoteInfo,
+        companyInfo: typedQuoteData.quote.companyInfo,
+        clientInfo: typedQuoteData.quote.clientInfo,
+        items: items.map(item => ({
+          name: item.description,
+          description: item.details,
+          price_per_unit: parseFloat(item.rate),
+          quantity: parseFloat(item.quantity),
+          total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
+          url: item.url,
+          image_url: item.image_url
+        })),
+        laborHours: parseFloat(laborHours),
+        laborRate: parseFloat(laborRate),
+        laborCost: parseFloat(calculateLaborCost()),
+        markup: parseFloat(markupPercentage),
+        markupAmount: parseFloat(calculateMarkup()),
+        subtotal: parseFloat(calculateSubtotal()),
+        tax: parseFloat(calculateTax()),
+        total: parseFloat(calculateTotal())
+      };
+
+      // Format the request message
+      const requestMessage = {
+        message: `I want a quote for $${calculateTotal()}`
+      };
+
+      // Make the GET request with properly formatted query parameter
+      const response = await fetch(`https://commissions-iv-vatican-alone.trycloudflare.com/generate-quote?request=${encodeURIComponent(JSON.stringify(requestMessage))}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate quote');
+      }
+
+      // Get the JSON response
+      const responseData = await response.json();
+      
+      // Store the response data in localStorage or state management
+      localStorage.setItem('quoteResponse', JSON.stringify({
+        userQuoteData: quoteData,
+        aiResponse: responseData
+      }));
+
+      // If successful, navigate to the next page
+      router.push('/customerPDF');
+    } catch (error) {
+      console.error('Error generating quote:', error);
+      alert('Failed to generate quote. Please try again.');
     }
   };
 
@@ -643,8 +724,12 @@ export default function QuotePage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">Rate ($)</label>
                     <input
                       type="text"
-                      value={newItem.rate || ''}
-                      onChange={(e) => setNewItem({ ...newItem, rate: e.target.value === '' ? '0' : e.target.value })}
+                      value={newItem.rate === '0' ? '' : newItem.rate}
+                      onChange={(e) => {
+                        // Only allow numbers and one decimal point
+                        if (!/^\d*\.?\d*$/.test(e.target.value) && e.target.value !== '') return;
+                        setNewItem({ ...newItem, rate: e.target.value === '' ? '0' : e.target.value })
+                      }}
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                       placeholder="0.00"
                     />
@@ -653,8 +738,12 @@ export default function QuotePage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
                     <input
                       type="text"
-                      value={newItem.quantity || ''}
-                      onChange={(e) => setNewItem({ ...newItem, quantity: e.target.value === '' ? '0' : e.target.value })}
+                      value={newItem.quantity === '0' ? '' : newItem.quantity}
+                      onChange={(e) => {
+                        // Only allow numbers and one decimal point
+                        if (!/^\d*\.?\d*$/.test(e.target.value) && e.target.value !== '') return;
+                        setNewItem({ ...newItem, quantity: e.target.value === '' ? '0' : e.target.value })
+                      }}
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                       placeholder="0.00"
                     />
@@ -710,7 +799,7 @@ export default function QuotePage() {
         {/* Next Button */}
         <div className="mt-8 flex justify-end">
           <button
-            onClick={() => router.push('/customerPDF')}
+            onClick={handleNextClick}
             className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-900 transition-colors flex items-center space-x-2 hover:shadow-lg"
           >
             <span>Next</span>
