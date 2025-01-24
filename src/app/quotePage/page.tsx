@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
-import quoteData from './data.json';
+import quoteData from '../data.json';
 
 interface QuoteItem {
   id?: number;
@@ -41,8 +41,8 @@ interface LineItem {
   id: number;
   description: string;
   details: string;
-  rate: number;
-  quantity: number;
+  rate: string;
+  quantity: string;
   tempQuantity?: string;
   url: string;
   image_url: string;
@@ -62,8 +62,8 @@ export default function QuotePage() {
   const [newItem, setNewItem] = useState<Partial<LineItem>>({
     description: '',
     details: '',
-    rate: 0,
-    quantity: 0,
+    rate: '0',
+    quantity: '0',
     url: '',
     image_url: '',
   });
@@ -73,8 +73,8 @@ export default function QuotePage() {
       id: item.id || Math.random(),
       description: item.name,
       details: item.description,
-      rate: item.price_per_unit || 0,
-      quantity: item.quantity || 0,
+      rate: (item.price_per_unit || 0).toString(),
+      quantity: (item.quantity || 0).toString(),
       tempQuantity: item.quantity ? item.quantity.toString() : '0',
       url: item.url,
       image_url: item.image_url,
@@ -82,8 +82,8 @@ export default function QuotePage() {
   );
 
   // Add state for labor hours
-  const [laborHours, setLaborHours] = useState(0);
-  const [laborRate, setLaborRate] = useState(75); // Default hourly rate
+  const [laborHours, setLaborHours] = useState<string>('0');
+  const [laborRate, setLaborRate] = useState<string>('75'); // Default hourly rate
   const [isEditingLabor, setIsEditingLabor] = useState(false);
   const [isEditingLaborRate, setIsEditingLaborRate] = useState(false);
 
@@ -95,7 +95,7 @@ export default function QuotePage() {
   const markupRef = useRef<HTMLInputElement>(null);
 
   // Add state for markup
-  const [markupPercentage, setMarkupPercentage] = useState(15); // Default 15% markup
+  const [markupPercentage, setMarkupPercentage] = useState<string>('15'); // Default 15% markup
   const [isEditingMarkup, setIsEditingMarkup] = useState(false);
 
   // Add effect for markup input
@@ -162,49 +162,62 @@ export default function QuotePage() {
   };
 
   const handleRateChange = (id: number, value: string) => {
-    // Allow decimal input
-    const numericValue = value.replace(/[^0-9.]/g, '');
+    // Only allow numbers and one decimal point
+    if (!/^\d*\.?\d*$/.test(value) && value !== '') return;
+    
     setItems(items.map(item => {
       if (item.id === id) {
-        return { ...item, rate: numericValue === '' ? 0 : parseFloat(numericValue) };
+        return { ...item, rate: value };
       }
       return item;
     }));
   };
 
   const handleQuantityChange = (id: number, value: string) => {
-    // Allow decimal input
-    const numericValue = value.replace(/[^0-9.]/g, '');
+    // Only allow numbers and one decimal point
+    if (!/^\d*\.?\d*$/.test(value) && value !== '') return;
+    
     setItems(items.map(item => {
       if (item.id === id) {
-        return { ...item, quantity: numericValue === '' ? 0 : parseFloat(numericValue) };
+        return { ...item, quantity: value };
       }
       return item;
     }));
   };
 
   const handleLaborHoursChange = (value: string) => {
-    const numericValue = value.replace(/[^0-9.]/g, '');
-    setLaborHours(parseFloat(numericValue) || 0);
+    // Only allow numbers and one decimal point
+    if (!/^\d*\.?\d*$/.test(value) && value !== '') return;
+    setLaborHours(value);
   };
 
   const handleLaborRateChange = (value: string) => {
-    const numericValue = value.replace(/[^0-9.]/g, '');
-    setLaborRate(parseFloat(numericValue) || 0);
+    // Only allow numbers and one decimal point
+    if (!/^\d*\.?\d*$/.test(value) && value !== '') return;
+    setLaborRate(value);
   };
 
   const handleMarkupChange = (value: string) => {
-    const numericValue = value.replace(/[^0-9.]/g, '');
-    setMarkupPercentage(parseFloat(numericValue) || 0);
+    // Only allow numbers and one decimal point
+    if (!/^\d*\.?\d*$/.test(value) && value !== '') return;
+    setMarkupPercentage(value);
   };
 
-  const calculateAmount = (rate: number, quantity: number) => {
-    return (rate * quantity).toFixed(2);
+  const calculateAmount = (rate: string, quantity: string) => {
+    const rateNum = parseFloat(rate) || 0;
+    const quantityNum = parseFloat(quantity) || 0;
+    return (rateNum * quantityNum).toFixed(2);
   };
 
   const calculateSubtotal = () => {
-    const itemsTotal = items.reduce((sum, item) => sum + (item.rate * item.quantity), 0);
-    const laborTotal = laborHours * laborRate;
+    const itemsTotal = items.reduce((sum, item) => {
+      const rate = parseFloat(item.rate) || 0;
+      const quantity = parseFloat(item.quantity) || 0;
+      return sum + (rate * quantity);
+    }, 0);
+    const laborHoursNum = parseFloat(laborHours) || 0;
+    const laborRateNum = parseFloat(laborRate) || 0;
+    const laborTotal = laborHoursNum * laborRateNum;
     return (itemsTotal + laborTotal).toFixed(2);
   };
 
@@ -215,7 +228,7 @@ export default function QuotePage() {
 
   const calculateMarkup = () => {
     const subtotal = parseFloat(calculateSubtotal());
-    return ((subtotal * markupPercentage) / 100).toFixed(2);
+    return ((subtotal * parseFloat(markupPercentage) / 100).toFixed(2));
   };
 
   const calculateTotal = () => {
@@ -226,7 +239,7 @@ export default function QuotePage() {
   };
 
   const calculateLaborCost = () => {
-    return (laborHours * laborRate).toFixed(2);
+    return (parseFloat(laborHours) * parseFloat(laborRate)).toFixed(2);
   };
 
   const handleDelete = (id: number) => {
@@ -259,22 +272,28 @@ export default function QuotePage() {
         id: Math.random(),
         description: newItem.description || '',
         details: newItem.details || '',
-        rate: newItem.rate || 0,
-        quantity: newItem.quantity || 0,
+        rate: newItem.rate || '0',
+        quantity: newItem.quantity || '0',
         url: '', // Default empty string
         image_url: '', // Default empty string
       }]);
       setNewItem({
         description: '',
         details: '',
-        rate: 0,
-        quantity: 0,
+        rate: '0',
+        quantity: '0',
         url: '',
         image_url: '',
       });
       setShowAddItemModal(false);
     }
   };
+
+  const today = new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-8">
@@ -292,7 +311,7 @@ export default function QuotePage() {
             </div>
             <div className="flex justify-between gap-8">
               <span className="text-gray-600">Quote date:</span>
-              <span className="font-semibold text-gray-900">Jan 21, 2025</span>
+              <span className="font-semibold text-gray-900">{today}</span>
             </div>
             <div className="flex justify-between gap-8">
               <span className="text-gray-600">Due:</span>
@@ -422,8 +441,8 @@ export default function QuotePage() {
                           if (el) rateInputRefs.current[item.id] = el;
                         }}
                         value={focusedInput?.id === item.id && focusedInput?.type === 'rate'
-                          ? (item.rate === 0 ? '' : item.rate.toString())
-                          : item.rate.toFixed(2)}
+                          ? item.rate === '0' ? '' : item.rate
+                          : (parseFloat(item.rate) || 0).toFixed(2)}
                         onChange={(e) => handleRateChange(item.id, e.target.value)}
                         onFocus={() => setFocusedInput({ id: item.id, type: 'rate' })}
                         onBlur={() => setFocusedInput(null)}
@@ -438,8 +457,8 @@ export default function QuotePage() {
                         if (el) quantityInputRefs.current[item.id] = el;
                       }}
                       value={focusedInput?.id === item.id && focusedInput?.type === 'quantity'
-                        ? (item.quantity === 0 ? '' : item.quantity.toString())
-                        : item.quantity.toFixed(2)}
+                        ? item.quantity === '0' ? '' : item.quantity
+                        : (parseFloat(item.quantity) || 0).toFixed(2)}
                       onChange={(e) => handleQuantityChange(item.id, e.target.value)}
                       onFocus={() => setFocusedInput({ id: item.id, type: 'quantity' })}
                       onBlur={() => setFocusedInput(null)}
@@ -467,11 +486,11 @@ export default function QuotePage() {
               <input
                 type="text"
                 ref={laborHoursRef}
-                value={isEditingLabor && laborHours === 0 
+                value={isEditingLabor && laborHours === '0' 
                   ? '' 
                   : isEditingLabor 
-                    ? laborHours.toString() 
-                    : laborHours.toFixed(2)}
+                    ? laborHours
+                    : (parseFloat(laborHours) || 0).toFixed(2)}
                 onChange={(e) => handleLaborHoursChange(e.target.value)}
                 onFocus={() => setIsEditingLabor(true)}
                 onBlur={() => setIsEditingLabor(false)}
@@ -483,11 +502,11 @@ export default function QuotePage() {
               <input
                 type="text"
                 ref={laborRateRef}
-                value={isEditingLaborRate && laborRate === 0 
+                value={isEditingLaborRate && laborRate === '0' 
                   ? '' 
                   : isEditingLaborRate 
-                    ? laborRate.toString()
-                    : `$${laborRate.toFixed(2)}`}
+                    ? laborRate
+                    : `$${(parseFloat(laborRate) || 0).toFixed(2)}`}
                 onChange={(e) => handleLaborRateChange(e.target.value)}
                 onFocus={() => setIsEditingLaborRate(true)}
                 onBlur={() => setIsEditingLaborRate(false)}
@@ -515,11 +534,11 @@ export default function QuotePage() {
               <input
                 type="text"
                 ref={markupRef}
-                value={isEditingMarkup && markupPercentage === 0 
+                value={isEditingMarkup && markupPercentage === '0' 
                   ? '' 
                   : isEditingMarkup 
-                    ? markupPercentage.toString()
-                    : `${markupPercentage}%`}
+                    ? markupPercentage
+                    : `${(parseFloat(markupPercentage) || 0)}%`}
                 onChange={(e) => handleMarkupChange(e.target.value)}
                 onFocus={() => setIsEditingMarkup(true)}
                 onBlur={() => setIsEditingMarkup(false)}
@@ -625,7 +644,7 @@ export default function QuotePage() {
                     <input
                       type="text"
                       value={newItem.rate || ''}
-                      onChange={(e) => setNewItem({ ...newItem, rate: e.target.value === '' ? 0 : parseFloat(e.target.value) })}
+                      onChange={(e) => setNewItem({ ...newItem, rate: e.target.value === '' ? '0' : e.target.value })}
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                       placeholder="0.00"
                     />
@@ -635,7 +654,7 @@ export default function QuotePage() {
                     <input
                       type="text"
                       value={newItem.quantity || ''}
-                      onChange={(e) => setNewItem({ ...newItem, quantity: e.target.value === '' ? 0 : parseFloat(e.target.value) })}
+                      onChange={(e) => setNewItem({ ...newItem, quantity: e.target.value === '' ? '0' : e.target.value })}
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                       placeholder="0.00"
                     />
@@ -687,6 +706,19 @@ export default function QuotePage() {
             </div>
           </div>
         )}
+
+        {/* Next Button */}
+        <div className="mt-8 flex justify-end">
+          <button
+            onClick={() => router.push('/customerPDF')}
+            className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-900 transition-colors flex items-center space-x-2 hover:shadow-lg"
+          >
+            <span>Next</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </button>
+        </div>
       </div>
     </main>
   );

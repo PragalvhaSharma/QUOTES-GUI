@@ -125,6 +125,27 @@ export default function Home() {
     router.push('/quotePage');
   };
 
+  const handleAutofill = () => {
+    const sampleFromData = {
+      companyName: 'Tech Solutions Inc.',
+      contactName: 'John Smith',
+      email: 'john.smith@techsolutions.com',
+      phone: '+1 (555) 123-4567',
+      address: '123 Tech Street, Silicon Valley, CA 94025'
+    };
+
+    const sampleBillToData = {
+      companyName: 'Client Corp',
+      contactName: 'Jane Doe',
+      email: 'jane.doe@clientcorp.com',
+      phone: '+1 (555) 987-6543',
+      address: '456 Business Ave, New York, NY 10001'
+    };
+
+    setFromInfo(sampleFromData);
+    setBillToInfo(sampleBillToData);
+  };
+
   return (
     <main className="min-h-screen bg-[#fafafa]">
       <div className="max-w-6xl mx-auto p-6 sm:p-8 pt-12 sm:pt-24">
@@ -133,6 +154,12 @@ export default function Home() {
             Quote Details
           </h1>
           <p className="text-gray-500 text-lg">Enter quote information and project requirements</p>
+          <button
+            onClick={handleAutofill}
+            className="mt-4 px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            Autofill Forms
+          </button>
         </div>
         
         <div className="space-y-6">
