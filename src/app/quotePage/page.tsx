@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 
 interface QuoteItem {
   id?: number;
@@ -454,9 +455,11 @@ export default function QuotePage() {
                   <td className="p-6">
                     <div className="flex gap-4">
                       {item.image_url && (
-                        <img 
+                        <Image 
                           src={item.image_url} 
                           alt={item.description}
+                          width={96}
+                          height={96}
                           className="w-24 h-24 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
                           onClick={() => setSelectedImage(item.image_url)}
                         />
@@ -766,9 +769,11 @@ export default function QuotePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-              <img 
+              <Image 
                 src={selectedImage} 
                 alt="Enlarged view" 
+                width={1200}
+                height={800}
                 className="w-full h-auto max-h-[80vh] object-contain"
               />
             </div>
