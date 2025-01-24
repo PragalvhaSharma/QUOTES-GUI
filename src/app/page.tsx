@@ -134,7 +134,7 @@ export default function Home() {
       handleSave();
       
       // Make API call to generate quote
-      const response = await fetch(`https://effect-despite-ball-cure.trycloudflare.com/generate-quote?request=${encodeURIComponent(requirements)}`, {
+      const response = await fetch(`http://127.0.0.1:8000/generate-quote?request=${encodeURIComponent(requirements)}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -484,11 +484,32 @@ export default function Home() {
       </div>
       
       {isLoading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-2xl shadow-xl flex flex-col items-center space-y-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
-            <p className="text-lg font-medium text-gray-900">Generating Quote...</p>
-            <p className="text-sm text-gray-500">This may take a few moments</p>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full mx-4">
+            <div className="flex flex-col items-center space-y-6">
+              {/* Loading Animation */}
+              <div className="relative w-20 h-20">
+                {/* Outer spinning ring */}
+                <div className="absolute inset-0 rounded-full border-4 border-t-black border-r-black border-b-transparent border-l-transparent animate-spin"></div>
+                {/* Inner pulsing circle */}
+                <div className="absolute inset-2 rounded-full border-2 border-gray-200 animate-pulse"></div>
+                {/* Center dot */}
+                <div className="absolute inset-[35%] rounded-full bg-black"></div>
+              </div>
+              
+              {/* Loading Text */}
+              <div className="text-center space-y-3">
+                <h3 className="text-xl font-semibold text-gray-900">Generating Your Quote</h3>
+                <div className="space-y-2">
+                  <p className="text-gray-600">Please wait while we analyze your requirements and prepare a detailed quote.</p>
+                  <div className="flex justify-center gap-1">
+                    <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                    <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                    <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
