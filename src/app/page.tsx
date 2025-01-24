@@ -134,50 +134,47 @@ export default function Home() {
       handleSave();
       
       // Make API call to generate quote
-      const response = await fetch(`https://commissions-iv-vatican-alone.trycloudflare.com/generate-quote?request=${encodeURIComponent(requirements)}`, {
+      const response = await fetch(`https://effect-despite-ball-cure.trycloudflare.com/generate-quote?request=${encodeURIComponent(requirements)}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
         },
       });
+
+      // First check if response is JSON
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        // If not JSON, get the text content for better error message
+        const textContent = await response.text();
+        throw new Error(`API returned non-JSON response: ${textContent.substring(0, 100)}...`);
+      }
       
       const data = await response.json();
       
-      if (!response.ok || !data.quote) {
-        throw new Error(data.detail?.[0]?.msg || 'Failed to generate quote');
+      if (!response.ok) {
+        throw new Error(data.detail?.[0]?.msg || data.message || 'Failed to generate quote');
       }
       
-      const quoteData = data.quote;
-      
-      if (!quoteData.quoteInfo || !quoteData.items || !quoteData.financials) {
-        throw new Error('Invalid quote data received');
+      if (!data.quote) {
+        throw new Error('No quote data received from API');
       }
-
+      
       // Save quote data to localStorage
-      localStorage.setItem('quoteData', JSON.stringify(quoteData));
-
-      // Update stored data through API
-      const updateResponse = await fetch('/api/updateData', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify(quoteData),
-        cache: 'no-store',
-      });
-
-      const updateData = await updateResponse.json();
-      
-      if (!updateResponse.ok) {
-        throw new Error(updateData.error || 'Failed to store quote data');
-      }
+      localStorage.setItem('quoteData', JSON.stringify(data));
 
       // Only navigate if all operations succeeded
       router.push('/quotePage');
     } catch (error) {
       console.error('Error in handleProceed:', error);
-      alert(error instanceof Error ? error.message : 'Failed to generate quote. Please try again.');
+      let errorMessage = 'An unexpected error occurred while generating the quote.';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
+      alert(`Error: ${errorMessage}\n\nPlease try again or contact support if the issue persists.`);
     } finally {
       setIsLoading(false);
     }

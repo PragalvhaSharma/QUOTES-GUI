@@ -49,43 +49,10 @@ interface LineItem {
 
 export default function QuotePage() {
   const router = useRouter();
+  const [quoteData, setQuoteData] = useState<QuoteData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
-  // Replace direct quoteData usage with storedQuoteData from window
-  const [typedQuoteData, setTypedQuoteData] = useState<QuoteData | null>(null);
-
-  useEffect(() => {
-    // Access storedQuoteData from window when component mounts
-    if (typeof window !== 'undefined' && (window as any).storedQuoteData) {
-      setTypedQuoteData((window as any).storedQuoteData);
-    } else {
-      // Redirect back if no data is available
-      router.push('/');
-    }
-  }, [router]);
-
-  // Add loading state while data is being retrieved
-  if (!typedQuoteData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl text-gray-600">Loading...</div>
-      </div>
-    );
-  }
-
-  // Initialize items state with typedQuoteData
-  const [items, setItems] = useState<LineItem[]>(
-    typedQuoteData.quote.items.map((item: QuoteItem) => ({
-      id: item.id || Math.random(),
-      description: item.name,
-      details: item.description,
-      rate: (item.price_per_unit || 0).toString(),
-      quantity: (item.quantity || 0).toString(),
-      tempQuantity: item.quantity ? item.quantity.toString() : '0',
-      url: item.url,
-      image_url: item.image_url,
-    }))
-  );
-
   // Add state for focused inputs and deleted items
   const [focusedInput, setFocusedInput] = useState<{ id: number, type: 'rate' | 'quantity' } | null>(null);
   const [deletedItems, setDeletedItems] = useState<LineItem[]>([]);
@@ -101,6 +68,8 @@ export default function QuotePage() {
     url: '',
     image_url: '',
   });
+
+  const [items, setItems] = useState<LineItem[]>([]);
 
   // Add state for labor hours
   const [laborHours, setLaborHours] = useState<string>('0');
@@ -118,6 +87,41 @@ export default function QuotePage() {
   // Add state for markup
   const [markupPercentage, setMarkupPercentage] = useState<string>('15'); // Default 15% markup
   const [isEditingMarkup, setIsEditingMarkup] = useState(false);
+  
+  // Load quote data from localStorage
+  useEffect(() => {
+    try {
+      const storedQuoteData = localStorage.getItem('quoteData');
+      if (storedQuoteData) {
+        setQuoteData(JSON.parse(storedQuoteData));
+      } else {
+        setError('No quote data found. Please generate a quote first.');
+      }
+    } catch (err) {
+      setError('Failed to load quote data. Please try again.');
+      console.error('Error loading quote data:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Update items when quoteData changes
+  useEffect(() => {
+    if (quoteData) {
+      setItems(
+        quoteData.quote.items.map((item: QuoteItem) => ({
+          id: item.id || Math.random(),
+          description: item.name,
+          details: item.description,
+          rate: (item.price_per_unit || 0).toString(),
+          quantity: (item.quantity || 0).toString(),
+          tempQuantity: item.quantity ? item.quantity.toString() : '0',
+          url: item.url,
+          image_url: item.image_url,
+        }))
+      );
+    }
+  }, [quoteData]);
 
   // Add effect for markup input
   useEffect(() => {
@@ -177,6 +181,35 @@ export default function QuotePage() {
       }, 0);
     }
   }, [focusedInput]);
+
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-8 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading quote data...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (error || !quoteData) {
+    return (
+      <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-8 flex items-center justify-center">
+        <div className="text-center">
+          <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-4">
+            <p>{error || 'Failed to load quote data'}</p>
+          </div>
+          <button
+            onClick={() => router.push('/')}
+            className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-900 transition-colors"
+          >
+            Return Home
+          </button>
+        </div>
+      </main>
+    );
+  }
 
   const handleBack = () => {
     router.back();
@@ -334,7 +367,7 @@ export default function QuotePage() {
           <div className="space-y-3 bg-gray-50 p-4 rounded-lg border border-gray-100">
             <div className="flex justify-between gap-8">
               <span className="text-gray-600">Quote no.</span>
-              <span className="font-semibold text-gray-900">{typedQuoteData.quote.quoteInfo.quoteNumber}</span>
+              <span className="font-semibold text-gray-900">{quoteData?.quote.quoteInfo.quoteNumber}</span>
             </div>
             <div className="flex justify-between gap-8">
               <span className="text-gray-600">Quote date:</span>
@@ -342,7 +375,7 @@ export default function QuotePage() {
             </div>
             <div className="flex justify-between gap-8">
               <span className="text-gray-600">Due:</span>
-              <span className="font-semibold text-gray-900">{typedQuoteData.quote.quoteInfo.validUntil}</span>
+              <span className="font-semibold text-gray-900">{quoteData?.quote.quoteInfo.validUntil}</span>
             </div>
           </div>
         </div>
@@ -358,17 +391,17 @@ export default function QuotePage() {
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4zm3 1h6v4H7V5zm8 8v2h1v-2h-1zm-2-6H7v4h6V7zm2 0h1v4h-1V7zm1 6h-1v2h1v-2zm-7-1H4v-2h6v2zm-6-3h6v-2H4v2z" clipRule="evenodd" />
               </svg>
-              <p className="font-semibold text-gray-900">{typedQuoteData.quote.companyInfo.name}</p>
+              <p className="font-semibold text-gray-900">{quoteData?.quote.companyInfo.name}</p>
             </div>
             <div className="flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
               </svg>
-              <p className="text-gray-600">{typedQuoteData.quote.companyInfo.contact}</p>
+              <p className="text-gray-600">{quoteData?.quote.companyInfo.contact}</p>
             </div>
-            <p className="text-gray-600">{typedQuoteData.quote.companyInfo.email}</p>
-            <p className="text-gray-600">{typedQuoteData.quote.companyInfo.phone}</p>
-            <p className="text-gray-600">{typedQuoteData.quote.companyInfo.address}</p>
+            <p className="text-gray-600">{quoteData?.quote.companyInfo.email}</p>
+            <p className="text-gray-600">{quoteData?.quote.companyInfo.phone}</p>
+            <p className="text-gray-600">{quoteData?.quote.companyInfo.address}</p>
           </div>
           <div className="space-y-2 flex-1 bg-gray-50 p-6 rounded-lg border border-gray-100">
             <h2 className="text-gray-900 font-semibold mb-4 flex items-center gap-2">
@@ -379,16 +412,16 @@ export default function QuotePage() {
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4zm3 1h6v4H7V5zm8 8v2h1v-2h-1zm-2-6H7v4h6V7zm2 0h1v4h-1V7zm1 6h-1v2h1v-2zm-7-1H4v-2h6v2zm-6-3h6v-2H4v2z" clipRule="evenodd" />
               </svg>
-              <p className="font-semibold text-gray-900">{typedQuoteData.quote.clientInfo.company}</p>
+              <p className="font-semibold text-gray-900">{quoteData?.quote.clientInfo.company}</p>
             </div>
             <div className="flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
               </svg>
-              <p className="text-gray-600">{typedQuoteData.quote.clientInfo.email}</p>
+              <p className="text-gray-600">{quoteData?.quote.clientInfo.email}</p>
             </div>
-            <p className="text-gray-600">{typedQuoteData.quote.clientInfo.phone}</p>
-            <p className="text-gray-600">{typedQuoteData.quote.clientInfo.address}</p>
+            <p className="text-gray-600">{quoteData?.quote.clientInfo.phone}</p>
+            <p className="text-gray-600">{quoteData?.quote.clientInfo.address}</p>
           </div>
         </div>
 
