@@ -22,6 +22,7 @@ export default function Home() {
     phone: '',
     address: ''
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   // Load saved data when component mounts
   useEffect(() => {
@@ -127,11 +128,59 @@ export default function Home() {
     }
   };
 
-  const handleProceed = () => {
-    // Save before proceeding
-    handleSave();
-    // Navigate to quote page
-    router.push('/quotePage');
+  const handleProceed = async () => {
+    try {
+      setIsLoading(true);
+      handleSave();
+      
+      // Make API call to generate quote
+      const response = await fetch(`https://commissions-iv-vatican-alone.trycloudflare.com/generate-quote?request=${encodeURIComponent(requirements)}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok || !data.quote) {
+        throw new Error(data.detail?.[0]?.msg || 'Failed to generate quote');
+      }
+      
+      const quoteData = data.quote;
+      
+      if (!quoteData.quoteInfo || !quoteData.items || !quoteData.financials) {
+        throw new Error('Invalid quote data received');
+      }
+
+      // Save quote data to localStorage
+      localStorage.setItem('quoteData', JSON.stringify(quoteData));
+
+      // Update stored data through API
+      const updateResponse = await fetch('/api/updateData', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(quoteData),
+        cache: 'no-store',
+      });
+
+      const updateData = await updateResponse.json();
+      
+      if (!updateResponse.ok) {
+        throw new Error(updateData.error || 'Failed to store quote data');
+      }
+
+      // Only navigate if all operations succeeded
+      router.push('/quotePage');
+    } catch (error) {
+      console.error('Error in handleProceed:', error);
+      alert(error instanceof Error ? error.message : 'Failed to generate quote. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleAutofill = () => {
@@ -156,7 +205,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-[#fafafa]">
+    <main className="min-h-screen bg-[#fafafa] relative">
       <div className="max-w-6xl mx-auto p-6 sm:p-8 pt-12 sm:pt-24">
         <div className="text-center mb-12">
           <h1 className="text-3xl sm:text-5xl font-bold text-black mb-3 tracking-tight">
@@ -436,6 +485,16 @@ export default function Home() {
           </div>
         </div>
       </div>
+      
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-2xl shadow-xl flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+            <p className="text-lg font-medium text-gray-900">Generating Quote...</p>
+            <p className="text-sm text-gray-500">This may take a few moments</p>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

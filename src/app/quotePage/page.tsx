@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
-import quoteData from '../data.json';
 
 interface QuoteItem {
   id?: number;
@@ -48,25 +47,45 @@ interface LineItem {
   image_url: string;
 }
 
-// Update the generateQuoteData function to be properly typed
-const generateQuoteData = (data: QuoteData): string => {
-  return JSON.stringify(data);
-};
-
 export default function QuotePage() {
   const router = useRouter();
-  const typedQuoteData: QuoteData = {
-    quote: {
-      quoteInfo: quoteData.quote.quoteInfo,
-      companyInfo: quoteData.quote.companyInfo,
-      clientInfo: quoteData.quote.clientInfo,
-      items: quoteData.quote.items.map(item => ({
-        ...item,
-        quantity: parseFloat(item.quantity) || 0 // Convert string quantity to number
-      }))
-    }
-  };
   
+  // Replace direct quoteData usage with storedQuoteData from window
+  const [typedQuoteData, setTypedQuoteData] = useState<QuoteData | null>(null);
+
+  useEffect(() => {
+    // Access storedQuoteData from window when component mounts
+    if (typeof window !== 'undefined' && (window as any).storedQuoteData) {
+      setTypedQuoteData((window as any).storedQuoteData);
+    } else {
+      // Redirect back if no data is available
+      router.push('/');
+    }
+  }, [router]);
+
+  // Add loading state while data is being retrieved
+  if (!typedQuoteData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
+  // Initialize items state with typedQuoteData
+  const [items, setItems] = useState<LineItem[]>(
+    typedQuoteData.quote.items.map((item: QuoteItem) => ({
+      id: item.id || Math.random(),
+      description: item.name,
+      details: item.description,
+      rate: (item.price_per_unit || 0).toString(),
+      quantity: (item.quantity || 0).toString(),
+      tempQuantity: item.quantity ? item.quantity.toString() : '0',
+      url: item.url,
+      image_url: item.image_url,
+    }))
+  );
+
   // Add state for focused inputs and deleted items
   const [focusedInput, setFocusedInput] = useState<{ id: number, type: 'rate' | 'quantity' } | null>(null);
   const [deletedItems, setDeletedItems] = useState<LineItem[]>([]);
@@ -82,19 +101,6 @@ export default function QuotePage() {
     url: '',
     image_url: '',
   });
-
-  const [items, setItems] = useState<LineItem[]>(
-    typedQuoteData.quote.items.map((item: QuoteItem) => ({
-      id: item.id || Math.random(),
-      description: item.name,
-      details: item.description,
-      rate: (item.price_per_unit || 0).toString(),
-      quantity: (item.quantity || 0).toString(),
-      tempQuantity: item.quantity ? item.quantity.toString() : '0',
-      url: item.url,
-      image_url: item.image_url,
-    }))
-  );
 
   // Add state for labor hours
   const [laborHours, setLaborHours] = useState<string>('0');
@@ -307,66 +313,6 @@ export default function QuotePage() {
         image_url: '',
       });
       setShowAddItemModal(false);
-    }
-  };
-
-  const handleNextClick = async () => {
-    try {
-      // Prepare the quote data
-      const quoteData = {
-        quoteInfo: typedQuoteData.quote.quoteInfo,
-        companyInfo: typedQuoteData.quote.companyInfo,
-        clientInfo: typedQuoteData.quote.clientInfo,
-        items: items.map(item => ({
-          name: item.description,
-          description: item.details,
-          price_per_unit: parseFloat(item.rate),
-          quantity: parseFloat(item.quantity),
-          total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
-          url: item.url,
-          image_url: item.image_url
-        })),
-        laborHours: parseFloat(laborHours),
-        laborRate: parseFloat(laborRate),
-        laborCost: parseFloat(calculateLaborCost()),
-        markup: parseFloat(markupPercentage),
-        markupAmount: parseFloat(calculateMarkup()),
-        subtotal: parseFloat(calculateSubtotal()),
-        tax: parseFloat(calculateTax()),
-        total: parseFloat(calculateTotal())
-      };
-
-      // Format the request message
-      const requestMessage = {
-        message: `I want a quote for $${calculateTotal()}`
-      };
-
-      // Make the GET request with properly formatted query parameter
-      const response = await fetch(`https://commissions-iv-vatican-alone.trycloudflare.com/generate-quote?request=${encodeURIComponent(JSON.stringify(requestMessage))}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate quote');
-      }
-
-      // Get the JSON response
-      const responseData = await response.json();
-      
-      // Store the response data in localStorage or state management
-      localStorage.setItem('quoteResponse', JSON.stringify({
-        userQuoteData: quoteData,
-        aiResponse: responseData
-      }));
-
-      // If successful, navigate to the next page
-      router.push('/customerPDF');
-    } catch (error) {
-      console.error('Error generating quote:', error);
-      alert('Failed to generate quote. Please try again.');
     }
   };
 
@@ -799,7 +745,7 @@ export default function QuotePage() {
         {/* Next Button */}
         <div className="mt-8 flex justify-end">
           <button
-            onClick={handleNextClick}
+            onClick={() => router.push('/customerPDF')}
             className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-900 transition-colors flex items-center space-x-2 hover:shadow-lg"
           >
             <span>Next</span>
