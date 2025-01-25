@@ -130,6 +130,25 @@ export default function Home() {
 
   const handleProceed = async () => {
     try {
+      if (!endDate) {
+        alert('Please select a project end date');
+        return;
+      }
+
+      // Validate From fields
+      const emptyFromFields = Object.entries(fromInfo).filter(([, value]) => !value);
+      if (emptyFromFields.length > 0) {
+        alert('Please fill in all required From fields');
+        return;
+      }
+
+      // Validate Bill To fields
+      const emptyBillToFields = Object.entries(billToInfo).filter(([, value]) => !value);
+      if (emptyBillToFields.length > 0) {
+        alert('Please fill in all required Bill To fields');
+        return;
+      }
+      
       setIsLoading(true);
       handleSave();
       
@@ -239,31 +258,33 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-semibold text-black">From</h2>
+                <h2 className="text-2xl font-semibold text-black">From <span className="text-red-500">*</span></h2>
               </div>
               <div className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                  <label className="block text-sm font-medium text-gray-700">Company Name <span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     value={fromInfo.companyName}
                     onChange={(e) => setFromInfo({...fromInfo, companyName: e.target.value})}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                     placeholder="Enter company name"
+                    required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Contact Name</label>
+                  <label className="block text-sm font-medium text-gray-700">Contact Name <span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     value={fromInfo.contactName}
                     onChange={(e) => setFromInfo({...fromInfo, contactName: e.target.value})}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                     placeholder="Enter contact name"
+                    required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <label className="block text-sm font-medium text-gray-700">Email <span className="text-red-500">*</span></label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -276,11 +297,12 @@ export default function Home() {
                       onChange={(e) => setFromInfo({...fromInfo, email: e.target.value})}
                       className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                       placeholder="email@company.com"
+                      required
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                  <label className="block text-sm font-medium text-gray-700">Phone <span className="text-red-500">*</span></label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -293,11 +315,12 @@ export default function Home() {
                       onChange={(e) => setFromInfo({...fromInfo, phone: e.target.value})}
                       className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                       placeholder="+1 (555) 000-0000"
+                      required
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                  <label className="block text-sm font-medium text-gray-700">Address <span className="text-red-500">*</span></label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -311,6 +334,7 @@ export default function Home() {
                       onChange={(e) => setFromInfo({...fromInfo, address: e.target.value})}
                       className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                       placeholder="Enter full address"
+                      required
                     />
                   </div>
                 </div>
@@ -325,31 +349,33 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-semibold text-black">Bill To</h2>
+                <h2 className="text-2xl font-semibold text-black">Bill To <span className="text-red-500">*</span></h2>
               </div>
               <div className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                  <label className="block text-sm font-medium text-gray-700">Company Name <span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     value={billToInfo.companyName}
                     onChange={(e) => setBillToInfo({...billToInfo, companyName: e.target.value})}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                     placeholder="Enter company name"
+                    required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Contact Name</label>
+                  <label className="block text-sm font-medium text-gray-700">Contact Name <span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     value={billToInfo.contactName}
                     onChange={(e) => setBillToInfo({...billToInfo, contactName: e.target.value})}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                     placeholder="Enter contact name"
+                    required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <label className="block text-sm font-medium text-gray-700">Email <span className="text-red-500">*</span></label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -362,11 +388,12 @@ export default function Home() {
                       onChange={(e) => setBillToInfo({...billToInfo, email: e.target.value})}
                       className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                       placeholder="email@company.com"
+                      required
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                  <label className="block text-sm font-medium text-gray-700">Phone <span className="text-red-500">*</span></label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -379,11 +406,12 @@ export default function Home() {
                       onChange={(e) => setBillToInfo({...billToInfo, phone: e.target.value})}
                       className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                       placeholder="+1 (555) 000-0000"
+                      required
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                  <label className="block text-sm font-medium text-gray-700">Address <span className="text-red-500">*</span></label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -397,6 +425,7 @@ export default function Home() {
                       onChange={(e) => setBillToInfo({...billToInfo, address: e.target.value})}
                       className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                       placeholder="Enter full address"
+                      required
                     />
                   </div>
                 </div>
@@ -412,7 +441,7 @@ export default function Home() {
                 </label>
                 <div className="flex items-center space-x-2">
                   <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">
-                    Project End Date:
+                    Project End Date: <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
@@ -420,6 +449,7 @@ export default function Home() {
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                     className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
+                    required
                   />
                 </div>
               </div>
@@ -474,10 +504,10 @@ export default function Home() {
           <div className="flex justify-center">
             <button
               onClick={handleProceed}
-              disabled={requirements.length === 0}
+              disabled={requirements.length === 0 || !endDate}
               className={`
                 px-8 py-4 rounded-lg text-lg font-medium transition-all duration-300
-                ${requirements.length === 0
+                ${(requirements.length === 0 || !endDate)
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   : 'bg-gradient-to-r from-black to-gray-800 text-white hover:shadow-lg hover:scale-105 active:scale-100'
                 }
