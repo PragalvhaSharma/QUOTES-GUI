@@ -19,80 +19,112 @@
     },
     "items": [
       {
-        "name": "marble tile 10 cm x 10 cm",
-        "description": "A 10 cm x 10 cm marble tile used for flooring or wall coverings.",
-        "price_per_unit": 29.59,
-        "quantity": "1 piece",
-        "total_amount": 29.59,
-        "url": "https://www.homedepot.com/p/Ivy-Hill-Tile-Dart-Calcutta-and-Thassos-10-3-4-in-x-10-3-4-in-x-10-mm-Polished-Marble-Mosaic-Tile-EXT3RD101200/206675389",
-        "image_url": "https://images.thdstatic.com/productImages/b07f5724-695f-45ee-9c76-16a945f51e9c/svn/calacatta-and-thassos-ivy-hill-tile-marble-tile-ext3rd101200-64_300.jpg"
+        "name": "marble tiles 10x10 inches",
+        "description": "Square marble tiles used for flooring or wall applications.",
+        "price_per_unit": 11.76,
+        "quantity": "1 pack of 100",
+        "total_amount": 11.76,
+        "url": "https://www.homedepot.com/p/WallPOPs-White-Peel-and-Marble-Stick-Backsplash-10-in-x-10-in-Tiles-WPBS6210/331667509",
+        "image_url": "https://images.thdstatic.com/productImages/2ddd0156-dd67-40c8-84f2-f29b442b2a0e/svn/wallpops-peel-and-stick-backsplash-wpbs6210-64_300.jpg"
       },
       {
-        "name": "tile adhesive 750 ml",
-        "description": "A 750 ml pack of tile adhesive used to bond tiles to surfaces.",
-        "price_per_unit": 15.57,
-        "quantity": "1 pack",
-        "total_amount": 15.57,
-        "url": "https://www.homedepot.com/p/Custom-Building-Products-SimpleFix-White-1-qt-Pre-Mixed-Adhesive-and-Grout-TAGWQT/100678076",
-        "image_url": "https://images.thdstatic.com/productImages/e0145997-029f-46da-b339-796bc3cc65aa/svn/custom-building-products-grout-tagwqt-64_300.jpg"
+        "name": "cement backer board 4x8 ft",
+        "description": "Water-resistant board used as a substrate for tile installations.",
+        "price_per_unit": 47.95,
+        "quantity": "10 sheets",
+        "total_amount": 479.5,
+        "url": "https://www.homedepot.com/p/USG-Durock-Brand-5-8-in-x-4-ft-x-8-ft-Cement-Board-with-EdgeGuard-170576/304220353",
+        "image_url": "https://images.thdstatic.com/productImages/59fcd99f-dc9d-4d31-9d4f-5add3da9f24f/svn/usg-durock-brand-backer-boards-170576-64_300.jpg"
       },
       {
-        "name": "grout 25 kg",
-        "description": "A 25 kg pack of grout used to fill the spaces between tiles.",
-        "price_per_unit": 19.48,
-        "quantity": "1 pack",
-        "total_amount": 19.48,
-        "url": "https://www.homedepot.com/p/Custom-Building-Products-Polyblend-Plus-381-Bright-White-25-lb-Sanded-Grout-PBPG38125/313291666",
-        "image_url": "https://images.thdstatic.com/productImages/750076c0-67ff-4e17-80d7-cc0cbc5e51dc/svn/custom-building-products-grout-pbpg38125-64_300.jpg"
+        "name": "tile adhesive 50 lbs",
+        "description": "Adhesive used to bond tiles to surfaces.",
+        "price_per_unit": 11.98,
+        "quantity": "1 bag",
+        "total_amount": 11.98,
+        "url": "https://www.homedepot.com/p/Custom-Building-Products-VersaBond-50-lb-Gray-Professional-Polymer-Modified-Thinset-Mortar-MTSG50/100162542",
+        "image_url": "https://images.thdstatic.com/productImages/dce1b4f1-a4d9-4f5e-b2f2-ff5b2a26b612/svn/custom-building-products-tile-mortar-mtsg50-64_300.jpg"
       },
       {
-        "name": "marble sealant 500 ml",
-        "description": "A 500 ml bottle of marble sealant used to protect marble surfaces.",
-        "price_per_unit": 23.98,
-        "quantity": "1 bottle",
-        "total_amount": 23.98,
-        "url": "https://www.homedepot.com/p/Granite-Gold-24-oz-Multi-Surface-Countertop-Sealer-for-Granite-Marble-Travertine-and-More-Natural-Stone-Countertops-GG0036/204845004",
-        "image_url": "https://images.thdstatic.com/productImages/57352cef-03eb-4d4b-888a-92756c608291/svn/granite-gold-countertop-sealers-gg0036-64_300.jpg"
+        "name": "thinset mortar 50 lbs",
+        "description": "Mortar used to set tiles, providing a strong bond.",
+        "price_per_unit": 14.97,
+        "quantity": "1 bag",
+        "total_amount": 14.97,
+        "url": "https://www.homedepot.com/p/Custom-Building-Products-VersaBond-50-lb-White-Professional-Polymer-Modified-Thinset-Mortar-MTSW50/100091767",
+        "image_url": "https://images.thdstatic.com/productImages/87f67ecf-49cf-4f02-afa1-382bce9e26ed/svn/custom-building-products-tile-mortar-mtsw50-64_300.jpg"
       },
       {
-        "name": "masking tape 50 meters",
-        "description": "A 50 meters pack of masking tape used for protecting surfaces while painting or tiling.",
+        "name": "grout 25 lbs",
+        "description": "Material used to fill the gaps between tiles.",
+        "price_per_unit": 14.98,
+        "quantity": "1 bag",
+        "total_amount": 14.98,
+        "url": "https://www.homedepot.com/p/Custom-Building-Products-Polyblend-Plus-382-Bone-25-lb-Sanded-Grout-PBPG38225/313291664",
+        "image_url": "https://images.thdstatic.com/productImages/5f8c82dc-650b-468e-af6e-81205db1bcb1/svn/custom-building-products-grout-pbpg38225-64_300.jpg"
+      },
+      {
+        "name": "tile spacers 1/16 inch",
+        "description": "Plastic spacers used to ensure equal spacing between tiles.",
         "price_per_unit": 2.98,
-        "quantity": "1 pack",
+        "quantity": "1 pack of 100",
         "total_amount": 2.98,
-        "url": "https://www.homedepot.com/p/3M-Scotch-0-94-in-x-60-1-Yds-Multi-Surface-Contractor-Grade-Tan-Masking-Tape-1-Roll-2020-24AP/100207133",
-        "image_url": "https://images.thdstatic.com/productImages/eadbd686-d5d0-4dcf-9071-de2d67e181de/svn/beige-3m-masking-tape-2020-24ap-64_300.jpg"
+        "url": "https://www.homedepot.com/p/QEP-1-8-in-Traditional-Flexible-Tile-Spacers-500-pack-10335/312247201",
+        "image_url": ""
       },
       {
-        "name": "cleaning cloths 10 pieces",
-        "description": "A pack of 10 cleaning cloths used for cleaning surfaces.",
-        "price_per_unit": 7.78,
-        "quantity": "1 pack",
-        "total_amount": 7.78,
-        "url": "https://www.homedepot.com/p/Ettore-16-in-x-16-in-Blue-MicroSwipe-and-Microfiber-Cleaning-Cloths-10-Pack-84410-6/204267872",
-        "image_url": "https://images.thdstatic.com/productImages/befd7174-29fa-4a87-96b1-b8fb4a64c479/svn/ettore-microfiber-towels-84410-6-64_300.jpg"
+        "name": "tile sealer 16 fl oz",
+        "description": "Sealer used to protect tiles from stains and moisture.",
+        "price_per_unit": 16.03,
+        "quantity": "1 bottle",
+        "total_amount": 16.03,
+        "url": "https://www.homedepot.com/p/Custom-Building-Products-Aqua-Mix-1-Qt-Penetrating-Sealer-020372-4/206289283",
+        "image_url": "https://images.thdstatic.com/productImages/5630c482-f862-47f4-86d8-6c8d72bcd5f1/svn/custom-building-products-floor-sealers-020372-4-64_300.jpg"
       },
       {
-        "name": "grout sealer 250 ml",
-        "description": "A 250 ml pack of grout sealer used to protect grout lines.",
-        "price_per_unit": 9.97,
-        "quantity": "1 pack",
-        "total_amount": 9.97,
-        "url": "https://www.homedepot.com/p/Custom-Building-Products-TileLab-0-2-qt-Penetrating-Sealer-for-Tile-Grout-TLGS6Z/100041610",
-        "image_url": "https://images.thdstatic.com/productImages/d76fec52-f885-4a93-91c4-4cd81a5bc506/svn/custom-building-products-floor-sealers-tlgs6z-64_300.jpg"
+        "name": "caulk silicone",
+        "description": "Silicone caulk used for sealing joints and edges.",
+        "price_per_unit": 7.98,
+        "quantity": "1 tube",
+        "total_amount": 7.98,
+        "url": "https://www.homedepot.com/p/DAP-Kwik-Seal-Ultra-5-5-oz-White-Advanced-Siliconized-Kitchen-and-Bath-Caulk-18901/206046677",
+        "image_url": "https://images.thdstatic.com/productImages/650c75d8-adb7-418f-b6bf-8eff7f509d33/svn/white-dap-caulk-18901-64_300.jpg"
+      },
+      {
+        "name": "fiber tape 2 inches",
+        "description": "Tape used for reinforcing seams in cement backer board.",
+        "price_per_unit": 7.97,
+        "quantity": "1 roll of 75 yards",
+        "total_amount": 7.97,
+        "url": "https://www.homedepot.com/p/QEP-2-in-x-150-ft-Cement-Board-Drywall-Joint-Tape-99605/320674012",
+        "image_url": "https://images.thdstatic.com/productImages/9b399d17-a246-4230-bc7a-511175be4d9f/svn/qep-floor-tape-99605-64_300.jpg"
+      },
+      {
+        "name": "sanding sponge",
+        "description": "Sponge used for smoothing surfaces before applying finishes.",
+        "price_per_unit": 4.39,
+        "quantity": "2 pieces",
+        "total_amount": 8.78,
+        "url": "https://coppsbuildall.com/shop/82081/sanding-sponge-contour-prosand-5x-medium-2-pkg/",
+        "image_url": ""
+      },
+      {
+        "name": "prag",
+        "description": "prag",
+        "price_per_unit": 1,
+        "quantity": "12",
+        "total_amount": 12,
+        "url": "",
+        "image_url": ""
       }
     ],
     "financials": {
-      "subtotal": 109.35,
+      "subtotal": 611.9100000000001,
       "tax_rate": 0.13,
-      "tax_amount": 14.22,
-      "total": 139.97,
+      "tax_amount": 79.54830000000001,
+      "total": 691.4583000000001,
       "amount_paid": 0,
-      "balance_due": 139.97,
-      "labor_hours": 0,
-      "labor_rate": 75,
-      "markup_percentage": 15,
-      "markup_amount": 16.4
+      "balance_due": 691.4583000000001
     },
     "branding": {
       "primary_color": "0x000000",
@@ -105,6 +137,6 @@
       "routingNumber": "061120084"
     },
     "notes": "All lumber prices are subject to market fluctuations. Quote valid for 14 days. Delivery included within city limits. Special orders may require additional lead time. All materials are new and meet or exceed building code requirements.",
-    "generated_at": "2025-01-24T18:04:10.520059"
+    "generated_at": "2025-01-24T20:11:19.840530"
   }
 }

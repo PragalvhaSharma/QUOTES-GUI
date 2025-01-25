@@ -110,28 +110,47 @@ export default function QuotePage() {
   // Cast quoteData to QuoteData type
   const typedQuoteData = quoteData as unknown as QuoteData;
 
-  // Load data immediately when component mounts
+  // Load data when component mounts
   useEffect(() => {
-    try {
-      // Set items from quoteData
-      setItems(
-        typedQuoteData.quote.items.map((item: QuoteItem) => ({
-          id: item.id || Math.random(),
-          description: item.name,
-          details: item.description,
-          rate: (item.price_per_unit || 0).toString(),
-          quantity: item.quantity || '0',
-          tempQuantity: item.quantity || '0',
-          url: item.url,
-          image_url: item.image_url,
-        }))
-      );
-      setIsLoading(false);
-    } catch (err) {
-      setError('Error loading quote data. Please try again.');
-      setIsLoading(false);
-      console.error('Error loading quote data:', err);
-    }
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/getQuote');
+        if (!response.ok) {
+          throw new Error('Failed to fetch quote data');
+        }
+        const data = await response.json();
+        
+        // Set items from fetched data
+        setItems(
+          data.quote.items.map((item: QuoteItem) => ({
+            id: item.id || Math.random(),
+            description: item.name,
+            details: item.description,
+            rate: (item.price_per_unit || 0).toString(),
+            quantity: item.quantity || '0',
+            tempQuantity: item.quantity || '0',
+            url: item.url,
+            image_url: item.image_url,
+          }))
+        );
+
+        // Set labor and markup data if available
+        if (data.quote.financials) {
+          setLaborHours((data.quote.financials.labor_hours || 0).toString());
+          setLaborRate((data.quote.financials.labor_rate || 75).toString());
+          setMarkupPercentage((data.quote.financials.markup_percentage || 15).toString());
+        }
+
+        setIsLoading(false);
+      } catch (err) {
+        setError('Error loading quote data. Please try again.');
+        setIsLoading(false);
+        console.error('Error loading quote data:', err);
+      }
+    };
+
+    fetchData();
   }, []);
 
   // Add effect for markup input
