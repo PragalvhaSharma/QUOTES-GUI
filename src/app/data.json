@@ -116,15 +116,46 @@
         "total_amount": 12,
         "url": "",
         "image_url": ""
+      },
+      {
+        "name": "sd",
+        "description": "sd",
+        "price_per_unit": 1,
+        "quantity": "1",
+        "total_amount": 1,
+        "url": "",
+        "image_url": ""
+      },
+      {
+        "name": "121",
+        "description": "12",
+        "price_per_unit": 1,
+        "quantity": "1",
+        "total_amount": 1,
+        "url": "",
+        "image_url": ""
+      },
+      {
+        "name": "1212",
+        "description": "12",
+        "price_per_unit": 1,
+        "quantity": "12",
+        "total_amount": 12,
+        "url": "",
+        "image_url": ""
       }
     ],
     "financials": {
-      "subtotal": 611.9100000000001,
+      "subtotal": 602.93,
       "tax_rate": 0.13,
-      "tax_amount": 79.54830000000001,
-      "total": 691.4583000000001,
+      "tax_amount": 78.38,
+      "total": 771.75,
       "amount_paid": 0,
-      "balance_due": 691.4583000000001
+      "balance_due": 771.75,
+      "labor_hours": 0,
+      "labor_rate": 75,
+      "markup_percentage": 15,
+      "markup_amount": 90.44
     },
     "branding": {
       "primary_color": "0x000000",
