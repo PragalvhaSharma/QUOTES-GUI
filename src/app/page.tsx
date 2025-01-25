@@ -1,28 +1,92 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+
+interface FromInfo {
+  companyName: string;
+  contactName: string;
+  email: string;
+  phone: string;
+  address: string;
+}
+
+interface BillToInfo extends FromInfo {}
+
+interface QuoteData {
+  quote: {
+    quoteInfo: {
+      quoteNumber: string;
+      validUntil: string;
+    };
+    companyInfo: {
+      companyName: string;
+      contactName: string;
+      email: string;
+      phone: string;
+      address: string;
+    };
+    clientInfo: {
+      companyName: string;
+      contactName: string;
+      email: string;
+      phone: string;
+      address: string;
+    };
+    items: QuoteItem[];
+    financials: {
+      subtotal: number;
+      tax_rate: number;
+      tax_amount: number;
+      total: number;
+      amount_paid: number;
+      balance_due: number;
+    };
+    branding: {
+      primary_color: string;
+      secondary_color: string;
+      accent_color: string;
+    };
+    paymentInfo: {
+      paypal: string;
+      checkPayableTo: string;
+      routingNumber: string;
+    };
+    notes: string;
+    generated_at: string;
+  };
+}
+
+interface QuoteItem {
+  name: string;
+  description: string;
+  price_per_unit: number;
+  quantity: string;
+  total_amount: number;
+  url: string;
+  image_url: string;
+}
 
 export default function Home() {
   const router = useRouter();
-  const [requirements, setRequirements] = useState('');
-  const [saved, setSaved] = useState(false);
-  const [endDate, setEndDate] = useState('');
-  const [fromInfo, setFromInfo] = useState({
+  const [requirements, setRequirements] = useState<string>('');
+  const [saved, setSaved] = useState<boolean>(false);
+  const [endDate, setEndDate] = useState<string>('');
+  const [fromInfo, setFromInfo] = useState<FromInfo>({
     companyName: '',
     contactName: '',
     email: '',
     phone: '',
     address: ''
   });
-  const [billToInfo, setBillToInfo] = useState({
+  const [billToInfo, setBillToInfo] = useState<BillToInfo>({
     companyName: '',
     contactName: '',
     email: '',
     phone: '',
     address: ''
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Load saved data when component mounts
   useEffect(() => {
@@ -48,7 +112,7 @@ export default function Home() {
 
   // Auto-save functionality
   useEffect(() => {
-    let autoSaveTimer: NodeJS.Timeout;
+    let autoSaveTimer: ReturnType<typeof setTimeout>;
     
     if (requirements && !saved) {
       autoSaveTimer = setTimeout(() => {
@@ -78,7 +142,7 @@ export default function Home() {
     };
   }, [requirements, saved, fromInfo, billToInfo, endDate]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setRequirements(e.target.value);
     setSaved(false);
   };
@@ -153,7 +217,13 @@ export default function Home() {
       handleSave();
       
       // Make API call to generate quote
-      const response = await fetch(`http://127.0.0.1:8000/generate-quote?request=${encodeURIComponent(requirements)}`, {
+      const payload = {
+        request: requirements,
+        endDate: endDate,
+        fromInfo: fromInfo,
+        billToInfo: billToInfo
+      };
+      const response = await fetch(`https://gifts-durable-six-johns.trycloudflare.com/generate-quote?data=${encodeURIComponent(JSON.stringify(payload))}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -174,8 +244,11 @@ export default function Home() {
         throw new Error(data.detail?.[0]?.msg || data.message || 'Failed to generate quote');
       }
       
-      if (!data.quote) {
-        throw new Error('No quote data received from API');
+      console.log('API Response:', data);
+      
+      // Check if data exists and has required content
+      if (!data || typeof data !== 'object') {
+        throw new Error('Invalid response format from API');
       }
 
       // Update data.json file with the new quote data
@@ -211,7 +284,7 @@ export default function Home() {
   };
 
   const handleAutofill = () => {
-    const sampleFromData = {
+    const sampleFromData: FromInfo = {
       companyName: 'Tech Solutions Inc.',
       contactName: 'John Smith',
       email: 'john.smith@techsolutions.com',
@@ -219,7 +292,7 @@ export default function Home() {
       address: '123 Tech Street, Silicon Valley, CA 94025'
     };
 
-    const sampleBillToData = {
+    const sampleBillToData: BillToInfo = {
       companyName: 'Client Corp',
       contactName: 'Jane Doe',
       email: 'jane.doe@clientcorp.com',
@@ -229,6 +302,18 @@ export default function Home() {
 
     setFromInfo(sampleFromData);
     setBillToInfo(sampleBillToData);
+  };
+
+  const handleInputChange = (
+    type: 'from' | 'billTo',
+    field: keyof FromInfo,
+    value: string
+  ) => {
+    if (type === 'from') {
+      setFromInfo(prev => ({ ...prev, [field]: value }));
+    } else {
+      setBillToInfo(prev => ({ ...prev, [field]: value }));
+    }
   };
 
   return (
@@ -266,7 +351,7 @@ export default function Home() {
                   <input
                     type="text"
                     value={fromInfo.companyName}
-                    onChange={(e) => setFromInfo({...fromInfo, companyName: e.target.value})}
+                    onChange={(e) => handleInputChange('from', 'companyName', e.target.value)}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                     placeholder="Enter company name"
                     required
@@ -277,7 +362,7 @@ export default function Home() {
                   <input
                     type="text"
                     value={fromInfo.contactName}
-                    onChange={(e) => setFromInfo({...fromInfo, contactName: e.target.value})}
+                    onChange={(e) => handleInputChange('from', 'contactName', e.target.value)}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                     placeholder="Enter contact name"
                     required
@@ -294,7 +379,7 @@ export default function Home() {
                     <input
                       type="email"
                       value={fromInfo.email}
-                      onChange={(e) => setFromInfo({...fromInfo, email: e.target.value})}
+                      onChange={(e) => handleInputChange('from', 'email', e.target.value)}
                       className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                       placeholder="email@company.com"
                       required
@@ -312,7 +397,7 @@ export default function Home() {
                     <input
                       type="tel"
                       value={fromInfo.phone}
-                      onChange={(e) => setFromInfo({...fromInfo, phone: e.target.value})}
+                      onChange={(e) => handleInputChange('from', 'phone', e.target.value)}
                       className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                       placeholder="+1 (555) 000-0000"
                       required
@@ -331,7 +416,7 @@ export default function Home() {
                     <input
                       type="text"
                       value={fromInfo.address}
-                      onChange={(e) => setFromInfo({...fromInfo, address: e.target.value})}
+                      onChange={(e) => handleInputChange('from', 'address', e.target.value)}
                       className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                       placeholder="Enter full address"
                       required
@@ -357,7 +442,7 @@ export default function Home() {
                   <input
                     type="text"
                     value={billToInfo.companyName}
-                    onChange={(e) => setBillToInfo({...billToInfo, companyName: e.target.value})}
+                    onChange={(e) => handleInputChange('billTo', 'companyName', e.target.value)}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                     placeholder="Enter company name"
                     required
@@ -368,7 +453,7 @@ export default function Home() {
                   <input
                     type="text"
                     value={billToInfo.contactName}
-                    onChange={(e) => setBillToInfo({...billToInfo, contactName: e.target.value})}
+                    onChange={(e) => handleInputChange('billTo', 'contactName', e.target.value)}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                     placeholder="Enter contact name"
                     required
@@ -385,7 +470,7 @@ export default function Home() {
                     <input
                       type="email"
                       value={billToInfo.email}
-                      onChange={(e) => setBillToInfo({...billToInfo, email: e.target.value})}
+                      onChange={(e) => handleInputChange('billTo', 'email', e.target.value)}
                       className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                       placeholder="email@company.com"
                       required
@@ -403,7 +488,7 @@ export default function Home() {
                     <input
                       type="tel"
                       value={billToInfo.phone}
-                      onChange={(e) => setBillToInfo({...billToInfo, phone: e.target.value})}
+                      onChange={(e) => handleInputChange('billTo', 'phone', e.target.value)}
                       className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                       placeholder="+1 (555) 000-0000"
                       required
@@ -422,7 +507,7 @@ export default function Home() {
                     <input
                       type="text"
                       value={billToInfo.address}
-                      onChange={(e) => setBillToInfo({...billToInfo, address: e.target.value})}
+                      onChange={(e) => handleInputChange('billTo', 'address', e.target.value)}
                       className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all text-black"
                       placeholder="Enter full address"
                       required

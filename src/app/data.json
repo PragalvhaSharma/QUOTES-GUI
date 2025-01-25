@@ -1,161 +1,104 @@
 {
   "quote": {
     "quoteInfo": {
-      "quoteNumber": "001",
-      "validUntil": "Feb 28th, 2024"
+      "quoteNumber": "RWO6792",
+      "validUntil": "2025-01-25"
     },
     "companyInfo": {
-      "name": "Premier Building Supply",
-      "contact": "Mike Johnson",
-      "email": "sales@premierbuild.ca",
-      "phone": "416-555-0123",
-      "address": "123 Builder Ave, Toronto, ON M5V 2T6"
+      "companyName": "Tech Solutions Inc.",
+      "contactName": "Akshay Mysore",
+      "email": "john.smith@techsolutions.com",
+      "phone": "+1 (555) 123-4567",
+      "address": "123 Tech Street, Silicon Valley, CA 94025"
     },
     "clientInfo": {
-      "company": "Custom Homes Ltd.",
-      "email": "info@customhomes.ca",
-      "phone": "647-555-0189",
-      "address": "456 Development Dr, Toronto, ON M4W 1A8"
+      "companyName": "Client Corp",
+      "contactName": "Prag",
+      "email": "jane.doe@clientcorp.com",
+      "phone": "+1 (555) 987-6543",
+      "address": "456 Business Ave, New York, NY 10001"
     },
     "items": [
       {
-        "name": "marble tile 10x10",
-        "description": "Decorative tile used for flooring or wall applications.",
-        "price_per_unit": 6.43,
-        "quantity": "1",
-        "total_amount": 6.43,
-        "url": "https://www.homedepot.com/p/MSI-Verde-Amazonia-12-in-x-12-in-Polished-Marble-Floor-and-Wall-Tile-10-sq-ft-Case-TVERAMA1212/202508280",
-        "image_url": "https://images.thdstatic.com/productImages/f9d8ee8a-ef15-4c4a-911c-214050924b4f/svn/verde-amazonia-msi-marble-tile-tverama1212-64_300.jpg"
+        "name": "1 inch thick plywood",
+        "description": "Used as a strong surface for various projects.",
+        "price_per_unit": 26.79,
+        "quantity": "1 piece",
+        "total_amount": 26.79,
+        "url": "https://www.homedepot.com/p/1-in-x-12-in-x-29-in-Allwood-Birch-Project-Panel-Chopping-Block-Cutting-Board-EGP-1x12x29/313816267",
+        "image_url": "https://images.thdstatic.com/productImages/b76a8067-d080-41df-9044-6373fc809148/svn/natural-butcher-block-countertops-egp-1x12x29-64_300.jpg"
       },
       {
-        "name": "thin-set mortar 25 kg",
-        "description": "Adhesive used to install tiles onto substrates.",
-        "price_per_unit": 49.99,
-        "quantity": "1",
-        "total_amount": 49.99,
-        "url": "https://coppsbuildall.com/shop/SETA50W/thinset-mortar-polymer-modified-schluter-all-set-white-50-lb-bag/",
-        "image_url": ""
+        "name": "2x4 lumber",
+        "description": "Used for framing and structural support.",
+        "price_per_unit": 4.18,
+        "quantity": "4 pieces",
+        "total_amount": 16.72,
+        "url": "https://www.homedepot.com/p/2-in-x-4-in-x-8-ft-2-Ground-Contact-Pressure-Treated-Southern-Yellow-Pine-Lumber-106147/206970948",
+        "image_url": "https://images.thdstatic.com/productImages/4f6b481e-d93a-42d2-835d-739c7b26a3f5/svn/brown-pressure-treated-lumber-106147-64_300.jpg"
       },
       {
-        "name": "grout 4 kg",
-        "description": "Filler used in the joints between tiles.",
-        "price_per_unit": 26.49,
-        "quantity": "1",
-        "total_amount": 26.49,
-        "url": "https://coppsbuildall.com/shop/ULTRA00-10/tile-grout-mapei-ultracolour-fa-00-eggshell-5220-white-10-lb-bag/",
-        "image_url": ""
+        "name": "3 inch wood screws",
+        "description": "Used for fastening wood together.",
+        "price_per_unit": 29.97,
+        "quantity": "1 pack of 100",
+        "total_amount": 29.97,
+        "url": "https://www.homedepot.com/p/Grip-Rite-10-x-3-in-2-Phillips-Bugle-Head-Coarse-Thread-Sharp-Point-Coated-Exterior-Screws-5-lb-Box-PTN3S5/100200675",
+        "image_url": "https://images.thdstatic.com/productImages/553bf816-cbeb-44cc-8440-2ffee4505b7f/svn/grip-rite-deck-screws-ptn3s5-64_300.jpg"
       },
       {
-        "name": "tile sealant 1 can",
-        "description": "Protective sealant applied to tiles to prevent staining.",
-        "price_per_unit": 17.97,
-        "quantity": "1",
-        "total_amount": 17.97,
-        "url": "https://www.homedepot.com/p/Custom-Building-Products-TileLab-1-qt-Penetrating-Sealer-for-Tile-Concrete-Porcelain-Stone-and-Grout-TLPS24Z/202919172",
-        "image_url": "https://images.thdstatic.com/productImages/0bc92303-0d38-49b0-a083-714f460ccee8/svn/custom-building-products-floor-sealers-tlps24z-64_300.jpg"
+        "name": "wood glue",
+        "description": "Used for bonding wood pieces together.",
+        "price_per_unit": 4.97,
+        "quantity": "1 bottle",
+        "total_amount": 4.97,
+        "url": "https://www.homedepot.com/p/Gorilla-8-oz-Wood-Glue-Epoxy-62000/100672167",
+        "image_url": "https://images.thdstatic.com/productImages/b5089978-6c79-4958-954b-5ee04f50f4a8/svn/gorilla-wood-adhesive-62000-64_300.jpg"
       },
       {
-        "name": "cleaning solution 1 bottle",
-        "description": "Solution used for cleaning tiles and grout.",
-        "price_per_unit": 10.98,
-        "quantity": "1",
-        "total_amount": 10.98,
-        "url": "https://www.homedepot.com/p/OdoBan-1-Gal-3-in-1-Carpet-Cleaner-Concentrated-Carpet-Cleaning-Solution-EPA-Safer-Choice-Certified-Fragrance-Free-960261-G/202647775",
-        "image_url": "https://images.thdstatic.com/productImages/213c67f7-9b92-41e4-8e08-62e7d8edd21e/svn/odoban-carpet-cleaning-products-960261-g-64_300.jpg"
-      },
-      {
-        "name": "caulk 1 tube",
-        "description": "Sealant used to fill gaps and joints around tiles.",
+        "name": "assorted sandpaper",
+        "description": "Used for smoothing surfaces, includes 80, 120, and 220 grit.",
         "price_per_unit": 2.99,
-        "quantity": "1",
+        "quantity": "1 pack",
         "total_amount": 2.99,
-        "url": "https://coppsbuildall.com/shop/DAP74852/caulking-dap-alex-plus-white-162-ml-squeeze-tube/",
+        "url": "https://coppsbuildall.com/shop/47765/sandpaper-general-purpose-assorted-grits-5-pkg/",
         "image_url": ""
       },
       {
-        "name": "protective masking tape 1 roll",
-        "description": "Tape used to protect surfaces during tiling work.",
-        "price_per_unit": 2.98,
-        "quantity": "1",
-        "total_amount": 2.98,
-        "url": "https://www.homedepot.com/p/3M-Scotch-0-94-in-x-60-1-Yds-Multi-Surface-Contractor-Grade-Tan-Masking-Tape-1-Roll-2020-24AP/100207133",
-        "image_url": ""
+        "name": "polyurethane finish",
+        "description": "Used to protect and finish wood surfaces.",
+        "price_per_unit": 22.98,
+        "quantity": "1 can",
+        "total_amount": 22.98,
+        "url": "https://www.homedepot.com/p/Varathane-1-qt-Clear-Satin-Water-Based-Interior-Polyurethane-200241H/100169146",
+        "image_url": "https://images.thdstatic.com/productImages/d285cbcf-71b2-4cb9-80f0-ad8e182104ee/svn/varathane-polyurethane-wood-finish-200241h-64_300.jpg"
       },
       {
-        "name": "da",
-        "description": "asdasd",
-        "price_per_unit": 12,
-        "quantity": "12",
-        "total_amount": 144,
-        "url": "",
-        "image_url": ""
+        "name": "wood stain",
+        "description": "Used for coloring and enhancing the appearance of wood.",
+        "price_per_unit": 47.98,
+        "quantity": "1 can",
+        "total_amount": 47.98,
+        "url": "https://www.homedepot.com/p/BEHR-PREMIUM-1-gal-ST-330-Redwood-Semi-Transparent-Waterproofing-Exterior-Wood-Stain-and-Sealer-533001/202263943",
+        "image_url": "https://images.thdstatic.com/productImages/9bfb7b64-6d70-4f9e-9fd1-9ba999835329/svn/redwood-behr-premium-exterior-wood-stains-533001-64_300.jpg"
       },
       {
-        "name": "2w1w",
-        "description": "asdasdsd",
-        "price_per_unit": 1,
-        "quantity": "212",
-        "total_amount": 212,
-        "url": "",
-        "image_url": ""
-      },
-      {
-        "name": "12",
-        "description": "sc",
-        "price_per_unit": 12,
-        "quantity": "122",
-        "total_amount": 1464,
-        "url": "",
-        "image_url": ""
-      },
-      {
-        "name": "sdf",
-        "description": "sadfsdf",
-        "price_per_unit": 1,
-        "quantity": "12",
-        "total_amount": 12,
-        "url": "",
-        "image_url": ""
-      },
-      {
-        "name": "1",
-        "description": "dfs",
-        "price_per_unit": 1,
-        "quantity": "21",
-        "total_amount": 21,
-        "url": "",
-        "image_url": ""
-      },
-      {
-        "name": "sd",
-        "description": "sadf",
-        "price_per_unit": 1,
-        "quantity": "21",
-        "total_amount": 21,
-        "url": "",
-        "image_url": ""
-      },
-      {
-        "name": "12",
-        "description": "dfsd",
-        "price_per_unit": 12,
-        "quantity": "1212",
-        "total_amount": 14544,
-        "url": "",
-        "image_url": ""
+        "name": "table leg mounting brackets",
+        "description": "Used to secure table legs to the underside of a tabletop.",
+        "price_per_unit": 3.96,
+        "quantity": "4 pieces",
+        "total_amount": 15.84,
+        "url": "https://www.homedepot.com/p/Waddell-Heavy-Duty-Top-Plate-5-5-in-x-3-in-16G-Steel-Mounting-Hardware-Furniture-Leg-Easy-Installation-2755/100390125",
+        "image_url": "https://images.thdstatic.com/productImages/8dcb0f68-109d-4a9c-b900-fea86694cc8c/svn/waddell-shelf-supports-2755-64_300.jpg"
       }
     ],
     "financials": {
-      "subtotal": 16835.83,
+      "subtotal": 168.23999999999998,
       "tax_rate": 0.13,
-      "tax_amount": 2188.66,
-      "total": 21549.86,
+      "tax_amount": 21.871199999999998,
+      "total": 190.11119999999997,
       "amount_paid": 0,
-      "balance_due": 21549.86,
-      "labor_hours": 4,
-      "labor_rate": 75,
-      "markup_percentage": 15,
-      "markup_amount": 2525.37
+      "balance_due": 190.11119999999997
     },
     "branding": {
       "primary_color": "0x000000",
@@ -168,6 +111,6 @@
       "routingNumber": "061120084"
     },
     "notes": "All lumber prices are subject to market fluctuations. Quote valid for 14 days. Delivery included within city limits. Special orders may require additional lead time. All materials are new and meet or exceed building code requirements.",
-    "generated_at": "2025-01-24T20:28:15.674121"
+    "generated_at": "2025-01-25T14:40:40.758696"
   }
 }

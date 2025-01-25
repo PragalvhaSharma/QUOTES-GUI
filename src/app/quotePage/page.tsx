@@ -12,25 +12,37 @@ interface QuoteData {
       validUntil: string;
     };
     companyInfo: {
-      name: string;
-      contact: string;
+      companyName: string;
+      contactName: string;
       email: string;
       phone: string;
       address: string;
     };
     clientInfo: {
-      company: string;
+      companyName: string;
+      contactName: string;
       email: string;
       phone: string;
       address: string;
     };
     items: QuoteItem[];
     financials: Financials;
+    branding: {
+      primary_color: string;
+      secondary_color: string;
+      accent_color: string;
+    };
+    paymentInfo: {
+      paypal: string;
+      checkPayableTo: string;
+      routingNumber: string;
+    };
+    notes: string;
+    generated_at: string;
   };
 }
 
 interface QuoteItem {
-  id?: number;
   name: string;
   description: string;
   price_per_unit: number;
@@ -123,8 +135,8 @@ export default function QuotePage() {
         
         // Set items from fetched data
         setItems(
-          data.quote.items.map((item: QuoteItem) => ({
-            id: item.id || Math.random(),
+          data.quote.items.map((item: QuoteItem, index: number) => ({
+            id: index + 1, // Generate an id for internal use
             description: item.name,
             details: item.description,
             rate: (item.price_per_unit || 0).toString(),
@@ -527,13 +539,13 @@ export default function QuotePage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4zm3 1h6v4H7V5zm8 8v2h1v-2h-1zm-2-6H7v4h6V7zm2 0h1v4h-1V7zm1 6h-1v2h1v-2zm-7-1H4v-2h6v2zm-6-3h6v-2H4v2z" clipRule="evenodd" />
                 </svg>
-                <p className="font-semibold text-gray-900">{typedQuoteData.quote.companyInfo.name}</p>
+                <p className="font-semibold text-gray-900">{typedQuoteData.quote.companyInfo.companyName}</p>
               </div>
               <div className="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                 </svg>
-                <p className="text-gray-600">{typedQuoteData.quote.companyInfo.contact}</p>
+                <p className="text-gray-600">{typedQuoteData.quote.companyInfo.contactName}</p>
               </div>
               <p className="text-gray-600">{typedQuoteData.quote.companyInfo.email}</p>
               <p className="text-gray-600">{typedQuoteData.quote.companyInfo.phone}</p>
@@ -548,14 +560,15 @@ export default function QuotePage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4zm3 1h6v4H7V5zm8 8v2h1v-2h-1zm-2-6H7v4h6V7zm2 0h1v4h-1V7zm1 6h-1v2h1v-2zm-7-1H4v-2h6v2zm-6-3h6v-2H4v2z" clipRule="evenodd" />
                 </svg>
-                <p className="font-semibold text-gray-900">{typedQuoteData.quote.clientInfo.company}</p>
+                <p className="font-semibold text-gray-900">{typedQuoteData.quote.clientInfo.companyName}</p>
               </div>
               <div className="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                 </svg>
-                <p className="text-gray-600">{typedQuoteData.quote.clientInfo.email}</p>
+                <p className="text-gray-600">{typedQuoteData.quote.clientInfo.contactName}</p>
               </div>
+              <p className="text-gray-600">{typedQuoteData.quote.clientInfo.email}</p>
               <p className="text-gray-600">{typedQuoteData.quote.clientInfo.phone}</p>
               <p className="text-gray-600">{typedQuoteData.quote.clientInfo.address}</p>
             </div>

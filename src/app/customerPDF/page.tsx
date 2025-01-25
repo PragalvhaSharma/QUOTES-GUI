@@ -3,6 +3,64 @@
 import { Document, Page, Text, View, StyleSheet, PDFViewer, Image } from '@react-pdf/renderer';
 import quoteData from '../data.json';
 
+interface QuoteData {
+  quote: {
+    quoteInfo: {
+      quoteNumber: string;
+      validUntil: string;
+    };
+    companyInfo: {
+      companyName: string;
+      contactName: string;
+      email: string;
+      phone: string;
+      address: string;
+    };
+    clientInfo: {
+      companyName: string;
+      contactName: string;
+      email: string;
+      phone: string;
+      address: string;
+    };
+    items: QuoteItem[];
+    financials: {
+      subtotal: number;
+      tax_rate: number;
+      tax_amount: number;
+      total: number;
+      amount_paid: number;
+      balance_due: number;
+      labor_hours?: number;
+      labor_rate?: number;
+      markup_percentage?: number;
+      markup_amount?: number;
+    };
+    branding: {
+      primary_color: string;
+      secondary_color: string;
+      accent_color: string;
+    };
+    paymentInfo: {
+      paypal: string;
+      checkPayableTo: string;
+      routingNumber: string;
+    };
+    notes: string;
+    generated_at: string;
+  };
+}
+
+interface QuoteItem {
+  name: string;
+  description: string;
+  price_per_unit: number;
+  quantity: string;
+  total_amount: number;
+  url: string;
+  image_url: string;
+}
+
 const styles = StyleSheet.create({
   page: {
     padding: '20 30',
@@ -204,10 +262,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontStyle: 'italic',
   },
+  laborMarkupSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  laborSection: {
+    flex: 1,
+  },
+  markupSection: {
+    flex: 1,
+  },
 });
 
 const QuotePDF = () => {
-  const { quote } = quoteData;
+  const typedQuoteData = quoteData as unknown as QuoteData;
+  const { quote } = typedQuoteData;
 
   return (
     <PDFViewer style={{ width: '100%', height: '100vh' }}>
@@ -216,11 +286,11 @@ const QuotePDF = () => {
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              <Text style={styles.companyName}>{quote.companyInfo.name}</Text>
+              <Text style={styles.companyName}>{quote.companyInfo.companyName}</Text>
               <Text style={styles.companyDetails}>{quote.companyInfo.address}</Text>
               <Text style={styles.companyDetails}>Tel: {quote.companyInfo.phone}</Text>
               <Text style={styles.companyDetails}>{quote.companyInfo.email}</Text>
-              <Text style={styles.companyDetails}>Contact: {quote.companyInfo.contact}</Text>
+              <Text style={styles.companyDetails}>Contact: {quote.companyInfo.contactName}</Text>
             </View>
             <View style={styles.headerRight}>
               {/* eslint-disable-next-line jsx-a11y/alt-text */}
@@ -238,9 +308,11 @@ const QuotePDF = () => {
               <View style={styles.infoColumn}>
                 <View style={styles.infoSection}>
                   <Text style={styles.sectionTitle}>Bill To</Text>
-                  <Text style={styles.infoText}>{quote.clientInfo.company}</Text>
-                  <Text style={styles.infoText}>{quote.clientInfo.address}</Text>
+                  <Text style={styles.infoText}>{quote.clientInfo.companyName}</Text>
+                  <Text style={styles.infoText}>{quote.clientInfo.contactName}</Text>
+                  <Text style={styles.infoText}>{quote.clientInfo.email}</Text>
                   <Text style={styles.infoText}>{quote.clientInfo.phone}</Text>
+                  <Text style={styles.infoText}>{quote.clientInfo.address}</Text>
                 </View>
               </View>
               <View style={styles.infoColumn}>
@@ -285,14 +357,6 @@ const QuotePDF = () => {
               <Text style={styles.totalValue}>${quote.financials.subtotal.toFixed(2)}</Text>
             </View>
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Overhead ({quote.financials.markup_percentage}%)</Text>
-              <Text style={styles.totalValue}>${quote.financials.markup_amount.toFixed(2)}</Text>
-            </View>
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Labor ({quote.financials.labor_hours} hrs @ ${quote.financials.labor_rate}/hr)</Text>
-              <Text style={styles.totalValue}>${(quote.financials.labor_hours * quote.financials.labor_rate).toFixed(2)}</Text>
-            </View>
-            <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Tax ({(quote.financials.tax_rate * 100).toFixed()}%)</Text>
               <Text style={styles.totalValue}>${quote.financials.tax_amount.toFixed(2)}</Text>
             </View>
@@ -301,6 +365,31 @@ const QuotePDF = () => {
               <Text style={styles.totalFinal}>${quote.financials.total.toFixed(2)}</Text>
             </View>
           </View>
+
+          {/* Labor and Markup Section */}
+          {(quote.financials.labor_hours || quote.financials.markup_amount) && (
+            <View style={styles.laborMarkupSection}>
+              {quote.financials.labor_hours && quote.financials.labor_rate && (
+                <View style={styles.laborSection}>
+                  <Text style={styles.sectionTitle}>Labor</Text>
+                  <Text style={styles.infoText}>
+                    Hours: {quote.financials.labor_hours} @ ${quote.financials.labor_rate}/hr
+                  </Text>
+                  <Text style={styles.infoText}>
+                    Total: ${(quote.financials.labor_hours * quote.financials.labor_rate).toFixed(2)}
+                  </Text>
+                </View>
+              )}
+              {quote.financials.markup_amount && quote.financials.markup_percentage && (
+                <View style={styles.markupSection}>
+                  <Text style={styles.sectionTitle}>Markup</Text>
+                  <Text style={styles.infoText}>
+                    {quote.financials.markup_percentage}% = ${quote.financials.markup_amount.toFixed(2)}
+                  </Text>
+                </View>
+              )}
+            </View>
+          )}
 
           {/* Footer */}
           <View style={styles.footer}>
