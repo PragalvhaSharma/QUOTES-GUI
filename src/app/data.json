@@ -19,143 +19,143 @@
     },
     "items": [
       {
-        "name": "marble tiles 10x10 inches",
-        "description": "Square marble tiles used for flooring or wall applications.",
-        "price_per_unit": 11.76,
-        "quantity": "1 pack of 100",
-        "total_amount": 11.76,
-        "url": "https://www.homedepot.com/p/WallPOPs-White-Peel-and-Marble-Stick-Backsplash-10-in-x-10-in-Tiles-WPBS6210/331667509",
-        "image_url": "https://images.thdstatic.com/productImages/2ddd0156-dd67-40c8-84f2-f29b442b2a0e/svn/wallpops-peel-and-stick-backsplash-wpbs6210-64_300.jpg"
+        "name": "marble tile 10x10",
+        "description": "Decorative tile used for flooring or wall applications.",
+        "price_per_unit": 6.43,
+        "quantity": "1",
+        "total_amount": 6.43,
+        "url": "https://www.homedepot.com/p/MSI-Verde-Amazonia-12-in-x-12-in-Polished-Marble-Floor-and-Wall-Tile-10-sq-ft-Case-TVERAMA1212/202508280",
+        "image_url": "https://images.thdstatic.com/productImages/f9d8ee8a-ef15-4c4a-911c-214050924b4f/svn/verde-amazonia-msi-marble-tile-tverama1212-64_300.jpg"
       },
       {
-        "name": "cement backer board 4x8 ft",
-        "description": "Water-resistant board used as a substrate for tile installations.",
-        "price_per_unit": 47.95,
-        "quantity": "10 sheets",
-        "total_amount": 479.5,
-        "url": "https://www.homedepot.com/p/USG-Durock-Brand-5-8-in-x-4-ft-x-8-ft-Cement-Board-with-EdgeGuard-170576/304220353",
-        "image_url": "https://images.thdstatic.com/productImages/59fcd99f-dc9d-4d31-9d4f-5add3da9f24f/svn/usg-durock-brand-backer-boards-170576-64_300.jpg"
+        "name": "thin-set mortar 25 kg",
+        "description": "Adhesive used to install tiles onto substrates.",
+        "price_per_unit": 49.99,
+        "quantity": "1",
+        "total_amount": 49.99,
+        "url": "https://coppsbuildall.com/shop/SETA50W/thinset-mortar-polymer-modified-schluter-all-set-white-50-lb-bag/",
+        "image_url": ""
       },
       {
-        "name": "tile adhesive 50 lbs",
-        "description": "Adhesive used to bond tiles to surfaces.",
-        "price_per_unit": 11.98,
-        "quantity": "1 bag",
-        "total_amount": 11.98,
-        "url": "https://www.homedepot.com/p/Custom-Building-Products-VersaBond-50-lb-Gray-Professional-Polymer-Modified-Thinset-Mortar-MTSG50/100162542",
-        "image_url": "https://images.thdstatic.com/productImages/dce1b4f1-a4d9-4f5e-b2f2-ff5b2a26b612/svn/custom-building-products-tile-mortar-mtsg50-64_300.jpg"
+        "name": "grout 4 kg",
+        "description": "Filler used in the joints between tiles.",
+        "price_per_unit": 26.49,
+        "quantity": "1",
+        "total_amount": 26.49,
+        "url": "https://coppsbuildall.com/shop/ULTRA00-10/tile-grout-mapei-ultracolour-fa-00-eggshell-5220-white-10-lb-bag/",
+        "image_url": ""
       },
       {
-        "name": "thinset mortar 50 lbs",
-        "description": "Mortar used to set tiles, providing a strong bond.",
-        "price_per_unit": 14.97,
-        "quantity": "1 bag",
-        "total_amount": 14.97,
-        "url": "https://www.homedepot.com/p/Custom-Building-Products-VersaBond-50-lb-White-Professional-Polymer-Modified-Thinset-Mortar-MTSW50/100091767",
-        "image_url": "https://images.thdstatic.com/productImages/87f67ecf-49cf-4f02-afa1-382bce9e26ed/svn/custom-building-products-tile-mortar-mtsw50-64_300.jpg"
+        "name": "tile sealant 1 can",
+        "description": "Protective sealant applied to tiles to prevent staining.",
+        "price_per_unit": 17.97,
+        "quantity": "1",
+        "total_amount": 17.97,
+        "url": "https://www.homedepot.com/p/Custom-Building-Products-TileLab-1-qt-Penetrating-Sealer-for-Tile-Concrete-Porcelain-Stone-and-Grout-TLPS24Z/202919172",
+        "image_url": "https://images.thdstatic.com/productImages/0bc92303-0d38-49b0-a083-714f460ccee8/svn/custom-building-products-floor-sealers-tlps24z-64_300.jpg"
       },
       {
-        "name": "grout 25 lbs",
-        "description": "Material used to fill the gaps between tiles.",
-        "price_per_unit": 14.98,
-        "quantity": "1 bag",
-        "total_amount": 14.98,
-        "url": "https://www.homedepot.com/p/Custom-Building-Products-Polyblend-Plus-382-Bone-25-lb-Sanded-Grout-PBPG38225/313291664",
-        "image_url": "https://images.thdstatic.com/productImages/5f8c82dc-650b-468e-af6e-81205db1bcb1/svn/custom-building-products-grout-pbpg38225-64_300.jpg"
+        "name": "cleaning solution 1 bottle",
+        "description": "Solution used for cleaning tiles and grout.",
+        "price_per_unit": 10.98,
+        "quantity": "1",
+        "total_amount": 10.98,
+        "url": "https://www.homedepot.com/p/OdoBan-1-Gal-3-in-1-Carpet-Cleaner-Concentrated-Carpet-Cleaning-Solution-EPA-Safer-Choice-Certified-Fragrance-Free-960261-G/202647775",
+        "image_url": "https://images.thdstatic.com/productImages/213c67f7-9b92-41e4-8e08-62e7d8edd21e/svn/odoban-carpet-cleaning-products-960261-g-64_300.jpg"
       },
       {
-        "name": "tile spacers 1/16 inch",
-        "description": "Plastic spacers used to ensure equal spacing between tiles.",
+        "name": "caulk 1 tube",
+        "description": "Sealant used to fill gaps and joints around tiles.",
+        "price_per_unit": 2.99,
+        "quantity": "1",
+        "total_amount": 2.99,
+        "url": "https://coppsbuildall.com/shop/DAP74852/caulking-dap-alex-plus-white-162-ml-squeeze-tube/",
+        "image_url": ""
+      },
+      {
+        "name": "protective masking tape 1 roll",
+        "description": "Tape used to protect surfaces during tiling work.",
         "price_per_unit": 2.98,
-        "quantity": "1 pack of 100",
+        "quantity": "1",
         "total_amount": 2.98,
-        "url": "https://www.homedepot.com/p/QEP-1-8-in-Traditional-Flexible-Tile-Spacers-500-pack-10335/312247201",
+        "url": "https://www.homedepot.com/p/3M-Scotch-0-94-in-x-60-1-Yds-Multi-Surface-Contractor-Grade-Tan-Masking-Tape-1-Roll-2020-24AP/100207133",
         "image_url": ""
       },
       {
-        "name": "tile sealer 16 fl oz",
-        "description": "Sealer used to protect tiles from stains and moisture.",
-        "price_per_unit": 16.03,
-        "quantity": "1 bottle",
-        "total_amount": 16.03,
-        "url": "https://www.homedepot.com/p/Custom-Building-Products-Aqua-Mix-1-Qt-Penetrating-Sealer-020372-4/206289283",
-        "image_url": "https://images.thdstatic.com/productImages/5630c482-f862-47f4-86d8-6c8d72bcd5f1/svn/custom-building-products-floor-sealers-020372-4-64_300.jpg"
-      },
-      {
-        "name": "caulk silicone",
-        "description": "Silicone caulk used for sealing joints and edges.",
-        "price_per_unit": 7.98,
-        "quantity": "1 tube",
-        "total_amount": 7.98,
-        "url": "https://www.homedepot.com/p/DAP-Kwik-Seal-Ultra-5-5-oz-White-Advanced-Siliconized-Kitchen-and-Bath-Caulk-18901/206046677",
-        "image_url": "https://images.thdstatic.com/productImages/650c75d8-adb7-418f-b6bf-8eff7f509d33/svn/white-dap-caulk-18901-64_300.jpg"
-      },
-      {
-        "name": "fiber tape 2 inches",
-        "description": "Tape used for reinforcing seams in cement backer board.",
-        "price_per_unit": 7.97,
-        "quantity": "1 roll of 75 yards",
-        "total_amount": 7.97,
-        "url": "https://www.homedepot.com/p/QEP-2-in-x-150-ft-Cement-Board-Drywall-Joint-Tape-99605/320674012",
-        "image_url": "https://images.thdstatic.com/productImages/9b399d17-a246-4230-bc7a-511175be4d9f/svn/qep-floor-tape-99605-64_300.jpg"
-      },
-      {
-        "name": "sanding sponge",
-        "description": "Sponge used for smoothing surfaces before applying finishes.",
-        "price_per_unit": 4.39,
-        "quantity": "2 pieces",
-        "total_amount": 8.78,
-        "url": "https://coppsbuildall.com/shop/82081/sanding-sponge-contour-prosand-5x-medium-2-pkg/",
+        "name": "da",
+        "description": "asdasd",
+        "price_per_unit": 12,
+        "quantity": "12",
+        "total_amount": 144,
+        "url": "",
         "image_url": ""
       },
       {
-        "name": "prag",
-        "description": "prag",
+        "name": "2w1w",
+        "description": "asdasdsd",
+        "price_per_unit": 1,
+        "quantity": "212",
+        "total_amount": 212,
+        "url": "",
+        "image_url": ""
+      },
+      {
+        "name": "12",
+        "description": "sc",
+        "price_per_unit": 12,
+        "quantity": "122",
+        "total_amount": 1464,
+        "url": "",
+        "image_url": ""
+      },
+      {
+        "name": "sdf",
+        "description": "sadfsdf",
         "price_per_unit": 1,
         "quantity": "12",
         "total_amount": 12,
+        "url": "",
+        "image_url": ""
+      },
+      {
+        "name": "1",
+        "description": "dfs",
+        "price_per_unit": 1,
+        "quantity": "21",
+        "total_amount": 21,
         "url": "",
         "image_url": ""
       },
       {
         "name": "sd",
-        "description": "sd",
+        "description": "sadf",
         "price_per_unit": 1,
-        "quantity": "1",
-        "total_amount": 1,
+        "quantity": "21",
+        "total_amount": 21,
         "url": "",
         "image_url": ""
       },
       {
-        "name": "121",
-        "description": "12",
-        "price_per_unit": 1,
-        "quantity": "1",
-        "total_amount": 1,
-        "url": "",
-        "image_url": ""
-      },
-      {
-        "name": "1212",
-        "description": "12",
-        "price_per_unit": 1,
-        "quantity": "12",
-        "total_amount": 12,
+        "name": "12",
+        "description": "dfsd",
+        "price_per_unit": 12,
+        "quantity": "1212",
+        "total_amount": 14544,
         "url": "",
         "image_url": ""
       }
     ],
     "financials": {
-      "subtotal": 602.93,
+      "subtotal": 16835.83,
       "tax_rate": 0.13,
-      "tax_amount": 78.38,
-      "total": 771.75,
+      "tax_amount": 2188.66,
+      "total": 21549.86,
       "amount_paid": 0,
-      "balance_due": 771.75,
-      "labor_hours": 0,
+      "balance_due": 21549.86,
+      "labor_hours": 4,
       "labor_rate": 75,
       "markup_percentage": 15,
-      "markup_amount": 90.44
+      "markup_amount": 2525.37
     },
     "branding": {
       "primary_color": "0x000000",
@@ -168,6 +168,6 @@
       "routingNumber": "061120084"
     },
     "notes": "All lumber prices are subject to market fluctuations. Quote valid for 14 days. Delivery included within city limits. Special orders may require additional lead time. All materials are new and meet or exceed building code requirements.",
-    "generated_at": "2025-01-24T20:11:19.840530"
+    "generated_at": "2025-01-24T20:28:15.674121"
   }
 }

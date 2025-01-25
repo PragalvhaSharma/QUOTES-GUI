@@ -771,12 +771,12 @@ export default function QuotePage() {
                   <span className="font-semibold text-gray-900">${calculateSubtotal()}</span>
                 </div>
                 <div className="flex justify-between gap-8">
-                  <span className="text-gray-600">Markup ({markupPercentage}%):</span>
-                  <span className="font-semibold text-gray-900">${calculateMarkup()}</span>
-                </div>
-                <div className="flex justify-between gap-8">
                   <span className="text-gray-600">Tax (13%):</span>
                   <span className="font-semibold text-gray-900">${calculateTax()}</span>
+                </div>
+                <div className="flex justify-between gap-8">
+                  <span className="text-gray-600">Markup ({markupPercentage}%):</span>
+                  <span className="font-semibold text-gray-900">${calculateMarkup()}</span>
                 </div>
                 <div className="pt-2 border-t border-gray-200">
                   <div className="flex justify-between gap-8">

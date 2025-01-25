@@ -223,7 +223,8 @@ const QuotePDF = () => {
               <Text style={styles.companyDetails}>Contact: {quote.companyInfo.contact}</Text>
             </View>
             <View style={styles.headerRight}>
-              <Image style={styles.logo} src="/path-to-your-logo.png" />
+              {/* eslint-disable-next-line jsx-a11y/alt-text */}
+              <Image style={styles.logo} src="/Blanc.png" />
             </View>
           </View>
 
@@ -280,15 +281,19 @@ const QuotePDF = () => {
           {/* Totals */}
           <View style={styles.totalsSection}>
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Subtotal</Text>
+              <Text style={styles.totalLabel}>Materials Subtotal</Text>
               <Text style={styles.totalValue}>${quote.financials.subtotal.toFixed(2)}</Text>
+            </View>
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>Overhead ({quote.financials.markup_percentage}%)</Text>
+              <Text style={styles.totalValue}>${quote.financials.markup_amount.toFixed(2)}</Text>
             </View>
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Labor ({quote.financials.labor_hours} hrs @ ${quote.financials.labor_rate}/hr)</Text>
               <Text style={styles.totalValue}>${(quote.financials.labor_hours * quote.financials.labor_rate).toFixed(2)}</Text>
             </View>
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Tax</Text>
+              <Text style={styles.totalLabel}>Tax ({(quote.financials.tax_rate * 100).toFixed()}%)</Text>
               <Text style={styles.totalValue}>${quote.financials.tax_amount.toFixed(2)}</Text>
             </View>
             <View style={[styles.totalRow, styles.totalRowFinal]}>
