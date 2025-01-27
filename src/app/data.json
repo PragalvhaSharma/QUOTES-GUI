@@ -1,153 +1,117 @@
 {
   "quote": {
     "quoteInfo": {
-      "quoteNumber": "IVO3237",
-      "validUntil": "2025-01-29"
+      "quoteNumber": "WOP9848",
+      "validUntil": "2025-02-07"
     },
     "companyInfo": {
       "companyName": "Tech Solutions Inc.",
-      "contactName": "Akshay",
+      "contactName": "John Smith",
       "email": "john.smith@techsolutions.com",
       "phone": "+1 (555) 123-4567",
       "address": "123 Tech Street, Silicon Valley, CA 94025"
     },
     "clientInfo": {
       "companyName": "Client Corp",
-      "contactName": "Prag",
+      "contactName": "Jane Doe",
       "email": "jane.doe@clientcorp.com",
       "phone": "+1 (555) 987-6543",
       "address": "456 Business Ave, New York, NY 10001"
     },
     "items": [
       {
-        "name": "plywood 4x8 ft",
-        "description": "A sheet of plywood used for the tabletop.",
-        "price_per_unit": 45.85,
-        "quantity": "1 sheet",
-        "total_amount": 45.85,
-        "url": "https://www.homedepot.com/p/Plytanium-23-32-in-x-4-ft-x-8-ft-Southern-Pine-Tongue-and-Groove-Plywood-Sheathing-605189/100003769",
-        "image_url": "https://images.thdstatic.com/productImages/bb733133-7a3c-4ffa-ae8d-92e0e41ec763/svn/plytanium-sheathing-plywood-605189-64_300.jpg"
+        "name": "pressure treated lumber 4x4",
+        "description": "Used for building sturdy posts or supports in outdoor projects.",
+        "price_per_unit": 28.35,
+        "quantity": "6 pieces",
+        "total_amount": 170.1,
+        "url": "https://www.homedepot.com/p/4-in-x-6-in-x-12-ft-2-Pressure-Treated-Ground-Contact-Southern-Pine-Timber-260430/100062638",
+        "image_url": "https://images.thdstatic.com/productImages/265a5aec-d3ac-4b69-b61d-7a00d7354499/svn/pressure-treated-lumber-260430-64_300.jpg"
       },
       {
-        "name": "solid pine 4x4",
-        "description": "Solid pine table legs for support.",
-        "price_per_unit": 14.18,
+        "name": "pressure treated lumber 2x6",
+        "description": "Commonly used for framing or as structural support in outdoor constructions.",
+        "price_per_unit": 12.68,
         "quantity": "4 pieces",
-        "total_amount": 56.72,
-        "url": "https://www.homedepot.com/p/4-in-x-4-in-x-8-ft-2-Premium-Grade-Dimensional-Lumber-279542/300874740",
-        "image_url": "https://images.thdstatic.com/productImages/71e01440-2273-4b90-99cb-d5d123eeb680/svn/timber-279542-64_300.jpg"
+        "total_amount": 50.72,
+        "url": "https://www.homedepot.com/p/WeatherShield-2-in-x-6-in-x-12-ft-2-Prime-Pressure-Treated-Ground-Contact-Southern-Pine-Lumber-2331255/206889270",
+        "image_url": "https://images.thdstatic.com/productImages/49b04e2b-7680-4e98-aaaa-c2aa8ac3f5d4/svn/brown-weathershield-pressure-treated-lumber-2331255-64_300.jpg"
       },
       {
-        "name": "wood screws #8 x 2",
-        "description": "Wood screws used for assembling the tabletop.",
-        "price_per_unit": 1.38,
-        "quantity": "1 pack (200 screws)",
-        "total_amount": 1.38,
-        "url": "https://www.homedepot.com/p/Everbilt-8-x-2-in-Phillips-Flat-Head-Zinc-Plated-Wood-Screw-6-Pack-807301/204275597",
-        "image_url": "https://images.thdstatic.com/productImages/a9b2bb3b-2616-47a5-98cc-d09c3582f11a/svn/everbilt-wood-screws-807301-64_300.jpg"
+        "name": "cedar fence board 1x6",
+        "description": "Used for building wooden fences, providing durability and a natural aesthetic.",
+        "price_per_unit": 29.97,
+        "quantity": "20 pieces",
+        "total_amount": 599.4,
+        "url": "https://www.homedepot.com/p/2-in-x-6-in-x-8-ft-Rough-Green-Western-Red-Cedar-Lumber-819155/202594096",
+        "image_url": "https://images.thdstatic.com/productImages/c8048108-d3fa-4999-8a0f-da2ede85291e/svn/framing-lumber-819155-64_300.jpg"
       },
       {
-        "name": "wood glue 500ml",
-        "description": "Adhesive used for bonding wood pieces.",
-        "price_per_unit": 4.97,
-        "quantity": "1 bottle",
-        "total_amount": 4.97,
-        "url": "https://www.homedepot.com/p/Gorilla-8-oz-Wood-Glue-Epoxy-62000/100672167",
-        "image_url": "https://images.thdstatic.com/productImages/b5089978-6c79-4958-954b-5ee04f50f4a8/svn/gorilla-wood-adhesive-62000-64_300.jpg"
+        "name": "galvanized deck screws 3 inch",
+        "description": "Used for securing wood pieces together, especially in outdoor settings due to their corrosion resistance.",
+        "price_per_unit": 9.97,
+        "quantity": "1 pack",
+        "total_amount": 9.97,
+        "url": "https://www.homedepot.com/p/Grip-Rite-9-x-3-in-2-Phillips-Bugle-Head-Coarse-Thread-Sharp-Point-Coated-Exterior-Screw-1-lb-Box-PTN3S1/100115639",
+        "image_url": "https://images.thdstatic.com/productImages/0ff8d27e-6d50-46dc-80a6-966ab952847c/svn/grip-rite-deck-screws-ptn3s1-64_300.jpg"
       },
       {
-        "name": "polyurethane finish 2L",
-        "description": "Protective finish applied to the wood surface.",
-        "price_per_unit": 29.99,
-        "quantity": "2 litres",
-        "total_amount": 59.98,
-        "url": "https://www.homedepot.com/p/Varathane-1-qt-Clear-Gloss-Oil-Based-Interior-Polyurethane-2-Pack-341719/305587852",
-        "image_url": "https://images.thdstatic.com/productImages/625a7809-ac51-4ce2-804a-8d4d5826ee9b/svn/varathane-polyurethane-wood-finish-341719-64_300.jpg"
+        "name": "exterior wood preservative 1 gallon",
+        "description": "Applied to wood to protect it from moisture, rot, and insects.",
+        "price_per_unit": 21.98,
+        "quantity": "1 gallon",
+        "total_amount": 21.98,
+        "url": "https://www.homedepot.com/p/Olympic-Waterguard-1-gal-Clear-Wood-Sealer-55260XI-01/305542042",
+        "image_url": "https://images.thdstatic.com/productImages/44c3a5e9-0e39-46b2-a36b-5dc3d01c6945/svn/clear-olympic-exterior-wood-stains-55260xi-01-64_300.jpg"
       },
       {
-        "name": "sanding paper assorted grits",
-        "description": "Used for smoothing surfaces of wood.",
+        "name": "concrete mix 80 lb",
+        "description": "Used for pouring footings or slabs in outdoor projects for stability.",
         "price_per_unit": 5.98,
-        "quantity": "1 pack",
-        "total_amount": 5.98,
-        "url": "https://www.homedepot.com/p/3M-Pro-Grade-Precision-3-2-3-in-x-9-in-Fine-220-Grit-Sheet-Sandpaper-6-Sheets-Pack-SHTR220-PGP-6T/313353716",
-        "image_url": "https://images.thdstatic.com/productImages/92765c44-11a6-440e-9cf7-17862eded82d/svn/3m-drywall-sand-paper-shtr220-pgp-6t-64_300.jpg"
+        "quantity": "4 bags",
+        "total_amount": 23.92,
+        "url": "https://www.homedepot.com/p/Quikrete-80-lb-Concrete-Mix-110180/100318511",
+        "image_url": "https://images.thdstatic.com/productImages/491b0835-cba0-4f1b-9bfa-f748464675cc/svn/gray-quikrete-concrete-mix-110180-64_300.jpg"
       },
       {
-        "name": "metal corner braces",
-        "description": "Braces used for reinforcing corners.",
-        "price_per_unit": 3.77,
-        "quantity": "4 pieces",
-        "total_amount": 15.08,
-        "url": "https://www.homedepot.com/p/Everbilt-2-in-Zinc-Plated-Inside-Corner-Brace-4-Pack-20487/300985590",
-        "image_url": "https://images.thdstatic.com/productImages/38b51a75-32f2-4077-b82b-34f4537bb18a/svn/everbilt-corner-braces-20487-64_300.jpg"
+        "name": "crushed gravel 50 lb",
+        "description": "Used for drainage or as a base material for construction projects.",
+        "price_per_unit": 6.5,
+        "quantity": "1 bag",
+        "total_amount": 6.5,
+        "url": "https://www.homedepot.com/p/Quikrete-50-lb-All-Purpose-Gravel-115150/100318444",
+        "image_url": "https://images.thdstatic.com/productImages/fd37028d-4c02-4cff-979b-db56a7f3fd33/svn/quikrete-bagged-landscape-rocks-115150-64_300.jpg"
       },
       {
-        "name": "dowels 10mm x 100mm",
-        "description": "Used for joining two pieces of wood together.",
-        "price_per_unit": 0,
-        "quantity": "1 pack",
-        "total_amount": 0,
-        "url": "",
-        "image_url": ""
+        "name": "exterior wood stain 1 gallon",
+        "description": "Used for coloring and protecting wooden surfaces from weather damage.",
+        "price_per_unit": 29.98,
+        "quantity": "1 gallon",
+        "total_amount": 29.98,
+        "url": "https://www.homedepot.com/p/Flood-1-gal-Cedar-Tone-Transparent-CWF-UV-Exterior-Wood-Stain-FLD520-01/206265801",
+        "image_url": "https://images.thdstatic.com/productImages/a60bf711-e874-4e52-ac6a-956daea6c4bc/svn/cedar-tone-flood-exterior-wood-stains-fld520-01-64_300.jpg"
       },
       {
-        "name": "painter’s tape 50m",
-        "description": "Tape used for masking areas during painting.",
-        "price_per_unit": 6.98,
-        "quantity": "1 roll",
-        "total_amount": 6.98,
-        "url": "https://www.homedepot.com/p/3M-ScotchBlue-1-41-in-x-60-yds-Original-Multi-Surface-Painter-s-Tape-2090-36AP/202077779",
-        "image_url": "https://images.thdstatic.com/productImages/158dbaa9-805c-4829-aa57-52d4137e07e2/svn/blue-3m-painter-s-tape-2090-36ap-64_300.jpg"
-      },
-      {
-        "name": "wood stain 1L",
-        "description": "Coloring agent applied to wood for aesthetic purposes.",
-        "price_per_unit": 13.98,
-        "quantity": "1 litre",
-        "total_amount": 13.98,
-        "url": "https://www.homedepot.com/p/Varathane-1-qt-Aged-Barrel-Premium-Fast-Dry-Interior-Wood-Stain-355399/311317477",
-        "image_url": "https://images.thdstatic.com/productImages/0f0b55bd-4e1d-463d-be6b-e51a40c3a785/svn/aged-barrel-varathane-interior-wood-stains-355399-64_300.jpg"
-      },
-      {
-        "name": "wood filler 500g",
-        "description": "Filler used to repair imperfections in wood.",
-        "price_per_unit": 15.98,
-        "quantity": "1 pack",
-        "total_amount": 15.98,
-        "url": "https://www.homedepot.com/p/Rust-Oleum-Parks-Pro-Finisher-1-qt-White-Oak-Matte-Full-Trowel-Wood-Filler-138924/202056472",
-        "image_url": "https://images.thdstatic.com/productImages/dac1df8f-5aa0-422c-8725-5a8f67266788/svn/white-oak-rust-oleum-parks-wood-floor-fillers-138924-64_300.jpg"
-      },
-      {
-        "name": "edge banding 12mm",
-        "description": "Used for covering exposed edges of plywood.",
-        "price_per_unit": 37,
-        "quantity": "1 pack",
-        "total_amount": 37,
-        "url": "https://www.homedepot.com/p/Contractor-Express-Cabinets-Arlington-Vesper-White-Plywood-Shaker-Assembled-Kitchen-Cabinet-Edge-Scribe-Molding-96-in-W-x-0-25-in-D-x-0-75-in-H-SM8-AVW/312017333",
-        "image_url": "https://images.thdstatic.com/productImages/fac6ab70-d9c9-40c5-b74a-3d0d17c1adb0/svn/vesper-white-contractor-express-cabinets-kitchen-cabinet-moulding-sm8-avw-64_300.jpg"
-      },
-      {
-        "name": "felt pads",
-        "description": "Pads used to protect surfaces from scratches.",
-        "price_per_unit": 5.93,
-        "quantity": "1 pack (24 pieces)",
-        "total_amount": 5.93,
-        "url": "https://www.homedepot.com/p/Everbilt-4-1-4-in-x-6-in-Beige-Rectangular-Felt-Heavy-Duty-Self-Adhesive-Furniture-Sheet-2-Pack-49950/203661133",
-        "image_url": "https://images.thdstatic.com/productImages/852b2d37-392b-4d42-8b39-554c1230ba67/svn/beige-cream-everbilt-furniture-accessories-49950-64_300.jpg"
+        "name": "post anchor",
+        "description": "Used to secure posts in concrete or ground to provide stability for structures.",
+        "price_per_unit": 63.41,
+        "quantity": "6 pieces",
+        "total_amount": 380.46,
+        "url": "https://www.homedepot.com/p/VEVOR-Fence-Post-Anchor-Ground-Spike-6-Pack-24-x-4-x-4-in-Outer-Diameter-Inner-Diameter-3-5-in-x-3-5-in-Metal-Black-FXDD35YC24YCUQSQCV0/331058822",
+        "image_url": "https://images.thdstatic.com/productImages/cc632c7d-5930-5bf6-93cb-b10de668ffab/svn/vevor-fence-hardware-fxdd35yc24ycuqsqcv0-64_300.jpg"
       }
     ],
     "financials": {
-      "subtotal": 528.58,
+      "subtotal": 1465.53,
       "tax_rate": 0.13,
-      "tax_amount": 68.72,
-      "total": 597.3,
+      "tax_amount": 190.52,
+      "total": 1656.05,
       "amount_paid": 0,
-      "balance_due": 597.3,
-      "labor_hours": 3,
+      "balance_due": 1656.05,
+      "labor_hours": 2,
       "labor_rate": 75,
       "markup_percentage": 15,
-      "markup_amount": 258.75
+      "markup_amount": 172.5
     },
     "branding": {
       "primary_color": "0x000000",
@@ -160,6 +124,6 @@
       "routingNumber": "061120084"
     },
     "notes": "All lumber prices are subject to market fluctuations. Quote valid for 14 days. Delivery included within city limits. Special orders may require additional lead time. All materials are new and meet or exceed building code requirements.",
-    "generated_at": "2025-01-27T23:02:08.654973"
+    "generated_at": "2025-01-27T23:10:24.190478"
   }
 }

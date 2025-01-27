@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface FromInfo {
@@ -11,61 +11,7 @@ interface FromInfo {
   address: string;
 }
 
-interface BillToInfo extends FromInfo {}
-
-interface QuoteData {
-  quote: {
-    quoteInfo: {
-      quoteNumber: string;
-      validUntil: string;
-    };
-    companyInfo: {
-      companyName: string;
-      contactName: string;
-      email: string;
-      phone: string;
-      address: string;
-    };
-    clientInfo: {
-      companyName: string;
-      contactName: string;
-      email: string;
-      phone: string;
-      address: string;
-    };
-    items: QuoteItem[];
-    financials: {
-      subtotal: number;
-      tax_rate: number;
-      tax_amount: number;
-      total: number;
-      amount_paid: number;
-      balance_due: number;
-    };
-    branding: {
-      primary_color: string;
-      secondary_color: string;
-      accent_color: string;
-    };
-    paymentInfo: {
-      paypal: string;
-      checkPayableTo: string;
-      routingNumber: string;
-    };
-    notes: string;
-    generated_at: string;
-  };
-}
-
-interface QuoteItem {
-  name: string;
-  description: string;
-  price_per_unit: number;
-  quantity: string;
-  total_amount: number;
-  url: string;
-  image_url: string;
-}
+type BillToInfo = FromInfo;
 
 export default function Home() {
   const router = useRouter();
