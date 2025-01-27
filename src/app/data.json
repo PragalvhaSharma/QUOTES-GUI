@@ -1,12 +1,12 @@
 {
   "quote": {
     "quoteInfo": {
-      "quoteNumber": "RWO6792",
-      "validUntil": "2025-01-25"
+      "quoteNumber": "XEX8714",
+      "validUntil": "2025-01-29"
     },
     "companyInfo": {
       "companyName": "Tech Solutions Inc.",
-      "contactName": "Akshay Mysore",
+      "contactName": "Akshay",
       "email": "john.smith@techsolutions.com",
       "phone": "+1 (555) 123-4567",
       "address": "123 Tech Street, Silicon Valley, CA 94025"
@@ -20,85 +20,125 @@
     },
     "items": [
       {
-        "name": "1 inch thick plywood",
-        "description": "Used as a strong surface for various projects.",
-        "price_per_unit": 26.79,
-        "quantity": "1 piece",
-        "total_amount": 26.79,
-        "url": "https://www.homedepot.com/p/1-in-x-12-in-x-29-in-Allwood-Birch-Project-Panel-Chopping-Block-Cutting-Board-EGP-1x12x29/313816267",
-        "image_url": "https://images.thdstatic.com/productImages/b76a8067-d080-41df-9044-6373fc809148/svn/natural-butcher-block-countertops-egp-1x12x29-64_300.jpg"
+        "name": "plywood 4x8 ft",
+        "description": "Used as a tabletop surface.",
+        "price_per_unit": 59.99,
+        "quantity": "1 sheet",
+        "total_amount": 59.99,
+        "url": "https://coppsbuildall.com/shop/4834BPG/plywood-birch-4-ft-x-8-ft-x-3-4-veneer-core-paint-grade-18mm/",
+        "image_url": ""
       },
       {
-        "name": "2x4 lumber",
-        "description": "Used for framing and structural support.",
-        "price_per_unit": 4.18,
+        "name": "hardwood 5x5 lumber",
+        "description": "Used for the legs of the table.",
+        "price_per_unit": 61.04,
         "quantity": "4 pieces",
-        "total_amount": 16.72,
-        "url": "https://www.homedepot.com/p/2-in-x-4-in-x-8-ft-2-Ground-Contact-Pressure-Treated-Southern-Yellow-Pine-Lumber-106147/206970948",
-        "image_url": "https://images.thdstatic.com/productImages/4f6b481e-d93a-42d2-835d-739c7b26a3f5/svn/brown-pressure-treated-lumber-106147-64_300.jpg"
+        "total_amount": 244.16,
+        "url": "https://www.homedepot.com/p/Barrette-Outdoor-Living-5-in-x-5-in-x-82-in-Aluminum-Post-Insert-73003718/203271071",
+        "image_url": ""
       },
       {
-        "name": "3 inch wood screws",
-        "description": "Used for fastening wood together.",
-        "price_per_unit": 29.97,
-        "quantity": "1 pack of 100",
-        "total_amount": 29.97,
-        "url": "https://www.homedepot.com/p/Grip-Rite-10-x-3-in-2-Phillips-Bugle-Head-Coarse-Thread-Sharp-Point-Coated-Exterior-Screws-5-lb-Box-PTN3S5/100200675",
-        "image_url": "https://images.thdstatic.com/productImages/553bf816-cbeb-44cc-8440-2ffee4505b7f/svn/grip-rite-deck-screws-ptn3s5-64_300.jpg"
+        "name": "hardwood 5x10 lumber",
+        "description": "Used for the apron of the table.",
+        "price_per_unit": 47.95,
+        "quantity": "4 pieces",
+        "total_amount": 191.8,
+        "url": "https://www.homedepot.com/p/Swaner-Hardwood-1-4-in-x-2-5-in-x-4-ft-Poplar-S4S-Hardwood-Hobby-Board-5-Pack-OL287985/310856813",
+        "image_url": "https://images.thdstatic.com/productImages/d0f20505-bef2-41af-a61b-5753e5aea526/svn/swaner-hardwood-hardwood-boards-ol287985-64_300.jpg"
+      },
+      {
+        "name": "#8 wood screws",
+        "description": "Used to assemble the tabletop and legs.",
+        "price_per_unit": 7.97,
+        "quantity": "1 pack",
+        "total_amount": 7.97,
+        "url": "https://www.homedepot.com/p/Everbilt-8-x-3-4-in-Phillips-Flat-Head-Zinc-Plated-Wood-Screw-100-Pack-822742/317479391",
+        "image_url": "https://images.thdstatic.com/productImages/c641c1f9-17b8-420a-8fcb-ebfae3a3d1e5/svn/everbilt-wood-screws-822742-64_300.jpg"
       },
       {
         "name": "wood glue",
-        "description": "Used for bonding wood pieces together.",
-        "price_per_unit": 4.97,
+        "description": "Used to bond the wood joints.",
+        "price_per_unit": 9.98,
         "quantity": "1 bottle",
-        "total_amount": 4.97,
-        "url": "https://www.homedepot.com/p/Gorilla-8-oz-Wood-Glue-Epoxy-62000/100672167",
-        "image_url": "https://images.thdstatic.com/productImages/b5089978-6c79-4958-954b-5ee04f50f4a8/svn/gorilla-wood-adhesive-62000-64_300.jpg"
+        "total_amount": 9.98,
+        "url": "https://www.homedepot.com/p/Titebond-III-16-oz-Ultimate-Wood-Glue-1414/100522343",
+        "image_url": "https://images.thdstatic.com/productImages/c67a9d8f-3f29-47fa-bfc1-7327270d47cb/svn/titebond-wood-adhesive-1414-64_300.jpg"
       },
       {
-        "name": "assorted sandpaper",
-        "description": "Used for smoothing surfaces, includes 80, 120, and 220 grit.",
-        "price_per_unit": 2.99,
+        "name": "120 grit sandpaper",
+        "description": "Used for smoothing surfaces before finishing.",
+        "price_per_unit": 1.19,
         "quantity": "1 pack",
-        "total_amount": 2.99,
-        "url": "https://coppsbuildall.com/shop/47765/sandpaper-general-purpose-assorted-grits-5-pkg/",
+        "total_amount": 1.19,
+        "url": "https://coppsbuildall.com/shop/00159/sandpaper-aluminum-oxide-120-grit-9-x-11-sheet/",
+        "image_url": ""
+      },
+      {
+        "name": "220 grit sandpaper",
+        "description": "Used for final sanding before finishing.",
+        "price_per_unit": 0.89,
+        "quantity": "1 pack",
+        "total_amount": 0.89,
+        "url": "https://coppsbuildall.com/shop/01511/sandpaper-garnet-220-grit-9-x-11-sheet/",
         "image_url": ""
       },
       {
         "name": "polyurethane finish",
-        "description": "Used to protect and finish wood surfaces.",
+        "description": "Used to protect and finish the tabletop.",
         "price_per_unit": 22.98,
-        "quantity": "1 can",
+        "quantity": "1 litre",
         "total_amount": 22.98,
-        "url": "https://www.homedepot.com/p/Varathane-1-qt-Clear-Satin-Water-Based-Interior-Polyurethane-200241H/100169146",
-        "image_url": "https://images.thdstatic.com/productImages/d285cbcf-71b2-4cb9-80f0-ad8e182104ee/svn/varathane-polyurethane-wood-finish-200241h-64_300.jpg"
+        "url": "https://www.homedepot.com/p/Varathane-1-qt-Clear-Gloss-Water-Based-Interior-Polyurethane-200041H/100193658",
+        "image_url": "https://images.thdstatic.com/productImages/c406494b-c537-43c9-9e43-cdda7d7950d7/svn/varathane-polyurethane-wood-finish-200041h-64_300.jpg"
       },
       {
-        "name": "wood stain",
-        "description": "Used for coloring and enhancing the appearance of wood.",
-        "price_per_unit": 47.98,
-        "quantity": "1 can",
-        "total_amount": 47.98,
-        "url": "https://www.homedepot.com/p/BEHR-PREMIUM-1-gal-ST-330-Redwood-Semi-Transparent-Waterproofing-Exterior-Wood-Stain-and-Sealer-533001/202263943",
-        "image_url": "https://images.thdstatic.com/productImages/9bfb7b64-6d70-4f9e-9fd1-9ba999835329/svn/redwood-behr-premium-exterior-wood-stains-533001-64_300.jpg"
+        "name": "felt pads",
+        "description": "Used to protect floors from scratches.",
+        "price_per_unit": 3.35,
+        "quantity": "8 pieces",
+        "total_amount": 26.8,
+        "url": "https://coppsbuildall.com/shop/9953/felt-gard-pads-heavy-duty-1-1-2-round-8-pkg/",
+        "image_url": ""
       },
       {
-        "name": "table leg mounting brackets",
-        "description": "Used to secure table legs to the underside of a tabletop.",
-        "price_per_unit": 3.96,
-        "quantity": "4 pieces",
-        "total_amount": 15.84,
-        "url": "https://www.homedepot.com/p/Waddell-Heavy-Duty-Top-Plate-5-5-in-x-3-in-16G-Steel-Mounting-Hardware-Furniture-Leg-Easy-Installation-2755/100390125",
-        "image_url": "https://images.thdstatic.com/productImages/8dcb0f68-109d-4a9c-b900-fea86694cc8c/svn/waddell-shelf-supports-2755-64_300.jpg"
+        "name": "wood filler",
+        "description": "Used to fill any gaps or holes in the wood.",
+        "price_per_unit": 17.98,
+        "quantity": "1 container",
+        "total_amount": 17.98,
+        "url": "https://www.homedepot.com/p/DAP-Plastic-Wood-X-with-DryDex-1-Quart-Natural-Paintable-All-Purpose-Wood-Filler-00543/206667347",
+        "image_url": "https://images.thdstatic.com/productImages/9afba656-c538-483e-98b3-acd3ecd123d7/svn/natural-dap-wood-floor-fillers-00543-64_300.jpg"
+      },
+      {
+        "name": "paintbrushes",
+        "description": "Used for applying wood glue and finishes.",
+        "price_per_unit": 1.47,
+        "quantity": "2 pieces",
+        "total_amount": 2.94,
+        "url": "https://www.homedepot.com/p/2-in-Flat-Chip-Brush-1500-2/100626098",
+        "image_url": "https://images.thdstatic.com/productImages/f7ba8ccd-63fe-48f8-82ed-1416cbd587c1/svn/paint-brushes-1500-2-64_300.jpg"
+      },
+      {
+        "name": "primer",
+        "description": "Used as an undercoat before painting.",
+        "price_per_unit": 23.98,
+        "quantity": "1 litre",
+        "total_amount": 23.98,
+        "url": "https://www.homedepot.com/p/KILZ-2-ALL-PURPOSE-1-Gal-White-Interior-Exterior-Multi-Surface-Primer-Sealer-and-Stain-Blocker-20941/100096395",
+        "image_url": "https://images.thdstatic.com/productImages/95ecb4e8-c743-415f-8cb8-e29edfb27dda/svn/white-kilz-2-primers-20941-64_300.jpg"
       }
     ],
     "financials": {
-      "subtotal": 168.23999999999998,
+      "subtotal": 610.66,
       "tax_rate": 0.13,
-      "tax_amount": 21.871199999999998,
-      "total": 190.11119999999997,
+      "tax_amount": 79.39,
+      "total": 781.65,
       "amount_paid": 0,
-      "balance_due": 190.11119999999997
+      "balance_due": 781.65,
+      "labor_hours": 0,
+      "labor_rate": 75,
+      "markup_percentage": 15,
+      "markup_amount": 91.6
     },
     "branding": {
       "primary_color": "0x000000",
@@ -111,6 +151,6 @@
       "routingNumber": "061120084"
     },
     "notes": "All lumber prices are subject to market fluctuations. Quote valid for 14 days. Delivery included within city limits. Special orders may require additional lead time. All materials are new and meet or exceed building code requirements.",
-    "generated_at": "2025-01-25T14:40:40.758696"
+    "generated_at": "2025-01-27T16:13:32.268097"
   }
 }

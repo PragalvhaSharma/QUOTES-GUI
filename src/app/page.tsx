@@ -223,7 +223,7 @@ export default function Home() {
         fromInfo: fromInfo,
         billToInfo: billToInfo
       };
-      const response = await fetch(`https://gifts-durable-six-johns.trycloudflare.com/generate-quote?data=${encodeURIComponent(JSON.stringify(payload))}`, {
+      const response = await fetch(`https://connectivity-bryant-raleigh-bad.trycloudflare.com/generate-quote?data=${encodeURIComponent(JSON.stringify(payload))}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
