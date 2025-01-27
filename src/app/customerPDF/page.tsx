@@ -262,15 +262,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontStyle: 'italic',
   },
-  laborMarkupSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
   laborSection: {
-    flex: 1,
-  },
-  markupSection: {
     flex: 1,
   },
 });
@@ -348,12 +340,27 @@ const QuotePDF = () => {
                 <Text style={[styles.tableCell, styles.colAmount]}>${item.total_amount.toFixed(2)}</Text>
               </View>
             ))}
+
+            {/* Labor and Other Expenses Row */}
+            {quote.financials.labor_hours && quote.financials.labor_rate && (
+              <View style={[styles.tableRow]}>
+                <View style={[styles.colItem]}>
+                  <Text style={styles.tableCellName}>Labour and Other Expenses</Text>
+                </View>
+                <Text style={[styles.tableCell, styles.colQty]}>-</Text>
+                <Text style={[styles.tableCell, styles.colRate]}>-</Text>
+                <Text style={[styles.tableCell, styles.colAmount]}>${(
+                  (quote.financials.labor_hours * quote.financials.labor_rate) * 
+                  (1 + (quote.financials.markup_percentage || 0) / 100)
+                ).toFixed(2)}</Text>
+              </View>
+            )}
           </View>
 
           {/* Totals */}
           <View style={styles.totalsSection}>
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Materials Subtotal</Text>
+              <Text style={styles.totalLabel}>Subtotal</Text>
               <Text style={styles.totalValue}>${quote.financials.subtotal.toFixed(2)}</Text>
             </View>
             <View style={styles.totalRow}>
@@ -365,31 +372,6 @@ const QuotePDF = () => {
               <Text style={styles.totalFinal}>${quote.financials.total.toFixed(2)}</Text>
             </View>
           </View>
-
-          {/* Labor and Markup Section */}
-          {(quote.financials.labor_hours || quote.financials.markup_amount) && (
-            <View style={styles.laborMarkupSection}>
-              {quote.financials.labor_hours && quote.financials.labor_rate && (
-                <View style={styles.laborSection}>
-                  <Text style={styles.sectionTitle}>Labor</Text>
-                  <Text style={styles.infoText}>
-                    Hours: {quote.financials.labor_hours} @ ${quote.financials.labor_rate}/hr
-                  </Text>
-                  <Text style={styles.infoText}>
-                    Total: ${(quote.financials.labor_hours * quote.financials.labor_rate).toFixed(2)}
-                  </Text>
-                </View>
-              )}
-              {quote.financials.markup_amount && quote.financials.markup_percentage && (
-                <View style={styles.markupSection}>
-                  <Text style={styles.sectionTitle}>Markup</Text>
-                  <Text style={styles.infoText}>
-                    {quote.financials.markup_percentage}% = ${quote.financials.markup_amount.toFixed(2)}
-                  </Text>
-                </View>
-              )}
-            </View>
-          )}
 
           {/* Footer */}
           <View style={styles.footer}>

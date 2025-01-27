@@ -276,16 +276,19 @@ export default function QuotePage() {
     return (rateNum * quantityNum).toFixed(2);
   };
 
+  const calculateLaborCost = () => {
+    const baseLabor = parseFloat(laborHours) * parseFloat(laborRate);
+    const withMarkup = baseLabor * (1 + parseFloat(markupPercentage) / 100);
+    return withMarkup.toFixed(2);
+  };
+
   const calculateSubtotal = () => {
     const itemsTotal = items.reduce((sum, item) => {
       const rate = parseFloat(item.rate) || 0;
       const quantity = parseFloat(item.quantity) || 0;
       return sum + (rate * quantity);
     }, 0);
-    const laborHoursNum = parseFloat(laborHours) || 0;
-    const laborRateNum = parseFloat(laborRate) || 0;
-    const laborTotal = laborHoursNum * laborRateNum;
-    return (itemsTotal + laborTotal).toFixed(2);
+    return (itemsTotal + parseFloat(calculateLaborCost())).toFixed(2);
   };
 
   const calculateTax = () => {
@@ -293,20 +296,10 @@ export default function QuotePage() {
     return (subtotal * 0.13).toFixed(2);
   };
 
-  const calculateMarkup = () => {
-    const subtotal = parseFloat(calculateSubtotal());
-    return ((subtotal * parseFloat(markupPercentage) / 100).toFixed(2));
-  };
-
   const calculateTotal = () => {
     const subtotal = parseFloat(calculateSubtotal());
     const tax = parseFloat(calculateTax());
-    const markup = parseFloat(calculateMarkup());
-    return (subtotal + tax + markup).toFixed(2);
-  };
-
-  const calculateLaborCost = () => {
-    return (parseFloat(laborHours) * parseFloat(laborRate)).toFixed(2);
+    return (subtotal + tax).toFixed(2);
   };
 
   const handleDelete = (id: number) => {
@@ -464,7 +457,7 @@ export default function QuotePage() {
         labor_hours: parseFloat(laborHours),
         labor_rate: parseFloat(laborRate),
         markup_percentage: parseFloat(markupPercentage),
-        markup_amount: parseFloat(calculateMarkup())
+        markup_amount: parseFloat(calculateLaborCost())
       } as Financials;
     } else {
       updatedQuoteData.quote.financials = {
@@ -476,7 +469,7 @@ export default function QuotePage() {
         labor_hours: parseFloat(laborHours),
         labor_rate: parseFloat(laborRate),
         markup_percentage: parseFloat(markupPercentage),
-        markup_amount: parseFloat(calculateMarkup())
+        markup_amount: parseFloat(calculateLaborCost())
       } as Financials;
     }
 
@@ -685,13 +678,13 @@ export default function QuotePage() {
             </table>
           </div>
 
-          {/* Labor Hours Section */}
+          {/* Labor Section */}
           <div className="mt-8 bg-gray-50 p-6 rounded-lg border border-gray-100">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <span className="h-5 w-1 bg-blue-500 rounded-full"></span>
-              Labor Hours
+              <span className="h-5 w-1 bg-green-500 rounded-full"></span>
+              Labour and Other Expenses
             </h3>
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-4 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-2">Hours</label>
                 <input
@@ -709,7 +702,7 @@ export default function QuotePage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-2">Hourly Rate</label>
+                <label className="block text-sm font-medium text-gray-600 mb-2">Labour Rate</label>
                 <input
                   type="text"
                   ref={laborRateRef}
@@ -724,22 +717,6 @@ export default function QuotePage() {
                   className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all hover:border-gray-300"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-600 mb-2">Total Labor Cost</label>
-                <div className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900">
-                  ${calculateLaborCost()}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Markup Section */}
-          <div className="mt-8 bg-gray-50 p-6 rounded-lg border border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <span className="h-5 w-1 bg-blue-500 rounded-full"></span>
-              Markup
-            </h3>
-            <div className="grid grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-2">Markup Percentage</label>
                 <input
@@ -757,9 +734,9 @@ export default function QuotePage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-2">Markup Amount</label>
+                <label className="block text-sm font-medium text-gray-600 mb-2">Total Amount</label>
                 <div className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900">
-                  ${calculateMarkup()}
+                  ${calculateLaborCost()}
                 </div>
               </div>
             </div>
@@ -786,10 +763,6 @@ export default function QuotePage() {
                 <div className="flex justify-between gap-8">
                   <span className="text-gray-600">Tax (13%):</span>
                   <span className="font-semibold text-gray-900">${calculateTax()}</span>
-                </div>
-                <div className="flex justify-between gap-8">
-                  <span className="text-gray-600">Markup ({markupPercentage}%):</span>
-                  <span className="font-semibold text-gray-900">${calculateMarkup()}</span>
                 </div>
                 <div className="pt-2 border-t border-gray-200">
                   <div className="flex justify-between gap-8">
