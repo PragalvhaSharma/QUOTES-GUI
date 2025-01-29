@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderWidth: 1,
     borderColor: '#e2e8f0',
-    marginBottom: 40,
+    marginBottom: 100,
   },
   totalRow: {
     flexDirection: 'row',
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 30,
     left: 30,
     right: 30,
   },
@@ -282,6 +282,32 @@ const styles = StyleSheet.create({
   },
   laborSection: {
     flex: 1,
+  },
+  signatureSection: {
+    position: 'absolute',
+    bottom: 80,
+    left: 30,
+    right: 30,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#e2e8f0',
+  },
+  signatureLine: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#94a3b8',
+    width: 200,
+    marginBottom: 4,
+  },
+  signatureLabel: {
+    fontSize: 8,
+    color: '#64748b',
+    marginTop: 4,
+    textAlign: 'center',
+  },
+  signatureBlock: {
+    alignItems: 'center',
   },
 });
 
@@ -432,6 +458,14 @@ const QuotePDF = () => {
               <Text style={styles.totalFinal}>
                 {isNaN(Number(quoteData.quote.financials?.total)) ? '$-' : `$${Number(quoteData.quote.financials?.total).toFixed(2)}`}
               </Text>
+            </View>
+          </View>
+
+          {/* Signature Section */}
+          <View style={styles.signatureSection}>
+            <View style={styles.signatureBlock}>
+              <View style={styles.signatureLine} />
+              <Text style={styles.signatureLabel}>Customer Signature</Text>
             </View>
           </View>
 
