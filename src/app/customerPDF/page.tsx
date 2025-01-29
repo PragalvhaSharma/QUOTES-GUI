@@ -22,6 +22,24 @@ interface QuoteData {
       email: string;
       phone: string;
       address: string;
+      quoteInfo: {
+        quoteNumber: string;
+        validUntil: string;
+      };
+      companyInfo: {
+        companyName: string;
+        contactName: string;
+        email: string;
+        phone: string;
+        address: string;
+      };
+      clientInfo: {
+        companyName: string;
+        contactName: string;
+        email: string;
+        phone: string;
+        address: string;
+      };
     };
     items: QuoteItem[];
     financials: {
@@ -320,10 +338,10 @@ const QuotePDF = () => {
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              <Text style={styles.companyName}>{quoteData.quote.companyInfo?.companyName || 'Company Name'}</Text>
-              <Text style={styles.companyDetails}>{quoteData.quote.companyInfo?.address || ''}</Text>
-              <Text style={styles.companyDetails}>{quoteData.quote.companyInfo?.email || ''}</Text>
-              <Text style={styles.companyDetails}>{quoteData.quote.companyInfo?.phone || ''}</Text>
+              <Text style={styles.companyName}>{quoteData.quote.clientInfo?.companyInfo?.companyName || 'Company Name'}</Text>
+              <Text style={styles.companyDetails}>{quoteData.quote.clientInfo?.companyInfo?.address || ''}</Text>
+              <Text style={styles.companyDetails}>{quoteData.quote.clientInfo?.companyInfo?.email || ''}</Text>
+              <Text style={styles.companyDetails}>{quoteData.quote.clientInfo?.companyInfo?.phone || ''}</Text>
             </View>
             <View style={styles.headerRight}>
               <Text style={styles.quoteNumber}>#{quoteData.quote.quoteInfo?.quoteNumber || 'N/A'}</Text>
@@ -339,18 +357,21 @@ const QuotePDF = () => {
               <View style={styles.infoColumn}>
                 <View style={styles.infoSection}>
                   <Text style={styles.sectionTitle}>Bill To</Text>
-                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.companyName || 'N/A'}</Text>
-                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.contactName || ''}</Text>
-                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.address || ''}</Text>
-                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.email || ''}</Text>
-                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.phone || ''}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.clientInfo?.companyName || 'N/A'}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.clientInfo?.contactName || ''}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.clientInfo?.address || ''}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.clientInfo?.email || ''}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.clientInfo?.phone || ''}</Text>
                 </View>
               </View>
               <View style={styles.infoColumn}>
                 <View style={styles.infoSection}>
-                  <Text style={styles.sectionTitle}>Quote Details</Text>
-                  <Text style={styles.infoText}>Quote Number: {quoteData.quote.quoteInfo?.quoteNumber || 'N/A'}</Text>
-                  <Text style={styles.infoText}>Valid Until: {quoteData.quote.quoteInfo?.validUntil || 'N/A'}</Text>
+                  <Text style={styles.sectionTitle}>From</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.companyInfo?.companyName || 'N/A'}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.companyInfo?.contactName || ''}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.companyInfo?.address || ''}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.companyInfo?.email || ''}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.companyInfo?.phone || ''}</Text>
                 </View>
               </View>
             </View>
@@ -370,22 +391,18 @@ const QuotePDF = () => {
                 index % 2 === 1 ? styles.tableRowAlt : {}
               ]}>
                 <View style={styles.colItem}>
-                  <Text style={styles.tableCellName}>{item.name}</Text>
-                  <Text style={styles.tableCellDescription}>{item.description}</Text>
+                  <Text style={styles.tableCellName}>{item.name || '-'}</Text>
+                  <Text style={styles.tableCellDescription}>{item.description || '-'}</Text>
                 </View>
-                <View style={styles.colQty}><Text style={styles.tableCell}>{item.quantity}</Text></View>
+                <View style={styles.colQty}><Text style={styles.tableCell}>{item.quantity || '-'}</Text></View>
                 <View style={styles.colRate}>
                   <Text style={styles.tableCell}>
-                    ${typeof item.price_per_unit === 'number' 
-                      ? item.price_per_unit.toFixed(2) 
-                      : Number(item.price_per_unit).toFixed(2)}
+                    {isNaN(Number(item.price_per_unit)) ? '$-' : `$${Number(item.price_per_unit).toFixed(2)}`}
                   </Text>
                 </View>
                 <View style={styles.colAmount}>
                   <Text style={styles.tableCell}>
-                    ${typeof item.total_amount === 'number' 
-                      ? item.total_amount.toFixed(2) 
-                      : Number(item.total_amount).toFixed(2)}
+                    {isNaN(Number(item.total_amount)) ? '$-' : `$${Number(item.total_amount).toFixed(2)}`}
                   </Text>
                 </View>
               </View>
@@ -396,21 +413,25 @@ const QuotePDF = () => {
           <View style={styles.totalsSection}>
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Subtotal</Text>
-              <Text style={styles.totalValue}>${quoteData.quote.financials?.subtotal?.toFixed(2) || '-'}</Text>
+              <Text style={styles.totalValue}>
+                {isNaN(Number(quoteData.quote.financials?.subtotal)) ? '$-' : `$${Number(quoteData.quote.financials?.subtotal).toFixed(2)}`}
+              </Text>
             </View>
-            {quoteData.quote.financials?.labor_hours && (
-              <View style={styles.totalRow}>
-                <Text style={styles.totalLabel}>Labor ({quoteData.quote.financials.labor_hours} hrs @ $-)</Text>
-                <Text style={styles.totalValue}>${(quoteData.quote.financials.labor_hours * (quoteData.quote.financials.labor_rate || 0)) || '-'}</Text>
-              </View>
-            )}
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Tax ({(quoteData.quote.financials?.tax_rate * 100)?.toFixed(0) || 0}%)</Text>
-              <Text style={styles.totalValue}>${quoteData.quote.financials?.tax_amount?.toFixed(2) || '-'}</Text>
+              <Text style={styles.totalLabel}>Labor and Other Expenses</Text>
+              <Text style={styles.totalValue}>$-</Text>
+            </View>
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>Tax ({isNaN(Number(quoteData.quote.financials?.tax_rate)) ? '0' : (Number(quoteData.quote.financials?.tax_rate) * 100).toFixed(0)}%)</Text>
+              <Text style={styles.totalValue}>
+                {isNaN(Number(quoteData.quote.financials?.tax_amount)) ? '$-' : `$${Number(quoteData.quote.financials?.tax_amount).toFixed(2)}`}
+              </Text>
             </View>
             <View style={[styles.totalRow, styles.totalRowFinal]}>
               <Text style={styles.totalLabel}>Total</Text>
-              <Text style={styles.totalFinal}>${quoteData.quote.financials?.total?.toFixed(2) || '-'}</Text>
+              <Text style={styles.totalFinal}>
+                {isNaN(Number(quoteData.quote.financials?.total)) ? '$-' : `$${Number(quoteData.quote.financials?.total).toFixed(2)}`}
+              </Text>
             </View>
           </View>
 
