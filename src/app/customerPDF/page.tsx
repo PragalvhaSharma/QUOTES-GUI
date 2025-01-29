@@ -1,7 +1,7 @@
 'use client';
 
-import { Document, Page, Text, View, StyleSheet, PDFViewer, Image } from '@react-pdf/renderer';
-import quoteData from '../data.json';
+import { Document, Page, Text, View, StyleSheet, PDFViewer } from '@react-pdf/renderer';
+import { useState, useEffect } from 'react';
 
 interface QuoteData {
   quote: {
@@ -268,8 +268,50 @@ const styles = StyleSheet.create({
 });
 
 const QuotePDF = () => {
-  const typedQuoteData = quoteData as unknown as QuoteData;
-  const { quote } = typedQuoteData;
+  const [quoteData, setQuoteData] = useState<QuoteData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/getQuote');
+        if (!response.ok) {
+          throw new Error('Failed to fetch quote data');
+        }
+        const data = await response.json();
+        
+        // Handle both nested and flat data structures
+        const formattedData = data.quote ? data : { quote: data };
+        setQuoteData(formattedData);
+      } catch (err) {
+        console.error('Error loading quote data:', err);
+        setError('Failed to load quote data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  if (error || !quoteData) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="bg-red-50 text-red-700 p-4 rounded-lg">
+          {error || 'No quote data available'}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <PDFViewer style={{ width: '100%', height: '100vh' }}>
@@ -278,109 +320,104 @@ const QuotePDF = () => {
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              <Text style={styles.companyName}>{quote.companyInfo.companyName}</Text>
-              <Text style={styles.companyDetails}>{quote.companyInfo.address}</Text>
-              <Text style={styles.companyDetails}>Tel: {quote.companyInfo.phone}</Text>
-              <Text style={styles.companyDetails}>{quote.companyInfo.email}</Text>
-              <Text style={styles.companyDetails}>Contact: {quote.companyInfo.contactName}</Text>
+              <Text style={styles.companyName}>{quoteData.quote.companyInfo?.companyName || 'Company Name'}</Text>
+              <Text style={styles.companyDetails}>{quoteData.quote.companyInfo?.address || ''}</Text>
+              <Text style={styles.companyDetails}>{quoteData.quote.companyInfo?.email || ''}</Text>
+              <Text style={styles.companyDetails}>{quoteData.quote.companyInfo?.phone || ''}</Text>
             </View>
             <View style={styles.headerRight}>
-              {/* eslint-disable-next-line jsx-a11y/alt-text */}
-              <Image style={styles.logo} src="/Blanc.png" />
+              <Text style={styles.quoteNumber}>#{quoteData.quote.quoteInfo?.quoteNumber || 'N/A'}</Text>
             </View>
           </View>
 
-          {/* Quote Header */}
+          {/* Quote Info */}
           <View style={styles.quoteContainer}>
             <View style={styles.quoteHeader}>
-              <Text style={styles.quoteTitle}>Estimate</Text>
-              <Text style={styles.quoteNumber}>#{quote.quoteInfo.quoteNumber}</Text>
+              <Text style={styles.quoteTitle}>Quote</Text>
             </View>
             <View style={styles.infoGrid}>
               <View style={styles.infoColumn}>
                 <View style={styles.infoSection}>
                   <Text style={styles.sectionTitle}>Bill To</Text>
-                  <Text style={styles.infoText}>{quote.clientInfo.companyName}</Text>
-                  <Text style={styles.infoText}>{quote.clientInfo.contactName}</Text>
-                  <Text style={styles.infoText}>{quote.clientInfo.email}</Text>
-                  <Text style={styles.infoText}>{quote.clientInfo.phone}</Text>
-                  <Text style={styles.infoText}>{quote.clientInfo.address}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.companyName || 'N/A'}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.contactName || ''}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.address || ''}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.email || ''}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.phone || ''}</Text>
                 </View>
               </View>
               <View style={styles.infoColumn}>
                 <View style={styles.infoSection}>
                   <Text style={styles.sectionTitle}>Quote Details</Text>
-                  <Text style={styles.infoText}>Generated: {quote.generated_at}</Text>
-                  <Text style={styles.infoText}>Valid Until: {quote.quoteInfo.validUntil}</Text>
+                  <Text style={styles.infoText}>Quote Number: {quoteData.quote.quoteInfo?.quoteNumber || 'N/A'}</Text>
+                  <Text style={styles.infoText}>Valid Until: {quoteData.quote.quoteInfo?.validUntil || 'N/A'}</Text>
                 </View>
               </View>
             </View>
           </View>
 
-          {/* Table */}
+          {/* Items Table */}
           <View style={styles.table}>
             <View style={styles.tableHeader}>
-              <Text style={[styles.tableHeaderText, styles.colItem]}>Item</Text>
-              <Text style={[styles.tableHeaderText, styles.colQty]}>Quantity</Text>
-              <Text style={[styles.tableHeaderText, styles.colRate]}>Rate</Text>
-              <Text style={[styles.tableHeaderText, styles.colAmount]}>Amount</Text>
+              <View style={styles.colItem}><Text style={styles.tableHeaderText}>Item</Text></View>
+              <View style={styles.colQty}><Text style={styles.tableHeaderText}>Quantity</Text></View>
+              <View style={styles.colRate}><Text style={styles.tableHeaderText}>Rate</Text></View>
+              <View style={styles.colAmount}><Text style={styles.tableHeaderText}>Amount</Text></View>
             </View>
-            
-            {quote.items.map((item, index) => (
+            {quoteData.quote.items?.map((item, index) => (
               <View key={index} style={[
                 styles.tableRow,
                 index % 2 === 1 ? styles.tableRowAlt : {}
               ]}>
-                <View style={[styles.colItem]}>
+                <View style={styles.colItem}>
                   <Text style={styles.tableCellName}>{item.name}</Text>
                   <Text style={styles.tableCellDescription}>{item.description}</Text>
                 </View>
-                <Text style={[styles.tableCell, styles.colQty]}>{item.quantity}</Text>
-                <Text style={[styles.tableCell, styles.colRate]}>${item.price_per_unit.toFixed(2)}</Text>
-                <Text style={[styles.tableCell, styles.colAmount]}>${item.total_amount.toFixed(2)}</Text>
+                <View style={styles.colQty}><Text style={styles.tableCell}>{item.quantity}</Text></View>
+                <View style={styles.colRate}>
+                  <Text style={styles.tableCell}>
+                    ${typeof item.price_per_unit === 'number' 
+                      ? item.price_per_unit.toFixed(2) 
+                      : Number(item.price_per_unit).toFixed(2)}
+                  </Text>
+                </View>
+                <View style={styles.colAmount}>
+                  <Text style={styles.tableCell}>
+                    ${typeof item.total_amount === 'number' 
+                      ? item.total_amount.toFixed(2) 
+                      : Number(item.total_amount).toFixed(2)}
+                  </Text>
+                </View>
               </View>
             ))}
-
-            {/* Labor and Other Expenses Row */}
-            {quote.financials.labor_hours && quote.financials.labor_rate && (
-              <View style={[styles.tableRow]}>
-                <View style={[styles.colItem]}>
-                  <Text style={styles.tableCellName}>Labour and Other Expenses</Text>
-                </View>
-                <Text style={[styles.tableCell, styles.colQty]}>-</Text>
-                <Text style={[styles.tableCell, styles.colRate]}>-</Text>
-                <Text style={[styles.tableCell, styles.colAmount]}>${(
-                  (quote.financials.labor_hours * quote.financials.labor_rate) * 
-                  (1 + (quote.financials.markup_percentage || 0) / 100)
-                ).toFixed(2)}</Text>
-              </View>
-            )}
           </View>
 
           {/* Totals */}
           <View style={styles.totalsSection}>
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Subtotal</Text>
-              <Text style={styles.totalValue}>${quote.financials.subtotal.toFixed(2)}</Text>
+              <Text style={styles.totalValue}>${quoteData.quote.financials?.subtotal?.toFixed(2) || '-'}</Text>
             </View>
+            {quoteData.quote.financials?.labor_hours && (
+              <View style={styles.totalRow}>
+                <Text style={styles.totalLabel}>Labor ({quoteData.quote.financials.labor_hours} hrs @ $-)</Text>
+                <Text style={styles.totalValue}>${(quoteData.quote.financials.labor_hours * (quoteData.quote.financials.labor_rate || 0)) || '-'}</Text>
+              </View>
+            )}
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Tax ({(quote.financials.tax_rate * 100).toFixed()}%)</Text>
-              <Text style={styles.totalValue}>${quote.financials.tax_amount.toFixed(2)}</Text>
+              <Text style={styles.totalLabel}>Tax ({(quoteData.quote.financials?.tax_rate * 100)?.toFixed(0) || 0}%)</Text>
+              <Text style={styles.totalValue}>${quoteData.quote.financials?.tax_amount?.toFixed(2) || '-'}</Text>
             </View>
             <View style={[styles.totalRow, styles.totalRowFinal]}>
               <Text style={styles.totalLabel}>Total</Text>
-              <Text style={styles.totalFinal}>${quote.financials.total.toFixed(2)}</Text>
+              <Text style={styles.totalFinal}>${quoteData.quote.financials?.total?.toFixed(2) || '-'}</Text>
             </View>
           </View>
 
           {/* Footer */}
           <View style={styles.footer}>
             <View style={styles.footerContent}>
-              <View style={styles.footerRow}>
-                <Text style={styles.footerText}>Accepted By: _______________________</Text>
-                <Text style={styles.footerText}>Date: _______________________</Text>
-              </View>
-              <Text style={styles.footerNote}>Thank you for your business</Text>
+              <Text style={styles.companyDetails}>{quoteData.quote.notes || ''}</Text>
             </View>
           </View>
         </Page>

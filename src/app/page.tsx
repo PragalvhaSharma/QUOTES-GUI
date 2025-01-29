@@ -169,7 +169,7 @@ export default function Home() {
         fromInfo: fromInfo,
         billToInfo: billToInfo
       };
-      const response = await fetch(`https://quotes-101.onrender.com/generate-quote?data=${encodeURIComponent(JSON.stringify(payload))}`, {
+      const response = await fetch(`http://127.0.0.1:8000/generate-quote?data=${encodeURIComponent(JSON.stringify(payload))}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -197,8 +197,8 @@ export default function Home() {
         throw new Error('Invalid response format from API');
       }
 
-      // Update data.json file with the new quote data
-      const updateResponse = await fetch('/api/updateQuote', {
+      // Save the quote data to MongoDB
+      const saveResponse = await fetch('/api/getQuote', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -206,9 +206,9 @@ export default function Home() {
         body: JSON.stringify(data),
       });
 
-      if (!updateResponse.ok) {
-        const errorData = await updateResponse.json();
-        throw new Error(errorData.error || 'Failed to update quote data');
+      if (!saveResponse.ok) {
+        const errorData = await saveResponse.json();
+        throw new Error(errorData.error || 'Failed to save quote data');
       }
 
       // Only navigate if all operations succeeded

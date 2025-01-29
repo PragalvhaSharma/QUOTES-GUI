@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import quoteData from '../data.json';
 
 interface QuoteData {
   quote: {
@@ -24,6 +23,24 @@ interface QuoteData {
       email: string;
       phone: string;
       address: string;
+      quoteInfo: {
+        validUntil: string;
+        quoteNumber: string;
+      };
+      companyInfo: {
+        companyName: string;
+        contactName: string;
+        email: string;
+        phone: string;
+        address: string;
+      };
+      clientInfo: {
+        companyName: string;
+        contactName: string;
+        email: string;
+        phone: string;
+        address: string;
+      };
     };
     items: QuoteItem[];
     financials: Financials;
@@ -45,7 +62,7 @@ interface QuoteData {
 interface QuoteItem {
   name: string;
   description: string;
-  price_per_unit: number;
+  price_per_unit: number | string;
   quantity: string;
   total_amount: number;
   url: string;
@@ -82,6 +99,7 @@ export default function QuotePage() {
   // Add loading and error states
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [quoteData, setQuoteData] = useState<QuoteData | null>(null);
   
   // Add state for focused inputs and deleted items
   const [focusedInput, setFocusedInput] = useState<{ id: number, type: 'rate' | 'quantity' } | null>(null);
@@ -119,8 +137,9 @@ export default function QuotePage() {
   const [markupPercentage, setMarkupPercentage] = useState<string>('15'); // Default 15% markup
   const [isEditingMarkup, setIsEditingMarkup] = useState(false);
   
-  // Cast quoteData to QuoteData type
-  const typedQuoteData = quoteData as unknown as QuoteData;
+  // Add loading state at the top with other state declarations
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // Load data when component mounts
   useEffect(() => {
@@ -133,25 +152,31 @@ export default function QuotePage() {
         }
         const data = await response.json();
         
+        // Handle both nested and flat data structures
+        const quoteData = data.quote ? data : { quote: data };
+        setQuoteData(quoteData);
+        
         // Set items from fetched data
-        setItems(
-          data.quote.items.map((item: QuoteItem, index: number) => ({
-            id: index + 1, // Generate an id for internal use
-            description: item.name,
-            details: item.description,
-            rate: (item.price_per_unit || 0).toString(),
-            quantity: item.quantity || '0',
-            tempQuantity: item.quantity || '0',
-            url: item.url,
-            image_url: item.image_url,
-          }))
-        );
+        if (quoteData.quote?.items) {
+          setItems(
+            quoteData.quote.items.map((item: QuoteItem, index: number) => ({
+              id: index + 1,
+              description: item.name || '',
+              details: item.description || '',
+              rate: (item.price_per_unit || 0).toString(),
+              quantity: item.quantity || '0',
+              tempQuantity: item.quantity || '0',
+              url: item.url || '',
+              image_url: item.image_url || '',
+            }))
+          );
 
-        // Set labor and markup data if available
-        if (data.quote.financials) {
-          setLaborHours((data.quote.financials.labor_hours || 0).toString());
-          setLaborRate((data.quote.financials.labor_rate || 75).toString());
-          setMarkupPercentage((data.quote.financials.markup_percentage || 15).toString());
+          // Set labor and markup data if available
+          if (quoteData.quote.financials) {
+            setLaborHours((quoteData.quote.financials.labor_hours || 0).toString());
+            setLaborRate((quoteData.quote.financials.labor_rate || 75).toString());
+            setMarkupPercentage((quoteData.quote.financials.markup_percentage || 15).toString());
+          }
         }
 
         setIsLoading(false);
@@ -232,54 +257,337 @@ export default function QuotePage() {
     // Only allow numbers and one decimal point
     if (!/^\d*\.?\d*$/.test(value) && value !== '') return;
     
-    setItems(items.map(item => {
+    const newItems = items.map(item => {
       if (item.id === id) {
         return { ...item, rate: value };
       }
       return item;
+    });
+    setItems(newItems);
+
+    // Update database
+    setIsSaving(true);
+    setSaveError(null);
+    const updatedQuoteData = { ...quoteData } as QuoteData;
+    if (!updatedQuoteData.quote) {
+      updatedQuoteData.quote = {
+        quoteInfo: {
+          quoteNumber: 'QT-' + new Date().getTime(),
+          validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        },
+        items: [],
+        financials: {
+          subtotal: 0,
+          tax_rate: 0.13,
+          tax_amount: 0,
+          total: 0,
+          amount_paid: 0,
+          balance_due: 0,
+          labor_hours: parseFloat(laborHours),
+          labor_rate: parseFloat(laborRate),
+          markup_percentage: parseFloat(markupPercentage)
+        }
+      };
+    }
+
+    updatedQuoteData.quote.items = newItems.map(item => ({
+      name: item.description,
+      description: item.details,
+      price_per_unit: parseFloat(item.rate),
+      quantity: item.quantity,
+      total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
+      url: item.url,
+      image_url: item.image_url
     }));
+
+    fetch('/api/getQuote', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedQuoteData),
+    })
+      .then(handleFetchResponse)
+      .catch((error) => {
+        console.error('Error saving changes:', error);
+        setSaveError(error.message);
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
   };
 
   const handleQuantityChange = (id: number, value: string) => {
     // Only allow numbers and one decimal point
     if (!/^\d*\.?\d*$/.test(value) && value !== '') return;
     
-    setItems(items.map(item => {
+    const newItems = items.map(item => {
       if (item.id === id) {
         return { ...item, quantity: value };
       }
       return item;
+    });
+    setItems(newItems);
+
+    // Update database
+    setIsSaving(true);
+    setSaveError(null);
+    const updatedQuoteData = { ...quoteData } as QuoteData;
+    if (!updatedQuoteData.quote) {
+      updatedQuoteData.quote = {
+        quoteInfo: {
+          quoteNumber: 'QT-' + new Date().getTime(),
+          validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        },
+        items: [],
+        financials: {
+          subtotal: 0,
+          tax_rate: 0.13,
+          tax_amount: 0,
+          total: 0,
+          amount_paid: 0,
+          balance_due: 0,
+          labor_hours: parseFloat(laborHours),
+          labor_rate: parseFloat(laborRate),
+          markup_percentage: parseFloat(markupPercentage)
+        }
+      };
+    }
+
+    updatedQuoteData.quote.items = newItems.map(item => ({
+      name: item.description,
+      description: item.details,
+      price_per_unit: parseFloat(item.rate),
+      quantity: item.quantity,
+      total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
+      url: item.url,
+      image_url: item.image_url
     }));
+
+    fetch('/api/getQuote', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedQuoteData),
+    })
+      .then(handleFetchResponse)
+      .catch((error) => {
+        console.error('Error saving changes:', error);
+        setSaveError(error.message);
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
   };
 
   const handleLaborHoursChange = (value: string) => {
     // Only allow numbers and one decimal point
     if (!/^\d*\.?\d*$/.test(value) && value !== '') return;
     setLaborHours(value);
+
+    // Update database
+    setIsSaving(true);
+    setSaveError(null);
+    const updatedQuoteData = { ...quoteData } as QuoteData;
+    if (!updatedQuoteData.quote) {
+      updatedQuoteData.quote = {
+        quoteInfo: {
+          quoteNumber: 'QT-' + new Date().getTime(),
+          validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        },
+        items: items.map(item => ({
+          name: item.description,
+          description: item.details,
+          price_per_unit: parseFloat(item.rate),
+          quantity: item.quantity,
+          total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
+          url: item.url,
+          image_url: item.image_url
+        })),
+        financials: {
+          subtotal: parseFloat(calculateSubtotal()),
+          tax_rate: 0.13,
+          tax_amount: parseFloat(calculateTax()),
+          total: parseFloat(calculateTotal()),
+          amount_paid: 0,
+          balance_due: parseFloat(calculateTotal()),
+          labor_hours: parseFloat(value),
+          labor_rate: parseFloat(laborRate),
+          markup_percentage: parseFloat(markupPercentage)
+        }
+      };
+    } else {
+      if (!updatedQuoteData.quote.financials) {
+        updatedQuoteData.quote.financials = {} as any;
+      }
+      updatedQuoteData.quote.financials.labor_hours = parseFloat(value);
+    }
+
+    fetch('/api/getQuote', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedQuoteData),
+    })
+      .then(handleFetchResponse)
+      .catch((error) => {
+        console.error('Error saving changes:', error);
+        setSaveError(error.message);
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
   };
 
   const handleLaborRateChange = (value: string) => {
     // Only allow numbers and one decimal point
     if (!/^\d*\.?\d*$/.test(value) && value !== '') return;
     setLaborRate(value);
+
+    // Update database
+    setIsSaving(true);
+    setSaveError(null);
+    const updatedQuoteData = { ...quoteData } as QuoteData;
+    if (!updatedQuoteData.quote) {
+      updatedQuoteData.quote = {
+        quoteInfo: {
+          quoteNumber: 'QT-' + new Date().getTime(),
+          validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        },
+        items: items.map(item => ({
+          name: item.description,
+          description: item.details,
+          price_per_unit: parseFloat(item.rate),
+          quantity: item.quantity,
+          total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
+          url: item.url,
+          image_url: item.image_url
+        })),
+        financials: {
+          subtotal: parseFloat(calculateSubtotal()),
+          tax_rate: 0.13,
+          tax_amount: parseFloat(calculateTax()),
+          total: parseFloat(calculateTotal()),
+          amount_paid: 0,
+          balance_due: parseFloat(calculateTotal()),
+          labor_hours: parseFloat(laborHours),
+          labor_rate: parseFloat(value),
+          markup_percentage: parseFloat(markupPercentage)
+        }
+      };
+    } else {
+      if (!updatedQuoteData.quote.financials) {
+        updatedQuoteData.quote.financials = {} as any;
+      }
+      updatedQuoteData.quote.financials.labor_rate = parseFloat(value);
+    }
+
+    fetch('/api/getQuote', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedQuoteData),
+    })
+      .then(handleFetchResponse)
+      .catch((error) => {
+        console.error('Error saving changes:', error);
+        setSaveError(error.message);
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
   };
 
   const handleMarkupChange = (value: string) => {
     // Only allow numbers and one decimal point
     if (!/^\d*\.?\d*$/.test(value) && value !== '') return;
     setMarkupPercentage(value);
+
+    // Update database
+    setIsSaving(true);
+    setSaveError(null);
+    const updatedQuoteData = { ...quoteData } as QuoteData;
+    if (!updatedQuoteData.quote) {
+      updatedQuoteData.quote = {
+        quoteInfo: {
+          quoteNumber: 'QT-' + new Date().getTime(),
+          validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        },
+        items: items.map(item => ({
+          name: item.description,
+          description: item.details,
+          price_per_unit: parseFloat(item.rate),
+          quantity: item.quantity,
+          total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
+          url: item.url,
+          image_url: item.image_url
+        })),
+        financials: {
+          subtotal: parseFloat(calculateSubtotal()),
+          tax_rate: 0.13,
+          tax_amount: parseFloat(calculateTax()),
+          total: parseFloat(calculateTotal()),
+          amount_paid: 0,
+          balance_due: parseFloat(calculateTotal()),
+          labor_hours: parseFloat(laborHours),
+          labor_rate: parseFloat(laborRate),
+          markup_percentage: parseFloat(value)
+        }
+      };
+    } else {
+      if (!updatedQuoteData.quote.financials) {
+        updatedQuoteData.quote.financials = {} as any;
+      }
+      updatedQuoteData.quote.financials.markup_percentage = parseFloat(value);
+    }
+
+    fetch('/api/getQuote', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedQuoteData),
+    })
+      .then(handleFetchResponse)
+      .catch((error) => {
+        console.error('Error saving changes:', error);
+        setSaveError(error.message);
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
   };
 
   const calculateAmount = (rate: string, quantity: string) => {
+    // Special case for Labour and Other Expenses
+    if (rate === "-" || quantity === "-") {
+      const laborHoursNum = parseFloat(laborHours) || 0;
+      const laborRateNum = parseFloat(laborRate) || 0;
+      const markupPercentageNum = parseFloat(markupPercentage) || 0;
+      const baseLabor = laborHoursNum * laborRateNum;
+      const markup = baseLabor * (markupPercentageNum / 100);
+      return (baseLabor + markup).toFixed(2);
+    }
     const rateNum = parseFloat(rate) || 0;
     const quantityNum = parseFloat(quantity) || 0;
     return (rateNum * quantityNum).toFixed(2);
   };
 
-  const calculateLaborCost = () => {
-    const baseLabor = parseFloat(laborHours) * parseFloat(laborRate);
-    const withMarkup = baseLabor * (1 + parseFloat(markupPercentage) / 100);
-    return withMarkup.toFixed(2);
+  const calculateLaborAndMarkup = () => {
+    const laborHoursNum = parseFloat(laborHours) || 0;
+    const laborRateNum = parseFloat(laborRate) || 0;
+    const markupPercentageNum = parseFloat(markupPercentage) || 0;
+    
+    if (laborHoursNum === 0 || laborRateNum === 0) {
+      return "-";
+    }
+    
+    const baseLabor = laborHoursNum * laborRateNum;
+    const markup = baseLabor * (markupPercentageNum / 100);
+    return (baseLabor + markup).toFixed(2);
   };
 
   const calculateSubtotal = () => {
@@ -288,18 +596,20 @@ export default function QuotePage() {
       const quantity = parseFloat(item.quantity) || 0;
       return sum + (rate * quantity);
     }, 0);
-    return (itemsTotal + parseFloat(calculateLaborCost())).toFixed(2);
+    return itemsTotal.toFixed(2);
   };
 
   const calculateTax = () => {
-    const subtotal = parseFloat(calculateSubtotal());
-    return (subtotal * 0.13).toFixed(2);
+    // Only tax the items subtotal, not labor or markup
+    const itemsSubtotal = parseFloat(calculateSubtotal());
+    return (itemsSubtotal * 0.13).toFixed(2);
   };
 
   const calculateTotal = () => {
-    const subtotal = parseFloat(calculateSubtotal());
+    const itemsSubtotal = parseFloat(calculateSubtotal());
+    const laborAndMarkup = parseFloat(calculateLaborAndMarkup());
     const tax = parseFloat(calculateTax());
-    return (subtotal + tax).toFixed(2);
+    return (itemsSubtotal + laborAndMarkup + tax).toFixed(2);
   };
 
   const handleDelete = (id: number) => {
@@ -311,26 +621,61 @@ export default function QuotePage() {
       setLastDeletedItem(itemToDelete);
       setShowUndo(true);
 
-      // Update data.json
-      const updatedQuoteData = { ...typedQuoteData };
-      updatedQuoteData.quote.items = newItems.map(item => ({
-        name: item.description,
-        description: item.details,
-        price_per_unit: parseFloat(item.rate),
-        quantity: item.quantity,
-        total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
-        url: item.url,
-        image_url: item.image_url
-      }));
+      // Update data
+      setIsSaving(true);
+      setSaveError(null);
+      const updatedQuoteData = { ...quoteData } as QuoteData;
+      
+      // Keep existing quote data and only update items
+      if (updatedQuoteData.quote) {
+        updatedQuoteData.quote = {
+          ...updatedQuoteData.quote,
+          items: newItems.map(item => ({
+            name: item.description,
+            description: item.details,
+            price_per_unit: parseFloat(item.rate),
+            quantity: item.quantity,
+            total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
+            url: item.url,
+            image_url: item.image_url
+          })),
+          financials: {
+            ...(updatedQuoteData.quote.financials || {}),
+            subtotal: parseFloat(calculateSubtotal()),
+            tax_rate: 0.13,
+            tax_amount: parseFloat(calculateTax()),
+            total: parseFloat(calculateTotal()),
+            amount_paid: 0,
+            balance_due: parseFloat(calculateTotal()),
+            labor_hours: parseFloat(laborHours),
+            labor_rate: parseFloat(laborRate),
+            markup_percentage: parseFloat(markupPercentage),
+            markup_amount: parseFloat(calculateLaborAndMarkup())
+          }
+        };
+      }
 
-      // Save to data.json
-      fetch('/api/updateQuote', {
-        method: 'POST',
+      // Save to MongoDB
+      fetch('/api/getQuote', {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedQuoteData),
-      });
+      })
+        .then(handleFetchResponse)
+        .catch((error) => {
+          console.error('Error saving changes:', error);
+          setSaveError(error.message);
+          // Revert the UI changes on error
+          setItems([...items]);
+          setDeletedItems(deletedItems.filter(item => item.id !== itemToDelete.id));
+          setShowUndo(false);
+          setLastDeletedItem(null);
+        })
+        .finally(() => {
+          setIsSaving(false);
+        });
 
       // Hide undo after 5 seconds
       setTimeout(() => {
@@ -348,26 +693,61 @@ export default function QuotePage() {
       setShowUndo(false);
       setLastDeletedItem(null);
 
-      // Update data.json
-      const updatedQuoteData = { ...typedQuoteData };
-      updatedQuoteData.quote.items = newItems.map(item => ({
-        name: item.description,
-        description: item.details,
-        price_per_unit: parseFloat(item.rate),
-        quantity: item.quantity,
-        total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
-        url: item.url,
-        image_url: item.image_url
-      }));
+      // Update data
+      setIsSaving(true);
+      setSaveError(null);
+      const updatedQuoteData = { ...quoteData } as QuoteData;
+      
+      // Keep existing quote data and only update items
+      if (updatedQuoteData.quote) {
+        updatedQuoteData.quote = {
+          ...updatedQuoteData.quote,
+          items: newItems.map(item => ({
+            name: item.description,
+            description: item.details,
+            price_per_unit: parseFloat(item.rate),
+            quantity: item.quantity,
+            total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
+            url: item.url,
+            image_url: item.image_url
+          })),
+          financials: {
+            ...(updatedQuoteData.quote.financials || {}),
+            subtotal: parseFloat(calculateSubtotal()),
+            tax_rate: 0.13,
+            tax_amount: parseFloat(calculateTax()),
+            total: parseFloat(calculateTotal()),
+            amount_paid: 0,
+            balance_due: parseFloat(calculateTotal()),
+            labor_hours: parseFloat(laborHours),
+            labor_rate: parseFloat(laborRate),
+            markup_percentage: parseFloat(markupPercentage),
+            markup_amount: parseFloat(calculateLaborAndMarkup())
+          }
+        };
+      }
 
-      // Save to data.json
-      fetch('/api/updateQuote', {
-        method: 'POST',
+      // Save to MongoDB
+      fetch('/api/getQuote', {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedQuoteData),
-      });
+      })
+        .then(handleFetchResponse)
+        .catch((error) => {
+          console.error('Error saving changes:', error);
+          setSaveError(error.message);
+          // Revert the UI changes on error
+          setItems(items.filter(item => item.id !== lastDeletedItem.id));
+          setDeletedItems([...deletedItems, lastDeletedItem]);
+          setShowUndo(true);
+          setLastDeletedItem(lastDeletedItem);
+        })
+        .finally(() => {
+          setIsSaving(false);
+        });
     }
   };
 
@@ -390,8 +770,28 @@ export default function QuotePage() {
       const newItems = [...items, newItemWithId];
       setItems(newItems);
 
-      // Update data.json
-      const updatedQuoteData = { ...typedQuoteData };
+      // Update data
+      setIsSaving(true);
+      setSaveError(null);
+      const updatedQuoteData = { ...quoteData } as QuoteData;
+      if (!updatedQuoteData.quote) {
+        updatedQuoteData.quote = {
+          quoteInfo: {
+            quoteNumber: 'QT-' + new Date().getTime(),
+            validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+          },
+          items: [],
+          financials: {
+            subtotal: 0,
+            tax_rate: 0.13,
+            tax_amount: 0,
+            total: 0,
+            amount_paid: 0,
+            balance_due: 0
+          }
+        } as any;
+      }
+      
       updatedQuoteData.quote.items = newItems.map(item => ({
         name: item.description,
         description: item.details,
@@ -402,14 +802,22 @@ export default function QuotePage() {
         image_url: item.image_url
       }));
 
-      // Save to data.json
-      fetch('/api/updateQuote', {
+      // Save to MongoDB
+      fetch('/api/getQuote', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedQuoteData),
-      });
+      })
+        .then(handleFetchResponse)
+        .catch((error) => {
+          console.error('Error saving changes:', error);
+          setSaveError(error.message);
+        })
+        .finally(() => {
+          setIsSaving(false);
+        });
       
       // Reset form
       setNewItem({
@@ -431,58 +839,169 @@ export default function QuotePage() {
   });
 
   const handleNext = () => {
-    // Update data.json with labor hours and markup percentage
-    const updatedQuoteData = { ...typedQuoteData };
+    // Update data with labor hours and markup percentage
+    setIsSaving(true);
+    setSaveError(null);
+    const updatedQuoteData = { ...quoteData } as QuoteData;
+    if (!updatedQuoteData.quote) {
+      updatedQuoteData.quote = {
+        quoteInfo: {
+          quoteNumber: 'QT-' + new Date().getTime(),
+          validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        },
+        companyInfo: {
+          companyName: '',
+          contactName: '',
+          email: '',
+          phone: '',
+          address: ''
+        },
+        clientInfo: {
+          companyName: '',
+          contactName: '',
+          email: '',
+          phone: '',
+          address: '',
+          quoteInfo: {
+            validUntil: '',
+            quoteNumber: ''
+          },
+          companyInfo: {
+            companyName: '',
+            contactName: '',
+            email: '',
+            phone: '',
+            address: ''
+          },
+          clientInfo: {
+            companyName: '',
+            contactName: '',
+            email: '',
+            phone: '',
+            address: ''
+          }
+        },
+        items: [],
+        financials: {
+          subtotal: 0,
+          tax_rate: 0.13,
+          tax_amount: 0,
+          total: 0,
+          amount_paid: 0,
+          balance_due: 0,
+          labor_hours: parseFloat(laborHours) || 0,
+          labor_rate: parseFloat(laborRate) || 75,
+          markup_percentage: parseFloat(markupPercentage) || 15,
+          markup_amount: parseFloat(calculateLaborAndMarkup()) || 0
+        },
+        branding: {
+          primary_color: '',
+          secondary_color: '',
+          accent_color: ''
+        },
+        paymentInfo: {
+          paypal: '',
+          checkPayableTo: '',
+          routingNumber: ''
+        },
+        notes: '',
+        generated_at: new Date().toISOString()
+      };
+    }
     
     // Update items with current state
-    updatedQuoteData.quote.items = items.map(item => ({
-      name: item.description,
-      description: item.details,
-      price_per_unit: parseFloat(item.rate),
-      quantity: item.quantity,
-      total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
-      url: item.url,
-      image_url: item.image_url
-    }));
+    const laborAndMarkupAmount = parseFloat(calculateLaborAndMarkup());
+    const laborItem = {
+      name: "Labour and Other Expenses",
+      description: "Labour and other expenses incurred",
+      price_per_unit: "-",
+      quantity: "-",
+      total_amount: laborAndMarkupAmount,
+      url: "",
+      image_url: ""
+    };
 
-    // Add labor and markup data
+    updatedQuoteData.quote.items = [
+      ...items.map(item => ({
+        name: item.description,
+        description: item.details,
+        price_per_unit: parseFloat(item.rate),
+        quantity: item.quantity,
+        total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
+        url: item.url,
+        image_url: item.image_url
+      })),
+      laborItem
+    ];
+
+    // Update financials with labor and markup data
     if (!updatedQuoteData.quote.financials) {
-      updatedQuoteData.quote.financials = {
-        subtotal: parseFloat(calculateSubtotal()),
-        tax_rate: 0.13,
-        tax_amount: parseFloat(calculateTax()),
-        total: parseFloat(calculateTotal()),
-        amount_paid: 0,
-        balance_due: parseFloat(calculateTotal()),
-        labor_hours: parseFloat(laborHours),
-        labor_rate: parseFloat(laborRate),
-        markup_percentage: parseFloat(markupPercentage),
-        markup_amount: parseFloat(calculateLaborCost())
-      } as Financials;
-    } else {
-      updatedQuoteData.quote.financials = {
-        ...updatedQuoteData.quote.financials,
-        subtotal: parseFloat(calculateSubtotal()),
-        tax_amount: parseFloat(calculateTax()),
-        total: parseFloat(calculateTotal()),
-        balance_due: parseFloat(calculateTotal()),
-        labor_hours: parseFloat(laborHours),
-        labor_rate: parseFloat(laborRate),
-        markup_percentage: parseFloat(markupPercentage),
-        markup_amount: parseFloat(calculateLaborCost())
-      } as Financials;
+      updatedQuoteData.quote.financials = {} as Financials;
     }
+    
+    updatedQuoteData.quote.financials = {
+      ...updatedQuoteData.quote.financials,
+      subtotal: parseFloat(calculateSubtotal()),
+      tax_rate: 0.13,
+      tax_amount: parseFloat(calculateTax()),
+      total: parseFloat(calculateTotal()),
+      amount_paid: 0,
+      balance_due: parseFloat(calculateTotal()),
+      labor_hours: parseFloat(laborHours) || 0,
+      labor_rate: parseFloat(laborRate) || 75,
+      markup_percentage: parseFloat(markupPercentage) || 15,
+      markup_amount: laborAndMarkupAmount
+    };
 
-    // Save to data.json
-    fetch('/api/updateQuote', {
+    // Save to MongoDB
+    fetch('/api/getQuote', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(updatedQuoteData),
-    }).then(() => {
-      router.push('/customerPDF');
-    });
+    })
+      .then(handleFetchResponse)
+      .then(() => {
+        router.push('/customerPDF');
+      })
+      .catch((error) => {
+        console.error('Error saving changes:', error);
+        setSaveError(error.message);
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
+  };
+
+  // Helper function for standardized fetch error handling
+  const handleFetchResponse = async (response: Response) => {
+    const contentType = response.headers.get("content-type");
+    if (!response.ok) {
+      let errorMessage = 'Failed to save changes';
+      try {
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } else {
+          const textError = await response.text();
+          errorMessage = textError || errorMessage;
+        }
+      } catch (e) {
+        console.error('Error parsing error response:', e);
+      }
+      throw new Error(errorMessage);
+    }
+    
+    try {
+      if (contentType && contentType.includes("application/json")) {
+        return response.json();
+      }
+      return null;
+    } catch (e) {
+      console.error('Error parsing response:', e);
+      return null;
+    }
   };
 
   return (
@@ -508,7 +1027,7 @@ export default function QuotePage() {
             <div className="space-y-3 bg-gray-50 p-4 rounded-lg border border-gray-100">
               <div className="flex justify-between gap-8">
                 <span className="text-gray-600">Quote no.</span>
-                <span className="font-semibold text-gray-900">{typedQuoteData.quote.quoteInfo.quoteNumber}</span>
+                <span className="font-semibold text-gray-900">{quoteData?.quote?.quoteInfo?.quoteNumber || 'N/A'}</span>
               </div>
               <div className="flex justify-between gap-8">
                 <span className="text-gray-600">Quote date:</span>
@@ -516,7 +1035,7 @@ export default function QuotePage() {
               </div>
               <div className="flex justify-between gap-8">
                 <span className="text-gray-600">Due:</span>
-                <span className="font-semibold text-gray-900">{typedQuoteData.quote.quoteInfo.validUntil}</span>
+                <span className="font-semibold text-gray-900">{quoteData?.quote?.quoteInfo?.validUntil || 'N/A'}</span>
               </div>
             </div>
           </div>
@@ -532,17 +1051,17 @@ export default function QuotePage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4zm3 1h6v4H7V5zm8 8v2h1v-2h-1zm-2-6H7v4h6V7zm2 0h1v4h-1V7zm1 6h-1v2h1v-2zm-7-1H4v-2h6v2zm-6-3h6v-2H4v2z" clipRule="evenodd" />
                 </svg>
-                <p className="font-semibold text-gray-900">{typedQuoteData.quote.companyInfo.companyName}</p>
+                <p className="font-semibold text-gray-900">{quoteData?.quote?.clientInfo?.companyInfo?.companyName || 'N/A'}</p>
               </div>
               <div className="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                 </svg>
-                <p className="text-gray-600">{typedQuoteData.quote.companyInfo.contactName}</p>
+                <p className="text-gray-600">{quoteData?.quote?.clientInfo?.companyInfo?.contactName || 'N/A'}</p>
               </div>
-              <p className="text-gray-600">{typedQuoteData.quote.companyInfo.email}</p>
-              <p className="text-gray-600">{typedQuoteData.quote.companyInfo.phone}</p>
-              <p className="text-gray-600">{typedQuoteData.quote.companyInfo.address}</p>
+              <p className="text-gray-600">{quoteData?.quote?.clientInfo?.companyInfo?.email || 'N/A'}</p>
+              <p className="text-gray-600">{quoteData?.quote?.clientInfo?.companyInfo?.phone || 'N/A'}</p>
+              <p className="text-gray-600">{quoteData?.quote?.clientInfo?.companyInfo?.address || 'N/A'}</p>
             </div>
             <div className="space-y-2 flex-1 bg-gray-50 p-6 rounded-lg border border-gray-100">
               <h2 className="text-gray-900 font-semibold mb-4 flex items-center gap-2">
@@ -553,17 +1072,17 @@ export default function QuotePage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4zm3 1h6v4H7V5zm8 8v2h1v-2h-1zm-2-6H7v4h6V7zm2 0h1v4h-1V7zm1 6h-1v2h1v-2zm-7-1H4v-2h6v2zm-6-3h6v-2H4v2z" clipRule="evenodd" />
                 </svg>
-                <p className="font-semibold text-gray-900">{typedQuoteData.quote.clientInfo.companyName}</p>
+                <p className="font-semibold text-gray-900">{quoteData?.quote?.clientInfo?.clientInfo?.companyName || 'N/A'}</p>
               </div>
               <div className="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                 </svg>
-                <p className="text-gray-600">{typedQuoteData.quote.clientInfo.contactName}</p>
+                <p className="text-gray-600">{quoteData?.quote?.clientInfo?.clientInfo?.contactName || 'N/A'}</p>
               </div>
-              <p className="text-gray-600">{typedQuoteData.quote.clientInfo.email}</p>
-              <p className="text-gray-600">{typedQuoteData.quote.clientInfo.phone}</p>
-              <p className="text-gray-600">{typedQuoteData.quote.clientInfo.address}</p>
+              <p className="text-gray-600">{quoteData?.quote?.clientInfo?.clientInfo?.email || 'N/A'}</p>
+              <p className="text-gray-600">{quoteData?.quote?.clientInfo?.clientInfo?.phone || 'N/A'}</p>
+              <p className="text-gray-600">{quoteData?.quote?.clientInfo?.clientInfo?.address || 'N/A'}</p>
             </div>
           </div>
 
@@ -638,36 +1157,48 @@ export default function QuotePage() {
                       </div>
                     </td>
                     <td className="p-6 text-right">
-                      <div className="relative flex items-center justify-end">
+                      {item.description === "Labour and Other Expenses" ? (
+                        <div className="w-32 bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900">
+                          -
+                        </div>
+                      ) : (
+                        <div className="relative flex items-center justify-end">
+                          <input
+                            type="text"
+                            ref={(el) => {
+                              if (el) rateInputRefs.current[item.id] = el;
+                            }}
+                            value={focusedInput?.id === item.id && focusedInput?.type === 'rate'
+                              ? item.rate === '0' ? '' : item.rate
+                              : (parseFloat(item.rate) || 0).toFixed(2)}
+                            onChange={(e) => handleRateChange(item.id, e.target.value)}
+                            onFocus={() => setFocusedInput({ id: item.id, type: 'rate' })}
+                            onBlur={() => setFocusedInput(null)}
+                            className="w-32 bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all hover:border-gray-300"
+                          />
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-6 text-right">
+                      {item.description === "Labour and Other Expenses" ? (
+                        <div className="w-24 bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900">
+                          -
+                        </div>
+                      ) : (
                         <input
                           type="text"
                           ref={(el) => {
-                            if (el) rateInputRefs.current[item.id] = el;
+                            if (el) quantityInputRefs.current[item.id] = el;
                           }}
-                          value={focusedInput?.id === item.id && focusedInput?.type === 'rate'
-                            ? item.rate === '0' ? '' : item.rate
-                            : (parseFloat(item.rate) || 0).toFixed(2)}
-                          onChange={(e) => handleRateChange(item.id, e.target.value)}
-                          onFocus={() => setFocusedInput({ id: item.id, type: 'rate' })}
+                          value={focusedInput?.id === item.id && focusedInput?.type === 'quantity'
+                            ? item.quantity === '0' ? '' : item.quantity
+                            : (parseFloat(item.quantity) || 0).toFixed(2)}
+                          onChange={(e) => handleQuantityChange(item.id, e.target.value)}
+                          onFocus={() => setFocusedInput({ id: item.id, type: 'quantity' })}
                           onBlur={() => setFocusedInput(null)}
-                          className="w-32 bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all hover:border-gray-300"
+                          className="w-24 bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all hover:border-gray-300"
                         />
-                      </div>
-                    </td>
-                    <td className="p-6 text-right">
-                      <input
-                        type="text"
-                        ref={(el) => {
-                          if (el) quantityInputRefs.current[item.id] = el;
-                        }}
-                        value={focusedInput?.id === item.id && focusedInput?.type === 'quantity'
-                          ? item.quantity === '0' ? '' : item.quantity
-                          : (parseFloat(item.quantity) || 0).toFixed(2)}
-                        onChange={(e) => handleQuantityChange(item.id, e.target.value)}
-                        onFocus={() => setFocusedInput({ id: item.id, type: 'quantity' })}
-                        onBlur={() => setFocusedInput(null)}
-                        className="w-24 bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all hover:border-gray-300"
-                      />
+                      )}
                     </td>
                     <td className="p-6 text-right font-semibold text-gray-900">
                       ${calculateAmount(item.rate, item.quantity)}
@@ -734,9 +1265,10 @@ export default function QuotePage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-2">Total Amount</label>
-                <div className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-gray-900">
-                  ${calculateLaborCost()}
+                <label className="block text-sm font-medium text-gray-600 mb-2">Markup Impact</label>
+                <div className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 font-medium text-blue-600">
+                  {parseFloat(laborHours) === 0 || parseFloat(laborRate) === 0 ? "-" : 
+                    `+$${((parseFloat(laborHours) * parseFloat(laborRate) * parseFloat(markupPercentage)) / 100).toFixed(2)}`}
                 </div>
               </div>
             </div>
@@ -749,7 +1281,7 @@ export default function QuotePage() {
               className="px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2 hover:shadow-lg"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 11H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
               </svg>
               <span>Back</span>
             </button>
@@ -757,11 +1289,19 @@ export default function QuotePage() {
             <div className="bg-gray-50 p-6 rounded-lg border border-gray-100">
               <div className="space-y-2">
                 <div className="flex justify-between gap-8">
-                  <span className="text-gray-600">Subtotal:</span>
-                  <span className="font-semibold text-gray-900">${calculateSubtotal()}</span>
+                  <span className="text-gray-600">Items Subtotal:</span>
+                  <span className="font-semibold text-gray-900">
+                    ${calculateSubtotal()}
+                  </span>
                 </div>
                 <div className="flex justify-between gap-8">
-                  <span className="text-gray-600">Tax (13%):</span>
+                  <span className="text-gray-600">Labour and Other Expenses:</span>
+                  <span className="font-semibold text-gray-900">
+                    {calculateLaborAndMarkup() === "-" ? "-" : `$${calculateLaborAndMarkup()}`}
+                  </span>
+                </div>
+                <div className="flex justify-between gap-8">
+                  <span className="text-gray-600">Tax (13% on items only):</span>
                   <span className="font-semibold text-gray-900">${calculateTax()}</span>
                 </div>
                 <div className="pt-2 border-t border-gray-200">
@@ -913,6 +1453,25 @@ export default function QuotePage() {
               </svg>
             </button>
           </div>
+
+          {/* Loading Notification */}
+          {isSaving && (
+            <div className="fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
+              <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Saving changes...
+            </div>
+          )}
+          {saveError && (
+            <div className="fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              {saveError}
+            </div>
+          )}
         </div>
       )}
     </main>
