@@ -22,24 +22,6 @@ interface QuoteData {
       email: string;
       phone: string;
       address: string;
-      quoteInfo: {
-        quoteNumber: string;
-        validUntil: string;
-      };
-      companyInfo: {
-        companyName: string;
-        contactName: string;
-        email: string;
-        phone: string;
-        address: string;
-      };
-      clientInfo: {
-        companyName: string;
-        contactName: string;
-        email: string;
-        phone: string;
-        address: string;
-      };
     };
     items: QuoteItem[];
     financials: {
@@ -47,17 +29,8 @@ interface QuoteData {
       tax_rate: number;
       tax_amount: number;
       total: number;
-      amount_paid: number;
-      balance_due: number;
-      labor_hours?: number;
-      labor_rate?: number;
-      markup_percentage?: number;
-      markup_amount?: number;
-    };
-    branding: {
-      primary_color: string;
-      secondary_color: string;
-      accent_color: string;
+      paid: number;
+      balance: number;
     };
     paymentInfo: {
       paypal: string;
@@ -65,7 +38,6 @@ interface QuoteData {
       routingNumber: string;
     };
     notes: string;
-    generated_at: string;
   };
 }
 
@@ -364,13 +336,13 @@ const QuotePDF = () => {
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              <Text style={styles.companyName}>{quoteData.quote.clientInfo?.companyInfo?.companyName || 'Company Name'}</Text>
-              <Text style={styles.companyDetails}>{quoteData.quote.clientInfo?.companyInfo?.address || ''}</Text>
-              <Text style={styles.companyDetails}>{quoteData.quote.clientInfo?.companyInfo?.email || ''}</Text>
-              <Text style={styles.companyDetails}>{quoteData.quote.clientInfo?.companyInfo?.phone || ''}</Text>
+              <Text style={styles.companyName}>{quoteData.quote.companyInfo.companyName}</Text>
+              <Text style={styles.companyDetails}>{quoteData.quote.companyInfo.address}</Text>
+              <Text style={styles.companyDetails}>{quoteData.quote.companyInfo.email}</Text>
+              <Text style={styles.companyDetails}>{quoteData.quote.companyInfo.phone}</Text>
             </View>
             <View style={styles.headerRight}>
-              <Text style={styles.quoteNumber}>#{quoteData.quote.quoteInfo?.quoteNumber || 'N/A'}</Text>
+              <Text style={styles.quoteNumber}>#{quoteData.quote.quoteInfo.quoteNumber}</Text>
             </View>
           </View>
 
@@ -383,21 +355,21 @@ const QuotePDF = () => {
               <View style={styles.infoColumn}>
                 <View style={styles.infoSection}>
                   <Text style={styles.sectionTitle}>Bill To</Text>
-                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.clientInfo?.companyName || 'N/A'}</Text>
-                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.clientInfo?.contactName || ''}</Text>
-                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.clientInfo?.address || ''}</Text>
-                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.clientInfo?.email || ''}</Text>
-                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.clientInfo?.phone || ''}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo.companyName}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo.contactName}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo.address}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo.email}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.clientInfo.phone}</Text>
                 </View>
               </View>
               <View style={styles.infoColumn}>
                 <View style={styles.infoSection}>
                   <Text style={styles.sectionTitle}>From</Text>
-                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.companyInfo?.companyName || 'N/A'}</Text>
-                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.companyInfo?.contactName || ''}</Text>
-                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.companyInfo?.address || ''}</Text>
-                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.companyInfo?.email || ''}</Text>
-                  <Text style={styles.infoText}>{quoteData.quote.clientInfo?.companyInfo?.phone || ''}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.companyInfo.companyName}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.companyInfo.contactName}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.companyInfo.address}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.companyInfo.email}</Text>
+                  <Text style={styles.infoText}>{quoteData.quote.companyInfo.phone}</Text>
                 </View>
               </View>
             </View>
@@ -440,23 +412,19 @@ const QuotePDF = () => {
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Subtotal</Text>
               <Text style={styles.totalValue}>
-                {isNaN(Number(quoteData.quote.financials?.subtotal)) ? '$-' : `$${Number(quoteData.quote.financials?.subtotal).toFixed(2)}`}
+                ${Number(quoteData.quote.financials.subtotal).toFixed(2)}
               </Text>
             </View>
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Labor and Other Expenses</Text>
-              <Text style={styles.totalValue}>$-</Text>
-            </View>
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Tax ({isNaN(Number(quoteData.quote.financials?.tax_rate)) ? '0' : (Number(quoteData.quote.financials?.tax_rate) * 100).toFixed(0)}%)</Text>
+              <Text style={styles.totalLabel}>Tax ({(Number(quoteData.quote.financials.tax_rate) * 100).toFixed(0)}%)</Text>
               <Text style={styles.totalValue}>
-                {isNaN(Number(quoteData.quote.financials?.tax_amount)) ? '$-' : `$${Number(quoteData.quote.financials?.tax_amount).toFixed(2)}`}
+                ${Number(quoteData.quote.financials.tax_amount).toFixed(2)}
               </Text>
             </View>
             <View style={[styles.totalRow, styles.totalRowFinal]}>
               <Text style={styles.totalLabel}>Total</Text>
               <Text style={styles.totalFinal}>
-                {isNaN(Number(quoteData.quote.financials?.total)) ? '$-' : `$${Number(quoteData.quote.financials?.total).toFixed(2)}`}
+                ${Number(quoteData.quote.financials.total).toFixed(2)}
               </Text>
             </View>
           </View>
