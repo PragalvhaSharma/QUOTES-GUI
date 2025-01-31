@@ -23,31 +23,15 @@ interface QuoteData {
       email: string;
       phone: string;
       address: string;
-      quoteInfo: {
-        validUntil: string;
-        quoteNumber: string;
-      };
-      companyInfo: {
-        companyName: string;
-        contactName: string;
-        email: string;
-        phone: string;
-        address: string;
-      };
-      clientInfo: {
-        companyName: string;
-        contactName: string;
-        email: string;
-        phone: string;
-        address: string;
-      };
     };
     items: QuoteItem[];
-    financials: Financials;
-    branding: {
-      primary_color: string;
-      secondary_color: string;
-      accent_color: string;
+    financials: {
+      subtotal: number;
+      tax_rate: number;
+      tax_amount: number;
+      total: number;
+      paid: number;
+      balance: number;
     };
     paymentInfo: {
       paypal: string;
@@ -55,18 +39,25 @@ interface QuoteData {
       routingNumber: string;
     };
     notes: string;
-    generated_at: string;
   };
 }
 
 interface QuoteItem {
   name: string;
   description: string;
-  price_per_unit: number | string;
+  price_per_unit: number;
   quantity: string;
   total_amount: number;
   url: string;
   image_url: string;
+}
+
+// UI-specific interfaces
+interface UIFinancials extends Financials {
+  labor_hours?: number;
+  labor_rate?: number;
+  markup_percentage?: number;
+  markup_amount?: number;
 }
 
 interface Financials {
@@ -74,12 +65,8 @@ interface Financials {
   tax_rate: number;
   tax_amount: number;
   total: number;
-  amount_paid: number;
-  balance_due: number;
-  labor_hours?: number;
-  labor_rate?: number;
-  markup_percentage?: number;
-  markup_amount?: number;
+  paid: number;
+  balance: number;
 }
 
 interface LineItem {
@@ -146,42 +133,64 @@ export default function QuotePage() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('/api/getQuote');
-        if (!response.ok) {
-          throw new Error('Failed to fetch quote data');
-        }
-        const data = await response.json();
-        
-        // Handle both nested and flat data structures
-        const quoteData = data.quote ? data : { quote: data };
-        setQuoteData(quoteData);
-        
-        // Set items from fetched data
-        if (quoteData.quote?.items) {
-          setItems(
-            quoteData.quote.items.map((item: QuoteItem, index: number) => ({
-              id: index + 1,
-              description: item.name || '',
-              details: item.description || '',
-              rate: (item.price_per_unit || 0).toString(),
-              quantity: item.quantity || '0',
-              tempQuantity: item.quantity || '0',
-              url: item.url || '',
-              image_url: item.image_url || '',
-            }))
-          );
+        setError(null);
 
-          // Set labor and markup data if available
-          if (quoteData.quote.financials) {
-            setLaborHours((quoteData.quote.financials.labor_hours || 0).toString());
-            setLaborRate((quoteData.quote.financials.labor_rate || 75).toString());
-            setMarkupPercentage((quoteData.quote.financials.markup_percentage || 15).toString());
+        // Try fetching data multiple times with a delay
+        let attempts = 0;
+        const maxAttempts = 3;
+        
+        while (attempts < maxAttempts) {
+          const response = await fetch('/api/getQuote');
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (!data || Object.keys(data).length === 0) {
+              // If data is empty, wait and retry
+              await new Promise(resolve => setTimeout(resolve, 1000));
+              attempts++;
+              continue;
+            }
+            
+            // Handle both nested and flat data structures
+            const quoteData = data.quote ? data : { quote: data };
+            setQuoteData(quoteData);
+            
+            // Set items from fetched data
+            if (quoteData.quote?.items) {
+              setItems(
+                quoteData.quote.items.map((item: QuoteItem, index: number) => ({
+                  id: index + 1,
+                  description: item.name || '',
+                  details: item.description || '',
+                  rate: (item.price_per_unit || 0).toString(),
+                  quantity: item.quantity || '0',
+                  tempQuantity: item.quantity || '0',
+                  url: item.url || '',
+                  image_url: item.image_url || '',
+                }))
+              );
+
+              // Set labor and markup data if available
+              if (quoteData.quote.financials) {
+                setLaborHours((quoteData.quote.financials.labor_hours || 0).toString());
+                setLaborRate((quoteData.quote.financials.labor_rate || 75).toString());
+                setMarkupPercentage((quoteData.quote.financials.markup_percentage || 15).toString());
+              }
+            }
+            
+            setIsLoading(false);
+            return; // Successfully got data, exit the loop
           }
+          
+          // If response not ok, wait and retry
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          attempts++;
         }
-
-        setIsLoading(false);
+        
+        // If we get here, we've failed all attempts
+        throw new Error('Failed to fetch quote data after multiple attempts');
       } catch (err) {
-        setError('Error loading quote data. Please try again.');
+        setError('Error loading quote data. Please try again or go back to the previous page.');
         setIsLoading(false);
         console.error('Error loading quote data:', err);
       }
@@ -253,6 +262,48 @@ export default function QuotePage() {
     router.back();
   };
 
+  // Helper function to prepare data for API
+  const prepareQuoteDataForAPI = (baseData: QuoteData, items: LineItem[]) => {
+    const apiData = { ...baseData };
+    
+    // Map items to API format
+    apiData.quote.items = items.map(item => ({
+      name: item.description,
+      description: item.details,
+      price_per_unit: parseFloat(item.rate) || 0,
+      quantity: item.quantity,
+      total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
+      url: item.url,
+      image_url: item.image_url
+    }));
+
+    // Add labor item if labor hours and rate are set
+    const laborAndMarkupAmount = parseFloat(calculateLaborAndMarkup());
+    if (laborAndMarkupAmount > 0) {
+      apiData.quote.items.push({
+        name: "Labour and Other Expenses",
+        description: "Labour and other expenses incurred",
+        price_per_unit: 0,
+        quantity: "1",
+        total_amount: laborAndMarkupAmount,
+        url: "",
+        image_url: ""
+      });
+    }
+
+    // Update financials
+    apiData.quote.financials = {
+      subtotal: parseFloat(calculateSubtotal()),
+      tax_rate: 0.13,
+      tax_amount: parseFloat(calculateTax()),
+      total: parseFloat(calculateTotal()),
+      paid: 0,
+      balance: parseFloat(calculateTotal())
+    };
+
+    return apiData;
+  };
+
   const handleRateChange = (id: number, value: string) => {
     // Only allow numbers and one decimal point
     if (!/^\d*\.?\d*$/.test(value) && value !== '') return;
@@ -268,37 +319,8 @@ export default function QuotePage() {
     // Update database
     setIsSaving(true);
     setSaveError(null);
-    const updatedQuoteData = { ...quoteData } as QuoteData;
-    if (!updatedQuoteData.quote) {
-      updatedQuoteData.quote = {
-        quoteInfo: {
-          quoteNumber: 'QT-' + new Date().getTime(),
-          validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-        },
-        items: [],
-        financials: {
-          subtotal: 0,
-          tax_rate: 0.13,
-          tax_amount: 0,
-          total: 0,
-          amount_paid: 0,
-          balance_due: 0,
-          labor_hours: parseFloat(laborHours),
-          labor_rate: parseFloat(laborRate),
-          markup_percentage: parseFloat(markupPercentage)
-        }
-      };
-    }
-
-    updatedQuoteData.quote.items = newItems.map(item => ({
-      name: item.description,
-      description: item.details,
-      price_per_unit: parseFloat(item.rate),
-      quantity: item.quantity,
-      total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
-      url: item.url,
-      image_url: item.image_url
-    }));
+    
+    const updatedQuoteData = prepareQuoteDataForAPI(quoteData as QuoteData, newItems);
 
     fetch('/api/getQuote', {
       method: 'POST',
@@ -332,37 +354,8 @@ export default function QuotePage() {
     // Update database
     setIsSaving(true);
     setSaveError(null);
-    const updatedQuoteData = { ...quoteData } as QuoteData;
-    if (!updatedQuoteData.quote) {
-      updatedQuoteData.quote = {
-        quoteInfo: {
-          quoteNumber: 'QT-' + new Date().getTime(),
-          validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-        },
-        items: [],
-        financials: {
-          subtotal: 0,
-          tax_rate: 0.13,
-          tax_amount: 0,
-          total: 0,
-          amount_paid: 0,
-          balance_due: 0,
-          labor_hours: parseFloat(laborHours),
-          labor_rate: parseFloat(laborRate),
-          markup_percentage: parseFloat(markupPercentage)
-        }
-      };
-    }
-
-    updatedQuoteData.quote.items = newItems.map(item => ({
-      name: item.description,
-      description: item.details,
-      price_per_unit: parseFloat(item.rate),
-      quantity: item.quantity,
-      total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
-      url: item.url,
-      image_url: item.image_url
-    }));
+    
+    const updatedQuoteData = prepareQuoteDataForAPI(quoteData as QuoteData, newItems);
 
     fetch('/api/getQuote', {
       method: 'POST',
@@ -389,40 +382,8 @@ export default function QuotePage() {
     // Update database
     setIsSaving(true);
     setSaveError(null);
-    const updatedQuoteData = { ...quoteData } as QuoteData;
-    if (!updatedQuoteData.quote) {
-      updatedQuoteData.quote = {
-        quoteInfo: {
-          quoteNumber: 'QT-' + new Date().getTime(),
-          validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-        },
-        items: items.map(item => ({
-          name: item.description,
-          description: item.details,
-          price_per_unit: parseFloat(item.rate),
-          quantity: item.quantity,
-          total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
-          url: item.url,
-          image_url: item.image_url
-        })),
-        financials: {
-          subtotal: parseFloat(calculateSubtotal()),
-          tax_rate: 0.13,
-          tax_amount: parseFloat(calculateTax()),
-          total: parseFloat(calculateTotal()),
-          amount_paid: 0,
-          balance_due: parseFloat(calculateTotal()),
-          labor_hours: parseFloat(value),
-          labor_rate: parseFloat(laborRate),
-          markup_percentage: parseFloat(markupPercentage)
-        }
-      };
-    } else {
-      if (!updatedQuoteData.quote.financials) {
-        updatedQuoteData.quote.financials = {} as any;
-      }
-      updatedQuoteData.quote.financials.labor_hours = parseFloat(value);
-    }
+    
+    const updatedQuoteData = prepareQuoteDataForAPI(quoteData as QuoteData, items);
 
     fetch('/api/getQuote', {
       method: 'POST',
@@ -449,40 +410,8 @@ export default function QuotePage() {
     // Update database
     setIsSaving(true);
     setSaveError(null);
-    const updatedQuoteData = { ...quoteData } as QuoteData;
-    if (!updatedQuoteData.quote) {
-      updatedQuoteData.quote = {
-        quoteInfo: {
-          quoteNumber: 'QT-' + new Date().getTime(),
-          validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-        },
-        items: items.map(item => ({
-          name: item.description,
-          description: item.details,
-          price_per_unit: parseFloat(item.rate),
-          quantity: item.quantity,
-          total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
-          url: item.url,
-          image_url: item.image_url
-        })),
-        financials: {
-          subtotal: parseFloat(calculateSubtotal()),
-          tax_rate: 0.13,
-          tax_amount: parseFloat(calculateTax()),
-          total: parseFloat(calculateTotal()),
-          amount_paid: 0,
-          balance_due: parseFloat(calculateTotal()),
-          labor_hours: parseFloat(laborHours),
-          labor_rate: parseFloat(value),
-          markup_percentage: parseFloat(markupPercentage)
-        }
-      };
-    } else {
-      if (!updatedQuoteData.quote.financials) {
-        updatedQuoteData.quote.financials = {} as any;
-      }
-      updatedQuoteData.quote.financials.labor_rate = parseFloat(value);
-    }
+    
+    const updatedQuoteData = prepareQuoteDataForAPI(quoteData as QuoteData, items);
 
     fetch('/api/getQuote', {
       method: 'POST',
@@ -509,40 +438,8 @@ export default function QuotePage() {
     // Update database
     setIsSaving(true);
     setSaveError(null);
-    const updatedQuoteData = { ...quoteData } as QuoteData;
-    if (!updatedQuoteData.quote) {
-      updatedQuoteData.quote = {
-        quoteInfo: {
-          quoteNumber: 'QT-' + new Date().getTime(),
-          validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-        },
-        items: items.map(item => ({
-          name: item.description,
-          description: item.details,
-          price_per_unit: parseFloat(item.rate),
-          quantity: item.quantity,
-          total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
-          url: item.url,
-          image_url: item.image_url
-        })),
-        financials: {
-          subtotal: parseFloat(calculateSubtotal()),
-          tax_rate: 0.13,
-          tax_amount: parseFloat(calculateTax()),
-          total: parseFloat(calculateTotal()),
-          amount_paid: 0,
-          balance_due: parseFloat(calculateTotal()),
-          labor_hours: parseFloat(laborHours),
-          labor_rate: parseFloat(laborRate),
-          markup_percentage: parseFloat(value)
-        }
-      };
-    } else {
-      if (!updatedQuoteData.quote.financials) {
-        updatedQuoteData.quote.financials = {} as any;
-      }
-      updatedQuoteData.quote.financials.markup_percentage = parseFloat(value);
-    }
+    
+    const updatedQuoteData = prepareQuoteDataForAPI(quoteData as QuoteData, items);
 
     fetch('/api/getQuote', {
       method: 'POST',
@@ -624,36 +521,8 @@ export default function QuotePage() {
       // Update data
       setIsSaving(true);
       setSaveError(null);
-      const updatedQuoteData = { ...quoteData } as QuoteData;
       
-      // Keep existing quote data and only update items
-      if (updatedQuoteData.quote) {
-        updatedQuoteData.quote = {
-          ...updatedQuoteData.quote,
-          items: newItems.map(item => ({
-            name: item.description,
-            description: item.details,
-            price_per_unit: parseFloat(item.rate),
-            quantity: item.quantity,
-            total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
-            url: item.url,
-            image_url: item.image_url
-          })),
-          financials: {
-            ...(updatedQuoteData.quote.financials || {}),
-            subtotal: parseFloat(calculateSubtotal()),
-            tax_rate: 0.13,
-            tax_amount: parseFloat(calculateTax()),
-            total: parseFloat(calculateTotal()),
-            amount_paid: 0,
-            balance_due: parseFloat(calculateTotal()),
-            labor_hours: parseFloat(laborHours),
-            labor_rate: parseFloat(laborRate),
-            markup_percentage: parseFloat(markupPercentage),
-            markup_amount: parseFloat(calculateLaborAndMarkup())
-          }
-        };
-      }
+      const updatedQuoteData = prepareQuoteDataForAPI(quoteData as QuoteData, newItems);
 
       // Save to MongoDB
       fetch('/api/getQuote', {
@@ -696,36 +565,8 @@ export default function QuotePage() {
       // Update data
       setIsSaving(true);
       setSaveError(null);
-      const updatedQuoteData = { ...quoteData } as QuoteData;
       
-      // Keep existing quote data and only update items
-      if (updatedQuoteData.quote) {
-        updatedQuoteData.quote = {
-          ...updatedQuoteData.quote,
-          items: newItems.map(item => ({
-            name: item.description,
-            description: item.details,
-            price_per_unit: parseFloat(item.rate),
-            quantity: item.quantity,
-            total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
-            url: item.url,
-            image_url: item.image_url
-          })),
-          financials: {
-            ...(updatedQuoteData.quote.financials || {}),
-            subtotal: parseFloat(calculateSubtotal()),
-            tax_rate: 0.13,
-            tax_amount: parseFloat(calculateTax()),
-            total: parseFloat(calculateTotal()),
-            amount_paid: 0,
-            balance_due: parseFloat(calculateTotal()),
-            labor_hours: parseFloat(laborHours),
-            labor_rate: parseFloat(laborRate),
-            markup_percentage: parseFloat(markupPercentage),
-            markup_amount: parseFloat(calculateLaborAndMarkup())
-          }
-        };
-      }
+      const updatedQuoteData = prepareQuoteDataForAPI(quoteData as QuoteData, newItems);
 
       // Save to MongoDB
       fetch('/api/getQuote', {
@@ -786,8 +627,8 @@ export default function QuotePage() {
             tax_rate: 0.13,
             tax_amount: 0,
             total: 0,
-            amount_paid: 0,
-            balance_due: 0
+            paid: 0,
+            balance: 0
           }
         } as any;
       }
@@ -839,119 +680,10 @@ export default function QuotePage() {
   });
 
   const handleNext = () => {
-    // Update data with labor hours and markup percentage
     setIsSaving(true);
     setSaveError(null);
-    const updatedQuoteData = { ...quoteData } as QuoteData;
-    if (!updatedQuoteData.quote) {
-      updatedQuoteData.quote = {
-        quoteInfo: {
-          quoteNumber: 'QT-' + new Date().getTime(),
-          validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-        },
-        companyInfo: {
-          companyName: '',
-          contactName: '',
-          email: '',
-          phone: '',
-          address: ''
-        },
-        clientInfo: {
-          companyName: '',
-          contactName: '',
-          email: '',
-          phone: '',
-          address: '',
-          quoteInfo: {
-            validUntil: '',
-            quoteNumber: ''
-          },
-          companyInfo: {
-            companyName: '',
-            contactName: '',
-            email: '',
-            phone: '',
-            address: ''
-          },
-          clientInfo: {
-            companyName: '',
-            contactName: '',
-            email: '',
-            phone: '',
-            address: ''
-          }
-        },
-        items: [],
-        financials: {
-          subtotal: 0,
-          tax_rate: 0.13,
-          tax_amount: 0,
-          total: 0,
-          amount_paid: 0,
-          balance_due: 0,
-          labor_hours: parseFloat(laborHours) || 0,
-          labor_rate: parseFloat(laborRate) || 75,
-          markup_percentage: parseFloat(markupPercentage) || 15,
-          markup_amount: parseFloat(calculateLaborAndMarkup()) || 0
-        },
-        branding: {
-          primary_color: '',
-          secondary_color: '',
-          accent_color: ''
-        },
-        paymentInfo: {
-          paypal: '',
-          checkPayableTo: '',
-          routingNumber: ''
-        },
-        notes: '',
-        generated_at: new Date().toISOString()
-      };
-    }
     
-    // Update items with current state
-    const laborAndMarkupAmount = parseFloat(calculateLaborAndMarkup());
-    const laborItem = {
-      name: "Labour and Other Expenses",
-      description: "Labour and other expenses incurred",
-      price_per_unit: "-",
-      quantity: "-",
-      total_amount: laborAndMarkupAmount,
-      url: "",
-      image_url: ""
-    };
-
-    updatedQuoteData.quote.items = [
-      ...items.map(item => ({
-        name: item.description,
-        description: item.details,
-        price_per_unit: parseFloat(item.rate),
-        quantity: item.quantity,
-        total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
-        url: item.url,
-        image_url: item.image_url
-      })),
-      laborItem
-    ];
-
-    // Update financials with labor and markup data
-    if (!updatedQuoteData.quote.financials) {
-      updatedQuoteData.quote.financials = {} as Financials;
-    }
-    
-    updatedQuoteData.quote.financials = {
-      ...updatedQuoteData.quote.financials,
-      subtotal: parseFloat(calculateSubtotal()),
-      tax_rate: 0.13,
-      tax_amount: parseFloat(calculateTax()),
-      total: parseFloat(calculateTotal()),
-      amount_paid: 0,
-      balance_due: parseFloat(calculateTotal()),
-      labor_hours: parseFloat(laborHours) || 0,
-      labor_rate: parseFloat(laborRate) || 75,
-      markup_percentage: parseFloat(markupPercentage) || 15,
-      markup_amount: laborAndMarkupAmount
-    };
+    const updatedQuoteData = prepareQuoteDataForAPI(quoteData as QuoteData, items);
 
     // Save to MongoDB
     fetch('/api/getQuote', {
@@ -1004,19 +736,49 @@ export default function QuotePage() {
     }
   };
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="relative w-20 h-20 mx-auto mb-4">
+            <div className="absolute inset-0 rounded-full border-4 border-t-black border-r-black border-b-transparent border-l-transparent animate-spin"></div>
+            <div className="absolute inset-2 rounded-full border-2 border-gray-200 animate-pulse"></div>
+            <div className="absolute inset-[35%] rounded-full bg-black"></div>
+          </div>
+          <h2 className="text-xl font-semibold mb-2">Loading Quote Data</h2>
+          <p className="text-gray-600">Please wait while we fetch your quote information...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="fixed inset-0 bg-white flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="text-red-500 mb-4">
+            <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-semibold mb-2">Error Loading Quote</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={handleBack}
+            className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-8">
-      {isLoading ? (
-        <div className="flex items-center justify-center h-screen">
-          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
-        </div>
-      ) : error ? (
-        <div className="flex items-center justify-center h-screen">
-          <div className="bg-red-50 text-red-700 p-4 rounded-lg">
-            {error}
-          </div>
-        </div>
-      ) : (
+      {quoteData && (
         <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-lg p-12 border border-gray-100">
           {/* Quote Header */}
           <div className="flex justify-between items-start mb-12">
@@ -1051,17 +813,17 @@ export default function QuotePage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4zm3 1h6v4H7V5zm8 8v2h1v-2h-1zm-2-6H7v4h6V7zm2 0h1v4h-1V7zm1 6h-1v2h1v-2zm-7-1H4v-2h6v2zm-6-3h6v-2H4v2z" clipRule="evenodd" />
                 </svg>
-                <p className="font-semibold text-gray-900">{quoteData?.quote?.clientInfo?.companyInfo?.companyName || 'N/A'}</p>
+                <p className="font-semibold text-gray-900">{quoteData?.quote?.companyInfo?.companyName || 'N/A'}</p>
               </div>
               <div className="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                 </svg>
-                <p className="text-gray-600">{quoteData?.quote?.clientInfo?.companyInfo?.contactName || 'N/A'}</p>
+                <p className="text-gray-600">{quoteData?.quote?.companyInfo?.contactName || 'N/A'}</p>
               </div>
-              <p className="text-gray-600">{quoteData?.quote?.clientInfo?.companyInfo?.email || 'N/A'}</p>
-              <p className="text-gray-600">{quoteData?.quote?.clientInfo?.companyInfo?.phone || 'N/A'}</p>
-              <p className="text-gray-600">{quoteData?.quote?.clientInfo?.companyInfo?.address || 'N/A'}</p>
+              <p className="text-gray-600">{quoteData?.quote?.companyInfo?.email || 'N/A'}</p>
+              <p className="text-gray-600">{quoteData?.quote?.companyInfo?.phone || 'N/A'}</p>
+              <p className="text-gray-600">{quoteData?.quote?.companyInfo?.address || 'N/A'}</p>
             </div>
             <div className="space-y-2 flex-1 bg-gray-50 p-6 rounded-lg border border-gray-100">
               <h2 className="text-gray-900 font-semibold mb-4 flex items-center gap-2">
@@ -1072,17 +834,17 @@ export default function QuotePage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4zm3 1h6v4H7V5zm8 8v2h1v-2h-1zm-2-6H7v4h6V7zm2 0h1v4h-1V7zm1 6h-1v2h1v-2zm-7-1H4v-2h6v2zm-6-3h6v-2H4v2z" clipRule="evenodd" />
                 </svg>
-                <p className="font-semibold text-gray-900">{quoteData?.quote?.clientInfo?.clientInfo?.companyName || 'N/A'}</p>
+                <p className="font-semibold text-gray-900">{quoteData?.quote?.clientInfo?.companyName || 'N/A'}</p>
               </div>
               <div className="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                 </svg>
-                <p className="text-gray-600">{quoteData?.quote?.clientInfo?.clientInfo?.contactName || 'N/A'}</p>
+                <p className="text-gray-600">{quoteData?.quote?.clientInfo?.contactName || 'N/A'}</p>
               </div>
-              <p className="text-gray-600">{quoteData?.quote?.clientInfo?.clientInfo?.email || 'N/A'}</p>
-              <p className="text-gray-600">{quoteData?.quote?.clientInfo?.clientInfo?.phone || 'N/A'}</p>
-              <p className="text-gray-600">{quoteData?.quote?.clientInfo?.clientInfo?.address || 'N/A'}</p>
+              <p className="text-gray-600">{quoteData?.quote?.clientInfo?.email || 'N/A'}</p>
+              <p className="text-gray-600">{quoteData?.quote?.clientInfo?.phone || 'N/A'}</p>
+              <p className="text-gray-600">{quoteData?.quote?.clientInfo?.address || 'N/A'}</p>
             </div>
           </div>
 
@@ -1281,7 +1043,7 @@ export default function QuotePage() {
               className="px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2 hover:shadow-lg"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 11H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L14.586 11H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
               </svg>
               <span>Back</span>
             </button>
@@ -1459,7 +1221,7 @@ export default function QuotePage() {
             <div className="fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
               <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
               Saving changes...
             </div>
