@@ -66,9 +66,10 @@ const styles = StyleSheet.create({
   },
   headerLeft: {
     flex: 1,
+    paddingTop: 8,
   },
   headerRight: {
-    width: 100,
+    width: 150,
     alignItems: 'flex-end',
   },
   logo: {
@@ -76,16 +77,20 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   companyName: {
-    fontSize: 16,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#0f172a',
-    marginBottom: 4,
+    color: '#1e293b',
+    marginBottom: 8,
+    letterSpacing: -0.5,
+    textTransform: 'uppercase',
   },
   companyDetails: {
-    fontSize: 7,
+    fontSize: 9,
     color: '#475569',
-    marginBottom: 1,
-    lineHeight: 1.2,
+    marginBottom: 2,
+    lineHeight: 1.4,
+    fontFamily: 'Helvetica',
+    fontWeight: 'light',
   },
   quoteContainer: {
     backgroundColor: '#f8fafc',
@@ -99,13 +104,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
+    borderBottomWidth: 2,
+    borderBottomColor: '#e2e8f0',
+    paddingBottom: 10,
   },
   quoteTitle: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#0f172a',
     letterSpacing: -0.5,
+  },
+  quoteDate: {
+    fontSize: 10,
+    color: '#64748b',
+    marginTop: 4,
   },
   quoteNumber: {
     fontSize: 10,
@@ -281,6 +294,11 @@ const styles = StyleSheet.create({
   signatureBlock: {
     alignItems: 'center',
   },
+  validUntil: {
+    fontSize: 8,
+    color: '#64748b',
+    marginTop: 4,
+  },
 });
 
 const QuotePDF = () => {
@@ -343,14 +361,12 @@ const QuotePDF = () => {
             </View>
             <View style={styles.headerRight}>
               <Text style={styles.quoteNumber}>#{quoteData.quote.quoteInfo.quoteNumber}</Text>
+              <Text style={styles.validUntil}>Valid until: {quoteData.quote.quoteInfo.validUntil}</Text>
             </View>
           </View>
 
           {/* Quote Info */}
           <View style={styles.quoteContainer}>
-            <View style={styles.quoteHeader}>
-              <Text style={styles.quoteTitle}>Quote</Text>
-            </View>
             <View style={styles.infoGrid}>
               <View style={styles.infoColumn}>
                 <View style={styles.infoSection}>
