@@ -211,11 +211,13 @@ export default function Home() {
         throw new Error(errorData.error || 'Failed to save quote data');
       }
 
+      const savedData = await saveResponse.json();
+      
       // Wait for a moment to ensure data is saved
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Only navigate if all operations succeeded
-      router.push('/quotePage');
+      // Navigate with the quote ID
+      router.push(`/quotePage?id=${savedData.id}`);
     } catch (error) {
       console.error('Error in handleProceed:', error);
       let errorMessage = 'An unexpected error occurred while generating the quote.';

@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 
 interface QuoteData {
+  _id?: string;
   quote: {
     quoteInfo: {
       quoteNumber: string;
@@ -118,12 +119,20 @@ export default function QuotePage() {
         setIsLoading(true);
         setError(null);
 
+        // Get the quote ID from the URL
+        const searchParams = new URLSearchParams(window.location.search);
+        const quoteId = searchParams.get('id');
+        
+        if (!quoteId) {
+          throw new Error('No quote ID provided');
+        }
+
         // Try fetching data multiple times with a delay
         let attempts = 0;
         const maxAttempts = 3;
         
         while (attempts < maxAttempts) {
-          const response = await fetch('/api/getQuote');
+          const response = await fetch(`/api/getQuote?id=${quoteId}`);
           
           if (response.ok) {
             const data = await response.json();
@@ -247,7 +256,9 @@ export default function QuotePage() {
 
   // Helper function to prepare data for API
   const prepareQuoteDataForAPI = (baseData: QuoteData, items: LineItem[]) => {
-    const apiData = { ...baseData };
+    // Create a deep copy without _id field
+    const { quote, ...rest } = baseData;
+    const apiData = { quote: { ...quote }, ...rest };
     
     // Map items to API format
     apiData.quote.items = items.map(item => ({
@@ -305,7 +316,11 @@ export default function QuotePage() {
     
     const updatedQuoteData = prepareQuoteDataForAPI(quoteData as QuoteData, newItems);
 
-    fetch('/api/getQuote', {
+    // Get the quote ID from the URL
+    const searchParams = new URLSearchParams(window.location.search);
+    const quoteId = searchParams.get('id');
+
+    fetch(`/api/getQuote?id=${quoteId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -340,7 +355,11 @@ export default function QuotePage() {
     
     const updatedQuoteData = prepareQuoteDataForAPI(quoteData as QuoteData, newItems);
 
-    fetch('/api/getQuote', {
+    // Get the quote ID from the URL
+    const searchParams = new URLSearchParams(window.location.search);
+    const quoteId = searchParams.get('id');
+
+    fetch(`/api/getQuote?id=${quoteId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -368,7 +387,11 @@ export default function QuotePage() {
     
     const updatedQuoteData = prepareQuoteDataForAPI(quoteData as QuoteData, items);
 
-    fetch('/api/getQuote', {
+    // Get the quote ID from the URL
+    const searchParams = new URLSearchParams(window.location.search);
+    const quoteId = searchParams.get('id');
+
+    fetch(`/api/getQuote?id=${quoteId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -396,7 +419,11 @@ export default function QuotePage() {
     
     const updatedQuoteData = prepareQuoteDataForAPI(quoteData as QuoteData, items);
 
-    fetch('/api/getQuote', {
+    // Get the quote ID from the URL
+    const searchParams = new URLSearchParams(window.location.search);
+    const quoteId = searchParams.get('id');
+
+    fetch(`/api/getQuote?id=${quoteId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -424,7 +451,11 @@ export default function QuotePage() {
     
     const updatedQuoteData = prepareQuoteDataForAPI(quoteData as QuoteData, items);
 
-    fetch('/api/getQuote', {
+    // Get the quote ID from the URL
+    const searchParams = new URLSearchParams(window.location.search);
+    const quoteId = searchParams.get('id');
+
+    fetch(`/api/getQuote?id=${quoteId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -508,7 +539,10 @@ export default function QuotePage() {
       const updatedQuoteData = prepareQuoteDataForAPI(quoteData as QuoteData, newItems);
 
       // Save to MongoDB
-      fetch('/api/getQuote', {
+      const searchParams = new URLSearchParams(window.location.search);
+      const quoteId = searchParams.get('id');
+
+      fetch(`/api/getQuote?id=${quoteId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -552,7 +586,10 @@ export default function QuotePage() {
       const updatedQuoteData = prepareQuoteDataForAPI(quoteData as QuoteData, newItems);
 
       // Save to MongoDB
-      fetch('/api/getQuote', {
+      const searchParams = new URLSearchParams(window.location.search);
+      const quoteId = searchParams.get('id');
+
+      fetch(`/api/getQuote?id=${quoteId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -647,7 +684,10 @@ export default function QuotePage() {
       }));
 
       // Save to MongoDB
-      fetch('/api/getQuote', {
+      const searchParams = new URLSearchParams(window.location.search);
+      const quoteId = searchParams.get('id');
+
+      fetch(`/api/getQuote?id=${quoteId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -739,7 +779,10 @@ export default function QuotePage() {
     }
 
     // Make PUT request to update the quote
-    fetch('/api/getQuote', {
+    const searchParams = new URLSearchParams(window.location.search);
+    const quoteId = searchParams.get('id');
+
+    fetch(`/api/getQuote?id=${quoteId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -753,7 +796,7 @@ export default function QuotePage() {
         return response.json();
       })
       .then(() => {
-        router.push('/customerPDF');
+        router.push(`/customerPDF?id=${quoteId}`);
       })
       .catch((error) => {
         console.error('Error saving changes:', error);

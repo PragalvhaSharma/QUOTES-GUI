@@ -309,7 +309,15 @@ const QuotePDF = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/getQuote');
+        // Get the quote ID from the URL
+        const searchParams = new URLSearchParams(window.location.search);
+        const quoteId = searchParams.get('id');
+        
+        if (!quoteId) {
+          throw new Error('No quote ID provided');
+        }
+
+        const response = await fetch(`/api/getQuote?id=${quoteId}`);
         if (!response.ok) {
           throw new Error('Failed to fetch quote data');
         }

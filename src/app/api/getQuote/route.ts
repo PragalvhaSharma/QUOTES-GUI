@@ -2,14 +2,25 @@ import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const client = await clientPromise;
     const db = client.db("quotesDB");
     
-    // Get the most recent quote
-    const quote = await db.collection("quotes")
-      .findOne({}, { sort: { _id: -1 } });
+    // Get the quote ID from the URL
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+    
+    let quote;
+    if (id) {
+      // If ID is provided, fetch that specific quote
+      quote = await db.collection("quotes")
+        .findOne({ _id: new ObjectId(id) });
+    } else {
+      // If no ID, get the most recent quote (fallback behavior)
+      quote = await db.collection("quotes")
+        .findOne({}, { sort: { _id: -1 } });
+    }
     
     if (!quote) {
       // Return a default structure if no quote is found
@@ -54,41 +65,45 @@ export async function POST(request: Request) {
     const db = client.db("quotesDB");
     const data = await request.json();
     
+    // Get the quote ID from the URL
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+    
     // Ensure we're storing the data in the correct structure
     const quoteData = data.quote ? data : { quote: data };
     
-    // Get the most recent quote
-    const latestQuote = await db.collection("quotes").findOne({}, { sort: { _id: -1 } });
+    // Remove _id field if it exists to prevent MongoDB error
+    if (quoteData._id) {
+      delete quoteData._id;
+    }
+    if (quoteData.quote?._id) {
+      delete quoteData.quote._id;
+    }
     
-    if (latestQuote) {
-      // If the quote has an _id, convert it to ObjectId
-      if (quoteData._id) {
-        quoteData._id = new ObjectId(quoteData._id);
-      }
-
-      // Update existing quote
-      const result = await db.collection("quotes").updateOne(
-        { _id: latestQuote._id },
+    if (id) {
+      // If ID exists, update that specific quote
+      await db.collection("quotes").updateOne(
+        { _id: new ObjectId(id) },
         { $set: quoteData }
       );
 
       return NextResponse.json({ 
         success: true, 
-        id: latestQuote._id.toString()
+        id: id
+      });
+    } else {
+      // If no ID, create new quote
+      const result = await db.collection("quotes").insertOne(quoteData);
+      
+      return NextResponse.json({ 
+        success: true, 
+        id: result.insertedId.toString()
       });
     }
-    
-    // If no quote exists, create new one
-    const result = await db.collection("quotes").insertOne(quoteData);
-    
-    return NextResponse.json({ 
-      success: true, 
-      id: result.insertedId.toString()
-    });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error saving quote data:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to save quote data' },
+      { error: error instanceof Error ? error.message : 'Failed to save quote data' },
       { status: 500 }
     );
   }
@@ -100,38 +115,49 @@ export async function PUT(request: Request) {
     const db = client.db("quotesDB");
     const data = await request.json();
     
+    // Get the quote ID from the URL
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'No quote ID provided' },
+        { status: 400 }
+      );
+    }
+
     // Ensure we're storing the data in the correct structure
     const quoteData = data.quote ? data : { quote: data };
     
-    // Get the most recent quote since we're always updating the latest one
-    const latestQuote = await db.collection("quotes").findOne({}, { sort: { _id: -1 } });
+    // Remove _id field if it exists to prevent MongoDB error
+    if (quoteData._id) {
+      delete quoteData._id;
+    }
+    if (quoteData.quote?._id) {
+      delete quoteData.quote._id;
+    }
     
-    if (!latestQuote) {
+    // Update the specific quote by ID
+    const result = await db.collection("quotes").updateOne(
+      { _id: new ObjectId(id) },
+      { $set: quoteData }
+    );
+
+    if (result.matchedCount === 0) {
       return NextResponse.json(
-        { error: 'No quote found to update' },
+        { error: 'Quote not found' },
         { status: 404 }
       );
     }
 
-    // If the quote has an _id, convert it to ObjectId
-    if (quoteData._id) {
-      quoteData._id = new ObjectId(quoteData._id);
-    }
-
-    // Update the quote
-    const result = await db.collection("quotes").updateOne(
-      { _id: latestQuote._id },
-      { $set: quoteData }
-    );
-
     return NextResponse.json({ 
       success: true,
-      id: latestQuote._id.toString()
+      id: id
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error updating quote data:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to update quote data' },
+      { error: error instanceof Error ? error.message : 'Failed to update quote data' },
       { status: 500 }
     );
   }
