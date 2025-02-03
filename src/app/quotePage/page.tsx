@@ -53,12 +53,12 @@ interface QuoteItem {
 }
 
 // UI-specific interfaces
-interface UIFinancials extends Financials {
-  labor_hours?: number;
-  labor_rate?: number;
-  markup_percentage?: number;
-  markup_amount?: number;
-}
+// interface UIFinancials extends Financials {
+//   labor_hours?: number;
+//   labor_rate?: number;
+//   markup_percentage?: number;
+//   markup_amount?: number;
+// }
 
 interface Financials {
   subtotal: number;
@@ -629,8 +629,28 @@ export default function QuotePage() {
             total: 0,
             paid: 0,
             balance: 0
-          }
-        } as any;
+          },
+          companyInfo: {
+            companyName: '',
+            contactName: '',
+            email: '',
+            phone: '',
+            address: ''
+          },
+          clientInfo: {
+            companyName: '',
+            contactName: '',
+            email: '',
+            phone: '',
+            address: ''
+          },
+          paymentInfo: {
+            paypal: '',
+            checkPayableTo: '',
+            routingNumber: ''
+          },
+          notes: ''
+        };
       }
       
       updatedQuoteData.quote.items = newItems.map(item => ({
@@ -683,17 +703,72 @@ export default function QuotePage() {
     setIsSaving(true);
     setSaveError(null);
     
-    const updatedQuoteData = prepareQuoteDataForAPI(quoteData as QuoteData, items);
+    // Create a deep copy of the quote data
+    const updatedQuoteData = { ...quoteData } as QuoteData;
+    
+    // Calculate the total labor and markup amount
+    const laborHoursNum = parseFloat(laborHours) || 0;
+    const laborRateNum = parseFloat(laborRate) || 0;
+    const markupPercentageNum = parseFloat(markupPercentage) || 0;
+    const baseLabor = laborHoursNum * laborRateNum;
+    const markup = baseLabor * (markupPercentageNum / 100);
+    const laborAndMarkupAmount = baseLabor + markup;
 
-    // Save to MongoDB
+    // Calculate items subtotal
+    const itemsSubtotal = items.reduce((sum, item) => {
+      const rate = parseFloat(item.rate) || 0;
+      const quantity = parseFloat(item.quantity) || 0;
+      return sum + (rate * quantity);
+    }, 0);
+
+    // Update the financials with labor included in subtotal
+    updatedQuoteData.quote.financials = {
+      subtotal: itemsSubtotal + laborAndMarkupAmount,
+      tax_rate: 0.13,
+      tax_amount: itemsSubtotal * 0.13, // Tax only on items, not labor
+      total: itemsSubtotal + laborAndMarkupAmount + (itemsSubtotal * 0.13),
+      paid: 0,
+      balance: itemsSubtotal + laborAndMarkupAmount + (itemsSubtotal * 0.13)
+    };
+
+    // Update items array
+    updatedQuoteData.quote.items = items.map(item => ({
+      name: item.description,
+      description: item.details,
+      price_per_unit: parseFloat(item.rate) || 0,
+      quantity: item.quantity,
+      total_amount: parseFloat(calculateAmount(item.rate, item.quantity)),
+      url: item.url,
+      image_url: item.image_url
+    }));
+
+    // Add labor as an item if there are labor hours
+    if (laborHoursNum > 0) {
+      updatedQuoteData.quote.items.push({
+        name: "Labour and Other Expenses",
+        description: `${laborHours} hours at $${laborRate}/hr with ${markupPercentage}% markup`,
+        price_per_unit: laborAndMarkupAmount,
+        quantity: "1",
+        total_amount: laborAndMarkupAmount,
+        url: "",
+        image_url: ""
+      });
+    }
+
+    // Make PUT request to update the quote
     fetch('/api/getQuote', {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(updatedQuoteData),
     })
-      .then(handleFetchResponse)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to save quote data');
+        }
+        return response.json();
+      })
       .then(() => {
         router.push('/customerPDF');
       })
