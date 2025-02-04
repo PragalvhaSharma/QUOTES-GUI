@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
       }
     ],
   },
+  experimental: {
+    urlImports: true,
+  },
 };
 
 export default nextConfig;

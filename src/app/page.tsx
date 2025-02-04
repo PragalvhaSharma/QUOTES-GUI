@@ -170,7 +170,7 @@ export default function Home() {
         fromInfo: fromInfo,
         billToInfo: billToInfo
       };
-      const response = await fetch(`https://20.175.174.31/generate-quote?data=${encodeURIComponent(JSON.stringify(payload))}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/generate-quote?data=${encodeURIComponent(JSON.stringify(payload))}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
