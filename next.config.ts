@@ -16,6 +16,18 @@ const nextConfig: NextConfig = {
   experimental: {
     urlImports: true,
   },
+  webpack: (config) => {
+    config.experiments = {
+      ...config.experiments,
+      buildHttp: {
+        allowedUris: [
+          'https://**',
+          'http://**'
+        ]
+      }
+    };
+    return config;
+  }
 };
 
 export default nextConfig;
