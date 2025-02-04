@@ -2,6 +2,7 @@
 
 import { useState, useEffect, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface FromInfo {
   companyName: string;
@@ -271,6 +272,15 @@ export default function Home() {
     <main className="min-h-screen bg-[#fafafa] relative">
       <div className="max-w-6xl mx-auto p-6 sm:p-8 pt-12 sm:pt-24">
         <div className="text-center mb-12">
+          <div className="flex justify-center mb-6">
+            <Image
+              src="/logo_b_black.png"
+              alt="Blanc AI Logo"
+              width={120}
+              height={120}
+              priority
+            />
+          </div>
           <h1 className="text-3xl sm:text-5xl font-bold text-black mb-3 tracking-tight">
             Quote Details
           </h1>
